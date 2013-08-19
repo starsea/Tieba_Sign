@@ -1,7 +1,7 @@
-::-webkit-scrollbar { background: #3c3c3c; width: 8px; height: 8px; -webkit-border-radius: 10px; }
+::-webkit-scrollbar { background: #3c3c3c; width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #3c3c3c; }
-::-webkit-scrollbar-track-piece { background: #3c3c3c;  -webkit-border-radius: 10px; }
-::-webkit-scrollbar-thumb { background: #e5e5e5; }
+::-webkit-scrollbar-track-piece { background: #3c3c3c; }
+::-webkit-scrollbar-thumb { background: #e5e5e5; -webkit-border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #dedede; }
 
 html, body, div, h1, h2, h3, h4, h5, h6, p, img, dl, dt, dd, ol, ul, li, table, tr, td, form, object, embed, article, aside, canvas, command, details, figcaption, figure, footer, group, header, hgroup, mark, menu, meter, nav, output, progress, section, summary, time, audio, video { margin: 0; padding: 0; border: 0; }
