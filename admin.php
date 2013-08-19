@@ -57,6 +57,8 @@ switch($_GET['action']){
 	case 'save_setting':
 		if($formhash != $_POST['formhash']) showmessage('来源不可信，请重试', 'admin.php#config');
 		saveSetting('autoupdate', ($_POST['autoupdate'] ? 1 : 0));
+		saveSetting('block_register', ($_POST['block_register'] ? 1 : 0));
+		saveSetting('invite_code', daddslashes($_POST['invite_code']));
 		showmessage('设置已经保存☆Kira~', 'admin.php#config', 2);
 		break;
 	case 'deluser':

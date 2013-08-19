@@ -1,6 +1,6 @@
 <?php
 require_once './system/common.inc.php';
-$invite_code = '';
+$invite_code = getSetting('invite_code');
 if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 	dsetcookie('token', '');
 	$_COOKIE['token'] = '';
@@ -8,6 +8,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 }elseif($uid){
 	showmessage('您已经登录了~', dreferer(), 1);
 }elseif($_GET['action'] == 'register'){
+	if(getSetting('block_register')) showmessage('抱歉，当前站点禁止新用户注册', 'member.php?action=login');
 	if($_POST){
 		if(!$_POST['username']){
 			showmessage('请输入用户名', 'member.php?action=register');

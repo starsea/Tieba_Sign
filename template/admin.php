@@ -49,6 +49,8 @@ if(!defined('IN_ADMINCP')) exit();
 <form method="post" action="admin.php?action=save_setting">
 <p>功能增强</p>
 <input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
+<p><label><input type="checkbox" id="block_register" name="block_register" /> 关闭新用户注册功能</label></p>
+<p><input type="text" name="invite_code" id="invite_code" placeholder="邀请码 (留空为不需要)" /></p>
 <p><label><input type="checkbox" id="autoupdate" name="autoupdate" /> 每天自动更新用户喜欢的贴吧 (Beta, 稍占服务器资源)</label></p>
 <p><input type="submit" value="保存设置" /></p>
 </form>

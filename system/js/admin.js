@@ -61,6 +61,8 @@
 			$('.loading-icon').fadeOut();
 			if(!result) return;
 			$('#autoupdate')[0].checked = result.autoupdate ? 'checked' : '';
+			$('#block_register')[0].checked = result.block_register ? 'checked' : '';
+			$('#invite_code')[0].value = result.invite_code ? result.invite_code : '';
 		});
 	}
 	function parse_hash(){
