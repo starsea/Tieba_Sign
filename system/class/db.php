@@ -12,7 +12,7 @@ class db_mysql{
 			$_config['db']['password'],
 			'utf8',
 			$_config['db']['name'],
-			false
+			true
 		);
 	}
 	function _dbconnect($dbhost, $dbuser, $dbpw, $dbcharset, $dbname, $pconnect) {
@@ -99,6 +99,9 @@ class db_mysql{
 	}
 	function halt($message = '', $sql = '') {
 		error::db_error($message, $sql);
+	}
+	function __destruct(){
+		$this->close();
 	}
 }
 
