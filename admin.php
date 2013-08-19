@@ -61,8 +61,10 @@ switch($_GET['action']){
 		break;
 	case 'deluser':
 		$_uid = intval($_GET['uid']);
+		if($uid == $_uid) showmessage('删你自己的号是要作死啊？！', 'admin.php#user');
 		if($formhash != $_GET['formhash']) showmessage('来源不可信，请重试', 'admin.php#user');
 		DB::query("DELETE FROM member WHERE uid='{$_uid}'");
+		DB::query("DELETE FROM member_setting WHERE uid='{$_uid}'");
 		DB::query("DELETE FROM my_tieba WHERE uid='{$_uid}'");
 		DB::query("DELETE FROM sign_log WHERE uid='{$_uid}'");
 		showmessage('删除用户成功', 'admin.php#user', 1);
