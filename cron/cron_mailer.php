@@ -54,7 +54,7 @@ EOF;
 		$log[] = $result;
 	}
 	$message .= '</tbody></table></div></body></html>';
-	$res = send_mail($user['email'], "[{$mdate}] 贴吧签到助手 - 签到报告", $message);
+	$res = send_mail($user['email'], "[{$mdate}] 贴吧签到助手 - {$user[username]} - 签到报告", $message);
 	echo $res ? '邮件发送成功<br>' : '邮件发送失败<br>';
 }
 function _status($status){
