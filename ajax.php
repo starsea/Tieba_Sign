@@ -1,7 +1,7 @@
 <?php
 require_once './system/common.inc.php';
 
-if(!$uid) exit();
+if(!$uid) exit('Access Denied');
 
 $data = array();
 switch($_GET['v']){
@@ -12,7 +12,7 @@ switch($_GET['v']){
 		}
 		break;
 	case 'get-setting':
-		$data = DB::fetch_first("SELECT use_bdbowser, sign_method, error_mail, send_mail FROM member WHERE uid='{$uid}'");
+		$data = get_setting($uid);
 		break;
 	case 'sign-log':
 		$date = date('Ymd');

@@ -68,6 +68,14 @@ if(IN_MOBILE){
 <p><label><input type="checkbox" disabled name="send_mail" id="send_mail" value="1" /> 每日发送一封签到报告邮件</label></p>
 <p><input type="submit" value="保存设置" /></p>
 </form>
+<p>更改密码：</p>
+<form method="post" action="index.php?action=change_password">
+<input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
+<p><input type="password" name="old_password" id="old_password" placeholder="旧密码" /></p>
+<p><input type="password" name="new_password" id="new_password" placeholder="新密码" /></p>
+<p><input type="password" name="new_password2" id="new_password2" placeholder="请重复输入新密码" /></p>
+<p><input type="submit" value="修改密码" /></p>
+</form>
 <p>自动获取 Cookie:</p>
 <p>请将下面的链接拖动到收藏夹，然后再点击该链接并按照提示登录（推荐使用 Chrome 隐身窗口模式），登陆成功后再次点击便可复制。</p>
 <p><a href="javascript:(function(){if(document.cookie.indexOf('BDUSS')<0){alert('找不到BDUSS Cookie\n请先登陆 http://wapp.baidu.com/');location.href='http://wappass.baidu.com/passport/?login&u=http%3A%2F%2Fwapp.baidu.com%2F&ssid=&from=&uid=wapp_1375936328496_692&pu=&auth=&originid=2&mo_device=1&bd_page_type=1&tn=bdIndex&regtype=1&tpl=tb';}else{prompt('您的 Cookie 信息如下:', document.cookie);}})();" onclick="alert('请拖动到收藏夹');return false;" class="btn">获取手机百度贴吧 Cookie</a></p>

@@ -7,6 +7,11 @@ cron:
   url: cron/cron_autosign.php
   schedule: */1 0 * * *
 
+cron:
+- description: Mail-Services
+  url: cron/cron_mailer.php
+  schedule: 45 12 * * *
+
 handle:
 - expire: if( path ~ "css" ) time 864000
 - expire: if( path ~ "png" ) time 864000

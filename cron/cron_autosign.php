@@ -19,6 +19,8 @@ if($date != $_date){
 	}
 	DB::query("ALTER TABLE sign_log CHANGE `date` `date` INT NOT NULL DEFAULT '{$date}'");
 	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
+	$delete_date = date('Ymd', TIMESTAMP - 86400*30);
+	DB::query("DELETE FROM sign_log WHERE date<'{$delete_date}'");
 	saveSetting('date', $date);
 	saveSetting('autoupdate_uid', 0);
 }
@@ -60,7 +62,7 @@ while($tieba = DB::fetch($query)){
 		$done += 0.7;
 		continue;
 	}
-	$url = "http://wapp.baidu.com/f?kw={$tieba[unicode_name]}";
+	$url = "http://tieba.baidu.com/mo/m?kw={$tieba[unicode_name]}";
 	$get_url = curl_get($url, $uid);
 	if(!$get_url){
 		echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>服务器错误，签到失败，稍后会重试</td></tr>\r\n";
@@ -88,7 +90,12 @@ while($tieba = DB::fetch($query)){
 			continue;
         }else{
 			echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>签到错误，可能已成功，稍后会重试</td></tr>\r\n";
-			DB::query("UPDATE sign_log set status='1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			DB::query("UPDATE sign_log set status='1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");				$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			if($retry >= 20){
+				DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			}else{
+				DB::query("UPDATE sign_log set status='1', retry=retry+1 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			}
 			if($_GET['debug']) exit($sign_url.$get_sign);
 			continue;
         }
@@ -100,12 +107,7 @@ while($tieba = DB::fetch($query)){
 			continue;
         } else {
 			echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>找不到签到链接，稍后重试</td></tr>\r\n";
-			$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			if($retry >= 3){
-				DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			}else{
-				DB::query("UPDATE sign_log set status='1', retry=retry+1 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			}
+			DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
 			if($_GET['debug']) exit($get_url);
 			continue;
         }

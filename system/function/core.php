@@ -331,7 +331,7 @@ function get_username($uid){
 function get_setting($uid){
 	static $user_setting = array();
 	if($user_setting[$uid]) return $user_setting[$uid];
-	return $user_setting[$uid] = DB::fetch_first("SELECT use_bdbowser, sign_method, error_mail, send_mail FROM member WHERE uid='{$uid}'");
+	return $user_setting[$uid] = DB::fetch_first("SELECT * FROM member_setting WHERE uid='{$uid}'");
 }
 function send_mail($address, $subject, $message){
 	global $_config;
@@ -347,7 +347,7 @@ function bcms_mail($address, $subject, $message){
 	global $_config;
 	require_once SYSTEM_ROOT.'./class/bcms.php';
 	$bcms = new Bcms();
-    $ret = $bcms->mail($_config['mail']['bcms']['queue'], $message, array($address), array(Bcms::MAIL_SUBJECT => $subject));
+    $ret = $bcms->mail($_config['mail']['bcms']['queue'], '<!--HTML-->'.$message, array($address), array(Bcms::MAIL_SUBJECT => $subject));
     if (false === $ret) {
         return false;
     } else {
@@ -389,9 +389,9 @@ function saemail($address, $subject, $message){
 	$mail->send();
 	return true;
 }
-function getSetting($k){
+function getSetting($k, $force = false){
 	static $setting = array();
-	if($setting[$k]) return $setting[$k];
+	if(!$force && isset($setting[$k])) return $setting[$k];
 	return $setting[$k] = DB::result_first("SELECT v FROM setting WHERE k='{$k}'");
 }
 function saveSetting($k, $v){
