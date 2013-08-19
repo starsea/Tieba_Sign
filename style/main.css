@@ -76,6 +76,7 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .main-content table tr { background: #d5d5d5; }
 .main-content table tbody tr { background: #efefef; }
 .main-content table tbody tr:nth-child(odd) { background: #fafafa; }
+.main-content input[type=text], .main-content input[type=password] { width: 300px; }
 
 @media (max-width: 550px){
 	::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -90,4 +91,5 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 	.loading-icon { right: 10px; }
 	.reload { right: 45px; }
 	.menubtn { display: block; }
+	.main-content input[type=text], .main-content input[type=password] { width: 90%; }
 }
