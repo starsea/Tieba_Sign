@@ -33,6 +33,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 				'password' => $password,
 				'email' => $email,
 			));
+			DB::insert('member_setting', array('uid' => $uid));
 			dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$username}\t0", 'ENCODE'));
 			showmessage("注册成功，您的用户名是 <b>{$username}</b> 记住了哦~！", dreferer(), 3);
 		}
