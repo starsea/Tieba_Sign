@@ -26,6 +26,8 @@ if(!$uid){
 			break;
 		case 'change_password':
 			if($_POST['formhash'] != $formhash) break;
+			if(!$_POST['old_password']) showmessage('请输入旧密码', './#setting', 1);
+			if(!$_POST['new_password']) showmessage('请输入新密码', './#setting', 1);
 			if($_POST['new_password'] != $_POST['new_password2']) showmessage('两次输入的新密码不一样，请检查', './#setting', 1);
 			$oldpassword = md5(SYS_KEY.md5($_POST['old_password']).SYS_KEY);
 			$check = DB::result_first("SELECT uid FROM member WHERE uid='{$uid}' AND password='{$oldpassword}'");
