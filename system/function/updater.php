@@ -2,7 +2,9 @@
 if(!defined('IN_KKFRAME')) exit('Access Denied');
 function check_update(){
 	if(defined('UPDATE_CHECKED')) return;
-	$current_version = getSetting('version', true);
+	$query = DB::query("SELECT v FROM setting WHERE k='version'", 'SILENT');
+	$res = DB::fetch($query);
+	$current_version = $res['v'];
 	if ($current_version != VERSION){
 		// load update script
 		while($current_version){
