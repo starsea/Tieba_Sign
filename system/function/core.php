@@ -347,7 +347,7 @@ function bcms_mail($address, $subject, $message){
 	global $_config;
 	require_once SYSTEM_ROOT.'./class/bcms.php';
 	$bcms = new Bcms();
-    $ret = $bcms->mail($_config['mail']['bcms']['queue'], $message, array($address), array(Bcms::MAIL_SUBJECT => $subject));
+    $ret = $bcms->mail($_config['mail']['bcms']['queue'], '<!--HTML-->'.$message, array($address), array(Bcms::MAIL_SUBJECT => $subject));
     if (false === $ret) {
         return false;
     } else {
