@@ -4,7 +4,7 @@ define('IN_KKFRAME', true);
 define('SYSTEM_ROOT', dirname(__FILE__).'/');
 define('ROOT', dirname(SYSTEM_ROOT).'/');
 define('TIMESTAMP', time());
-define('VERSION', '1.13.8.18');
+define('VERSION', '1.13.8.19');
 if(!defined('IN_API')) define('IN_API', false);
 error_reporting(E_ALL ^ E_NOTICE);
 ob_start();
@@ -16,6 +16,7 @@ require_once SYSTEM_ROOT.'./class/error.php';
 require_once SYSTEM_ROOT.'./class/db.php';
 require_once SYSTEM_ROOT.'./class/debug.php';
 require_once SYSTEM_ROOT.'./function/core.php';
+require_once SYSTEM_ROOT.'./function/updater.php';
 
 DEBUG::INIT();
 
@@ -47,3 +48,4 @@ if(!empty($_COOKIE['token'])) {
     $uid = $username = '';
 }
 $formhash = substr(md5(substr(TIMESTAMP, 0, -7).$username.$uid.SYS_KEY.ROOT), 8, 8);
+check_update();
