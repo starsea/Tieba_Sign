@@ -30,7 +30,7 @@ function sendmsg($user){
 	$message = <<<EOF
 <html><body>
 <style type="text/css">
-div.wrapper * { font: 81.25% "Microsoft YaHei", arial, helvetica, sans-serif; word-break: break-all; }
+div.wrapper * { font: 12px "Microsoft YaHei", arial, helvetica, sans-serif; word-break: break-all; }
 div.wrapper a { color: #15c; text-decoration: none; }
 div.wrapper a:active { color: #d14836; }
 div.wrapper a:hover { text-decoration: underline; }
