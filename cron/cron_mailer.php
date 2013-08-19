@@ -6,7 +6,7 @@ $date = date('Ymd', TIMESTAMP+900);
 $mdate = date('Y-m-d', TIMESTAMP+900);
 $uid = 0;
 while(true){
-	$user = DB::fetch_first("SELECT uid, username, email, error_mail, send_mail FROM member WHERE uid>'{$uid}' ORDER BY uid LIMIT 0,1");
+	$user = DB::fetch_first("SELECT uid, username, email FROM member WHERE uid>'{$uid}' ORDER BY uid LIMIT 0,1");
 	$uid = $user['uid'];
 	if(!$uid) break;
 	echo "正在检查用户 {$user[username]}<br>";
@@ -17,8 +17,9 @@ while(true){
 };
 function check_if_msg($user){
 	global $date, $uid;
-	if($user['send_mail']) return true;
-	if(!$user['error_mail']) return false;
+	$setting = get_setting($user['uid']);
+	if($setting['send_mail']) return true;
+	if(!$setting['error_mail']) return false;
 	$error_num = DB::result_first("SELECT COUNT(*) FROM sign_log WHERE status!=2 AND date='{$date}' AND uid='{$uid}'");
 	if($error_num > 0) return true;
 }
