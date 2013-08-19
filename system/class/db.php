@@ -12,7 +12,7 @@ class db_mysql{
 			$_config['db']['password'],
 			'utf8',
 			$_config['db']['name'],
-			true
+			getenv('HTTP_BAE_ENV_ADDR_SQL_IP') ? true : false,
 		);
 	}
 	function _dbconnect($dbhost, $dbuser, $dbpw, $dbcharset, $dbname, $pconnect) {
