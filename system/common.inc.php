@@ -27,7 +27,7 @@ if(strpos($ua, 'wap') || strpos($ua, 'mobi') || strpos($ua, 'opera') || $_GET['m
 	define('IN_MOBILE', false);
 }
 if(strpos($ua, 'bot') || strpos($ua, 'spider')) define('IN_ROBOT', true);
-
+check_update();
 $cookiever = '1';
 if(!empty($_COOKIE['token'])) {
     list($_cookiever, $uid, $username, $login_exp) = explode("\t", authcode($_COOKIE['token'], 'DECODE'));
@@ -48,4 +48,4 @@ if(!empty($_COOKIE['token'])) {
     $uid = $username = '';
 }
 $formhash = substr(md5(substr(TIMESTAMP, 0, -7).$username.$uid.SYS_KEY.ROOT), 8, 8);
-check_update();
+
