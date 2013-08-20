@@ -18,12 +18,21 @@ function createWindow(){
 	win.addButton = function(title, callback){
 		var btn = document.createElement('button');
 		btn.innerHTML = title;
-		btn.onclick = callback;
+		btn.onclick = function(){
+			callback();
+			win.destroy();
+		}
 		this.btns.appendChild(btn);
 		return this;
 	}
 	win.addCloseButton = function(title){
-		return this.addButton(title, function(){ win.destroy(); });
+		var btn = document.createElement('button');
+		btn.innerHTML = title;
+		btn.onclick = function(){
+			win.destroy();
+		}
+		this.btns.appendChild(btn);
+		return this;
 	}
 	win.append = function(){
 		if (this.allow_close) {
@@ -50,4 +59,30 @@ function createWindow(){
 		$('#append_parent')[0].removeChild(win.obj);
 	}
 	return win;
+}
+function msg_win_action(link){
+	link += link.indexOf('?') < 0 ? '?' : '&';
+	link += "format=json";
+	$('.loading-icon').finish();
+	$('.loading-icon').fadeIn();
+	$.getJSON(link, function(result){
+		$('.loading-icon').finish();
+		$('.loading-icon').fadeOut();
+		if(!result) return;
+		createWindow().setTitle('系统消息').setContent(result.msg).addCloseButton('确定').append();
+	});
+	return false;
+}
+function msg_redirect_action(link){
+	link += link.indexOf('?') < 0 ? '?' : '&';
+	link += "format=json";
+	$('.loading-icon').finish();
+	$('.loading-icon').fadeIn();
+	$.getJSON(link, function(result){
+		$('.loading-icon').finish();
+		$('.loading-icon').fadeOut();
+		if(!result) return;
+		createWindow().setTitle('系统消息').setContent(result.msg).addButton('确定', function(){ location.href = result.redirect; }).append();
+	});
+	return false;
 }

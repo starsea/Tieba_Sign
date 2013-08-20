@@ -38,7 +38,7 @@ if(!defined('IN_KKFRAME')) exit();
 <thead><tr><td style="width: 40px">序号</td><td>贴吧</td></tr></thead>
 <tbody></tbody>
 </table>
-<p>如果此处显示的贴吧有缺失，请<a href="index.php?action=refresh_liked_tieba">点此刷新喜欢的贴吧</a>.</p>
+<p>如果此处显示的贴吧有缺失，请<a href="index.php?action=refresh_liked_tieba" onclick="return msg_redirect_action(this.href+'&formhash='+formhash)">点此刷新喜欢的贴吧</a>.</p>
 </div>
 <div id="content-sign-log" class="hidden">
 <h2>签到记录</h2>
