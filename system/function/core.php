@@ -106,6 +106,8 @@ function showmessage($msg = '', $redirect = '', $delay = 3){
 		exit($msg);
 	}elseif($_GET['format'] == 'json'){
 		$result = array('msg' => $msg, 'redirect' => $redirect, 'delay' => $delay);
+		echo json_encode($result);
+		exit();
 	}elseif(IN_MOBILE){
 		$msg = $redirect ? "<p>{$msg}</p><ins><a href=\"{$redirect}\">如果您的浏览器没有自动跳转，请点击这里</a></ins><meta http-equiv=\"refresh\" content=\"{$delay};url={$redirect}\" />" : "<p>{$msg}</p>";
 		echo '<!DOCTYPE html><html><meta charset=utf-8><title>系统消息</title><meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width"><style>*{margin:0;padding:0}html{background:#fff;color:#222;padding:15px}body{margin:20% auto 0;min-height:220px;padding:30px 0 15px}p{margin:11px 0 22px;overflow:hidden}ins, ins a{color:#777;text-decoration:none;font-size:10px;}a img{border:0;margin:0 auto;}</style>'.$msg.'</html>';
@@ -179,7 +181,7 @@ function update_liked_tieba($uid, $ignore_error = false){
 		showmessage('无法获取喜欢的贴吧，请更新 Cookie 信息', './#setting');
 	}
 	$my_tieba = array();
-	$query = DB::query("SELECT name, fid FROM my_tieba WHERE uid='{$uid}'");
+	$query = DB::query("SELECT name, fid, tid FROM my_tieba WHERE uid='{$uid}'");
 	while($r = DB::fetch($query)) {
 		$my_tieba[$r['name']] = $r;
 	}
@@ -207,9 +209,9 @@ function update_liked_tieba($uid, $ignore_error = false){
 	if($my_tieba){
 		$tieba_ids = array();
 		foreach($my_tieba as $tieba){
-			$tieba_ids = $tieba['tid'];
+			$tieba_ids[] = $tieba['tid'];
 		}
-		$str = "'".implode("', '", $my_tieba)."'";
+		$str = "'".implode("', '", $tieba_ids)."'";
 		$deleted = count($my_tieba);
 		DB::query("DELETE FROM my_tieba WHERE uid='{$uid}' AND tid IN ({$str})");
 		DB::query("DELETE FROM sign_log WHERE uid='{$uid}' AND tid IN ({$str})");
