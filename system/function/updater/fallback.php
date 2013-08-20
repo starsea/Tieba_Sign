@@ -13,5 +13,6 @@ if(!in_array('member', $tables)){
 }elseif(!in_array('member_setting', $tables)){
 	include SYSTEM_ROOT.'./function/updater/1.13.8.18.php';
 }
-error::system_error('自动更新“贴吧签到助手”失败，请尝试手动安装');
+saveSetting('version', VERSION);
+showmessage('已经更新到 V'.VERSION.'<br>（更新过程没有更新数据库）', './');
 ?>
