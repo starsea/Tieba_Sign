@@ -143,7 +143,7 @@
 		}else if(hash.split('-')[0] == "history"){
 			load_sign_history(hash.split('-')[1]);
 		}else{
-			$('#menu_loved_tb')[0].onclick();
+			$('#menu_sign_log')[0].onclick();
 		}
 	}
 	$('#menu_logout')[0].onclick = function(){

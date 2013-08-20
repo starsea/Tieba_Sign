@@ -23,8 +23,8 @@ if(!defined('IN_KKFRAME')) exit();
 <div class="menubtn">&nbsp;</div>
 <div class="sidebar">
 <ul class="menu">
-<li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
 <li id="menu_sign_log"><a href="#signlog">签到记录</a></li>
+<li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
 <li id="menu_config"><a href="#setting">设置</a></li>
 <?php if(is_admin($uid)) echo '<li id="menu_admincp"><a href="admin.php">管理面板</a></li><li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version='.VERSION.'" target="_blank">检查更新</a></li>'; ?>
 <li id="menu_logout"><a href="member.php?action=logout&hash=<?php echo $formhash; ?>">退出登录</a></li>
