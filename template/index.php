@@ -16,6 +16,7 @@ if(!defined('IN_KKFRAME')) exit();
 </head>
 <body>
 <div class="wrapper" id="page_index">
+<div id="append_parent"></div>
 <div class="main-box clearfix">
 <h1>贴吧签到助手</h1>
 <div class="loading-icon"><img src="style/loading.gif" /> 载入中...</div>
@@ -98,5 +99,6 @@ var mobile = <?php echo IN_MOBILE ? '1' : '0'; ?>;
 var formhash = '<?php echo $formhash; ?>';
 </script>
 <script src="system/js/main.js"></script>
+<script src="system/js/fwin.js"></script>
 </body>
 </html>
