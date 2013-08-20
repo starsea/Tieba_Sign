@@ -59,6 +59,7 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .center-box { position: relative; top: 125px; width: 320px; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
 .main-box { position: relative; top: 35px; width: 80%; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
 .sidebar { float: left; width: 20%; padding: 10px 0; border-right: 1px solid #dedede; margin: 0 0 -10px -15px }
+.sidebar p { text-align: center; margin-bottom: 0; padding-bottom: .75em; border-bottom: 1px solid #DEDEDE; }
 .main-content { margin: 0 0 -10px -1px; border-left: 1px solid #dedede; padding: 10px 0 10px 10px; float: left; width: 80%; }
 .menu { margin: 0; }
 .menu li { border-top: 1px solid #dedede; margin: 0; padding: 0; }
