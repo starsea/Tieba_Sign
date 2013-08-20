@@ -90,8 +90,9 @@ while($tieba = DB::fetch($query)){
 			continue;
         }else{
 			echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>签到错误，可能已成功，稍后会重试</td></tr>\r\n";
-			DB::query("UPDATE sign_log set status='1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");				$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			if($retry >= 20){
+			DB::query("UPDATE sign_log set status='1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			if($retry >= 25){
 				DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
 			}else{
 				DB::query("UPDATE sign_log set status='1', retry=retry+1 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
@@ -107,7 +108,12 @@ while($tieba = DB::fetch($query)){
 			continue;
         } else {
 			echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>找不到签到链接，稍后重试</td></tr>\r\n";
-			DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			if($retry >= 25){
+				DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			}else{
+				DB::query("UPDATE sign_log set status='1', retry=retry+7 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			}
 			if($_GET['debug']) exit($get_url);
 			continue;
         }
