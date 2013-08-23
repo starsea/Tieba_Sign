@@ -22,8 +22,8 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 			$email = daddslashes($_POST['email']);
 			$password = md5(SYS_KEY.md5($_POST['password']).SYS_KEY);
 			if(!$username || !$password || !$email) showmessage('您输入的信息不完整', 'member.php?action=register');
-			if(preg_match('/[<>\'\\"]/i', $username)) showmessage('您输入的用户名不合法，用户名仅允许字母和数字！', 'member.php?action=register');
-			if(strlen($username) < 6) showmessage('用户名至少要6位，请修改', dreferer(), 5);
+			if(preg_match('/[<>\'\\"]/i', $username)) showmessage('用户名中有被禁止使用的关键字', 'member.php?action=register');
+			if(strlen($username) < 6) showmessage('用户名至少要6个字符(即2个中文 或 6个英文)，请修改', dreferer(), 5);
 			if(strlen($username) > 12) showmessage('用户名过长，请修改', dreferer(), 5);
 			$un = strtolower($username);
 			if(strexists($un, 'admin') || strexists($un, 'guanli')) showmessage('用户名不和谐，请修改', dreferer(), 5);
