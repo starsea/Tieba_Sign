@@ -63,7 +63,7 @@ function dgmdate($timestamp, $d_format = 'Y-m-d H:i') {
 }
 function authcode($string, $operation = 'DECODE', $key = '', $expiry = 0) {
 	$ckey_length = 4;
-	$key = md5($key ? $key : SYS_KEY);
+	$key = md5($key ? $key : ENCRYPT_KEY);
 	$keya = md5(substr($key, 0, 16));
 	$keyb = md5(substr($key, 16, 16));
 	$keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length): substr(md5(microtime()), -$ckey_length)) : '';

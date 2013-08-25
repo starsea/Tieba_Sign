@@ -20,7 +20,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 			if($invite_code && $_POST['invite_code'] != $invite_code) showmessage('邀请码有误', 'member.php?action=register');
 			$username = daddslashes($_POST['username']);
 			$email = daddslashes($_POST['email']);
-			$password = md5(SYS_KEY.md5($_POST['password']).SYS_KEY);
+			$password = md5(ENCRYPT_KEY.md5($_POST['password']).ENCRYPT_KEY);
 			if(!$username || !$password || !$email) showmessage('您输入的信息不完整', 'member.php?action=register');
 			if(preg_match('/[<>\'\\"]/i', $username)) showmessage('用户名中有被禁止使用的关键字', 'member.php?action=register');
 			if(strlen($username) < 6) showmessage('用户名至少要6个字符(即2个中文 或 6个英文)，请修改', dreferer(), 5);
@@ -44,7 +44,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 }elseif($_POST){
 	if($_POST['username'] && $_POST['password']){
 		$username = daddslashes($_POST['username']);
-		$password = md5(SYS_KEY.md5($_POST['password']).SYS_KEY);
+		$password = md5(ENCRYPT_KEY.md5($_POST['password']).ENCRYPT_KEY);
 		$un = strtolower($username);
 		if(strlen($username) > 12) showmessage('用户名过长，请修改', dreferer(), 5);
 		$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}' AND password='{$password}'");

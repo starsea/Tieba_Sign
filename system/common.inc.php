@@ -22,6 +22,12 @@ require_once SYSTEM_ROOT.'./function/core.php';
 require_once SYSTEM_ROOT.'./function/updater.php';
 
 DEBUG::INIT();
+if(getSetting('SYS_KEY') != SYS_KEY){
+	saveSetting('SYS_KEY', SYS_KEY);
+	define('ENCRYPT_KEY', SYS_KEY);
+}else{
+	define('ENCRYPT_KEY', getSetting('SYS_KEY'));
+}
 
 $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 if(strpos($ua, 'wap') || strpos($ua, 'mobi') || strpos($ua, 'opera') || $_GET['mobile']){

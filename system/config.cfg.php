@@ -3,7 +3,7 @@ if(!defined('IN_KKFRAME')) exit();
 $_config = array();
 
 // ------------------ 系统设定 ------------------
-define('SYS_KEY', '123456789023456789asfasfasfasfbdnmcvbng');		// 加密密钥，用于加密密码等信息，乱打就行
+define('SYS_KEY', '123456789023456789asfasfasfasfbdnmcvbng');		// 加密密钥，用于加密密码等信息，一旦设定不能更改
 $_config['adminid'] = '1';											// 超级管理员 UID，如有多个使用英文逗号分隔
 $_config['cronkey'] = '';											// 任务执行 KEY，防止他人恶意刷邮件任务，留空为不需要。设置后需要在邮件计划任务脚本后加上 ?key= (此处设定的 key)
 // -------------- END 系统设定 ------------------
