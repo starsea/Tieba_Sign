@@ -47,7 +47,7 @@ if(!defined('IN_ADMINCP')) exit();
 </div>
 <div id="content-config" class="hidden">
 <h2>系统设置</h2>
-<form method="post" action="admin.php?action=save_setting">
+<form method="post" action="admin.php?action=save_setting" id="setting_form" onsubmit="return post_win(this.action, this.id)">
 <p>功能增强</p>
 <input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
 <p><label><input type="checkbox" id="block_register" name="block_register" /> 关闭新用户注册功能</label></p>

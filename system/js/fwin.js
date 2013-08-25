@@ -87,6 +87,15 @@ function showloading(){
 function hideloading(){
 	$('.loading-icon')[0].className = 'loading-icon h';
 }
+function post_win(link, formid){
+	link += link.indexOf('?') < 0 ? '?' : '&';
+	link += "format=json";
+	showloading();
+	$.post(link, $('#'+formid).serialize(), function(result){
+		createWindow().setTitle('系统消息').setContent(result.msg).addCloseButton('确定').append();
+	}, 'json').fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+	return false;
+}
 function show_updater_win(_url){
 	$.ajax({
 		type: "get",
