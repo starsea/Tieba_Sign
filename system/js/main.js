@@ -147,7 +147,8 @@
 		}
 	}
 	$('#menu_logout')[0].onclick = function(){
-		if(!confirm('确认要退出登录吗？')) return false;
+		createWindow().setTitle('退出').setContent('确认要退出登录吗？').addButton('确定', function(){ location.href='member.php?action=logout&hash='+formhash; }).addCloseButton('取消').append();
+		return false;
 	}
 	$('.menubtn').click(function(){
 		$('.sidebar').fadeToggle();
