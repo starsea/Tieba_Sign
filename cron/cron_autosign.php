@@ -71,12 +71,12 @@ while($tieba = DB::fetch($query)){
 		$done += 0.7;
 	}else{
 		$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-		if($retry >= 30){
+		if($retry >= 100){
 			DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
 		}elseif($status == 1){
 			DB::query("UPDATE sign_log set status='1', retry=retry+1 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
 		}else{
-			DB::query("UPDATE sign_log set status='1', retry=retry+7 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+			DB::query("UPDATE sign_log set status='1', retry=retry+15 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
 		}
 	}
 	sleep(1);
