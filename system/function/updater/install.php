@@ -46,7 +46,6 @@ DB::query("CREATE TABLE IF NOT EXISTS `sign_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ");
 
-saveSetting('SYS_KEY', random(32));
 saveSetting('version', '1.13.8.19');
 showmessage('1.13.8.19 安装成功！', './', 1);
 ?>

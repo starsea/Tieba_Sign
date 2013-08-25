@@ -22,12 +22,6 @@ require_once SYSTEM_ROOT.'./function/core.php';
 require_once SYSTEM_ROOT.'./function/updater.php';
 
 DEBUG::INIT();
-if(getSetting('SYS_KEY') != SYS_KEY){
-	saveSetting('SYS_KEY', SYS_KEY);
-	define('ENCRYPT_KEY', SYS_KEY);
-}else{
-	define('ENCRYPT_KEY', getSetting('SYS_KEY'));
-}
 
 $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 if(strpos($ua, 'wap') || strpos($ua, 'mobi') || strpos($ua, 'opera') || $_GET['mobile']){
@@ -37,6 +31,17 @@ if(strpos($ua, 'wap') || strpos($ua, 'mobi') || strpos($ua, 'opera') || $_GET['m
 }
 if(strpos($ua, 'bot') || strpos($ua, 'spider')) define('IN_ROBOT', true);
 check_update();
+
+if(SYS_KEY){
+	define('ENCRYPT_KEY', SYS_KEY);
+}elseif(!getSetting('SYS_KEY')){
+	$key = random(32);
+	saveSetting('SYS_KEY', $key);
+	define('ENCRYPT_KEY', $key);
+}else{
+	define('ENCRYPT_KEY', getSetting('SYS_KEY'));
+}
+
 $cookiever = '1';
 if(!empty($_COOKIE['token'])) {
     list($_cookiever, $uid, $username, $login_exp) = explode("\t", authcode($_COOKIE['token'], 'DECODE'));
@@ -56,5 +61,8 @@ if(!empty($_COOKIE['token'])) {
 } else {
     $uid = $username = '';
 }
-$formhash = substr(md5(substr(TIMESTAMP, 0, -7).$username.$uid.SYS_KEY.ROOT), 8, 8);
+$formhash = substr(md5(substr(TIMESTAMP, 0, -7).$username.$uid.ENCRYPT_KEY.ROOT), 8, 8);
 
+if($uid && SYS_KEY && getSetting('SYS_KEY') != SYS_KEY){
+	saveSetting('SYS_KEY', SYS_KEY);
+}
