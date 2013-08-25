@@ -37,7 +37,7 @@
 			$.each(result, function(i, field){
 				$("#content-user table tbody").append("<tr><td>"+field.uid+"</td><td>"+field.username+"</td><td>"+field.email+"</td><td><a href=\"admin.php?action=update_liked_tieba&uid="+field.uid+"&formhash="+formhash+"\" onclick=\"return msg_win_action(this.href)\">刷新喜欢的贴吧</a> | <a href=\"admin.php?action=deluser&uid="+field.uid+"&formhash="+formhash+"\" onclick=\"return msg_win_action(this.href)\">删除用户</a></td></tr>");
 			});
-		});
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取用户列表').addCloseButton('确定').append(); });;
 	}
 	function load_userstat(){
 		$('.loading-icon').finish();
@@ -51,7 +51,7 @@
 				if(parseInt(field.unsupport) > 0) field.unsupport += ' (<a href="admin.php?action=reset_failure&uid='+field.uid+'&formhash='+formhash+'" onclick="return msg_win_action(this.href)">重置</a>)';
 				$("#content-stat table tbody").append("<tr><td>"+field.uid+"</td><td>"+field.username+"</td><td>"+field.succeed+"</td><td>"+field.waiting+"</td><td>"+field.retry+"</td><td>"+field.unsupport+"</td></tr>");
 			});
-		});
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取用户统计数据').addCloseButton('确定').append(); });;
 	}
 	function load_setting(){
 		$('.loading-icon').finish();
@@ -63,7 +63,7 @@
 			$('#autoupdate')[0].checked = result.autoupdate ? 'checked' : '';
 			$('#block_register')[0].checked = result.block_register ? 'checked' : '';
 			$('#invite_code')[0].value = result.invite_code ? result.invite_code : '';
-		});
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取当前系统设置').addCloseButton('确定').append(); });;
 	}
 	function parse_hash(){
 		var hash = location.hash.substring(1);
