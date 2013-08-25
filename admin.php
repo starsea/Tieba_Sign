@@ -94,6 +94,7 @@ switch($_GET['action']){
 			case 'saemail':		$func = 'saemail';		$method = 'SAE SMTP 类';			break;
 			case 'bcms':		$func = 'bcms_mail';	$method = 'BAE 消息服务';		break;
 			case 'mail':		$func = 'mail';			$method = 'PHP mail() 函数';		break;
+			case 'smtp':		$func = 'smtp_mail';	$method = '内置 SMTP 类';		break;
 		}
 		$subject = '[贴吧签到助手] 测试邮件';
 		$content = "此封邮件仅用于检测邮件系统是否正常工作。<br>\r\n测试使用的邮件发送方式：{$method}";

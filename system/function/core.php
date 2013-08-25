@@ -342,6 +342,7 @@ function send_mail($address, $subject, $message){
 		case 'bcms':	return bcms_mail($address, $subject, $message);
 		case 'saemail': return saemail($address, $subject, $message);
 		case 'mail':	return mail($address, $subject, $message);
+		case 'smtp':	return smtp_mail($address, $subject, $message);
 		default: return false;
 	}
 }
@@ -355,6 +356,12 @@ function bcms_mail($address, $subject, $message){
     } else {
         return true;
     }
+}
+function smtp_mail($address, $subject, $message){
+	global $_config;
+	require_once SYSTEM_ROOT.'./class/smtp.php';
+	$smtp = new smtp();
+    return $smtp->send($address, $subject, $message);
 }
 function kk_mail($address, $subject, $message){
 	global $_config;

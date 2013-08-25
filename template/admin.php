@@ -65,8 +65,10 @@ if(!defined('IN_ADMINCP')) exit();
 <p><a href="admin.php?action=mail_test&method=kk_mail" class="btn">发送测试邮件</a></p>
 <p>使用 BAE 提供的 BCMS 消息服务发送测试邮件 (发送者显示 *******@duapp.com，一般进垃圾箱)</p>
 <p><a href="admin.php?action=mail_test&method=bcms" class="btn">发送测试邮件</a></p>
-<p>使用 SAE 提供的 SMTP 类发送测试邮件 (发送者为您的邮箱)</p>
+<p>使用 SAE 提供的 SMTP 类发送测试邮件 (仅 SAE 用户可用, 发送者为您的邮箱)</p>
 <p><a href="admin.php?action=mail_test&method=saemail" class="btn">发送测试邮件</a></p>
+<p>使用 内置的 SMTP 类 (需防火墙开放25端口)</p>
+<p><a href="admin.php?action=mail_test&method=smtp" class="btn">发送测试邮件</a></p>
 <p>使用 PHP 的 mail 函数发送测试邮件 (成功率较低，定制性差)</p>
 <p><a href="admin.php?action=mail_test&method=mail" class="btn">发送测试邮件</a></p>
 </div>

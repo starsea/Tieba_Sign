@@ -45,6 +45,7 @@ if(defined('SAE_MYSQL_DB')){						// 已自动设置好，无需干预
  * bcms			BAE 用户可用，通过 BCMS 发送邮件（注：易被当作垃圾邮件拦截）
  * saemail		SAE 用户可用，通过 SAE 的 SMTP 类发送邮件
  * mail			其他服务器用户可用，调用 PHP 的 Mail 函数发邮件（成功率较低）
+ * smtp			其他服务器用户可用，通过 SMTP 服务器发邮件
  */
 $_config['mail']['type'] = 'none';		// 邮件发送方式
 
@@ -63,5 +64,12 @@ $_config['mail']['saemail']['smtp_server'] = 'smtp.exmail.qq.com';	// SMTP 服�
 $_config['mail']['saemail']['address'] = 'system@ikk.me';			// 发送者邮箱地址
 $_config['mail']['saemail']['smtp_name'] = 'system@ikk.me';			// SMTP 用户名
 $_config['mail']['saemail']['smtp_pass'] = 'password';				// SMTP 密码
+
+// smtp 通过 SMTP 服务器发邮件，请按给出的例子修改
+$_config['mail']['smtp'] = array();
+$_config['mail']['smtp']['smtp_server'] = 'smtp.exmail.qq.com';	// SMTP 服务器地址
+$_config['mail']['smtp']['address'] = 'system@ikk.me';			// 发送者邮箱地址
+$_config['mail']['smtp']['smtp_name'] = 'system@ikk.me';		// SMTP 用户名
+$_config['mail']['smtp']['smtp_pass'] = 'password';				// SMTP 密码
 
 ?>
