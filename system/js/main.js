@@ -146,10 +146,19 @@
 	function hideloading(){
 		$('.loading-icon')[0].className = 'loading-icon h';
 	}
-	$('#menu_logout')[0].onclick = function(){
+	$('.menu_switch_user a').click(function(){
+		var link = this.href;
+		createWindow().setTitle('切换账号').setContent('确认要切换登陆账号吗？').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();
+		return false;
+	});
+	$('#menu_adduser a').click(function(){
+		createWindow().setTitle('绑定账号').setContent('<form method="post" action="member.php?action=bind_user" id="bind_form" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'"><p>使用此功能，你可以快速切换在本站注册的多个帐号。</p><p>输入您的用户名/密码即可绑定到本账号。</p><p><label>用户名： <input type="text" name="username" style="width: 200px" /></label></p><p><label>密　码： <input type="password" name="password" style="width: 200px" /></label></p></form>').addButton('确定', function(){ $('#bind_form').submit(); }).addCloseButton('取消').append();
+		return false;
+	});
+	$('#menu_logout').click(function(){
 		createWindow().setTitle('退出').setContent('确认要退出登录吗？').addButton('确定', function(){ location.href='member.php?action=logout&hash='+formhash; }).addCloseButton('取消').append();
 		return false;
-	}
+	});
 	$('.menubtn').click(function(){
 		$('.sidebar').fadeToggle();
 	});

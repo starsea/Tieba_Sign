@@ -65,4 +65,11 @@ if(!$uid){
 	exit();
 }
 
+// Multi User Support
+$query = DB::query("SELECT * FROM member_bind WHERE uid='{$uid}'");
+$users = array();
+while($result = DB::fetch($query)){
+	$users[ $result['_uid'] ] = $result['username'];
+}
+
 include template('index');
