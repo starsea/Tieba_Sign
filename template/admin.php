@@ -26,7 +26,7 @@ if(!defined('IN_ADMINCP')) exit();
 <li id="menu_user"><a href="#user">用户管理</a></li>
 <li id="menu_stat"><a href="#stat">用户签到统计</a></li>
 <li id="menu_config"><a href="#config">系统设置</a></li>
-<li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version=<?php echo VERSION; ?>" target="_blank">检查更新</a></li>
+<li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version=<?php echo VERSION; ?>" target="_blank" onclick="return show_updater_win(this.href)">检查更新</a></li>
 <li><a href="./">返回前台</a></li>
 </ul>
 </div>

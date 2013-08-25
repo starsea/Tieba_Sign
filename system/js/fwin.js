@@ -84,3 +84,24 @@ function showloading(){
 function hideloading(){
 	$('.loading-icon')[0].className = 'loading-icon h';
 }
+function show_updater_win(_url){
+	$.ajax({
+		type: "get",
+		async: false,
+		url: _url,
+		dataType: "jsonp",
+		jsonp: "callback",
+		jsonpCallback: "handleNewVersion",
+		success: function(json){
+			if(json.new){
+				createWindow().setTitle('检查更新').setContent('<p>发现新版本'+json.ver+'！</p><p>要查看更新说明吗？</p>').addButton('确定', function(){ window.open(json.url); }).addCloseButton('取消').append();
+			}else{
+				createWindow().setTitle('检查更新').setContent('您当前使用的是最新版本').addCloseButton('确定').append();
+			}
+		},
+		error: function(){
+			createWindow().setTitle('检查更新').setContent('检查更新过程出现错误').addCloseButton('确定').append();
+		}
+	});
+	return false;
+}
