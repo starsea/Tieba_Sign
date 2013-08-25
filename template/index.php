@@ -57,26 +57,32 @@ if(IN_MOBILE){
 </div>
 <div id="content-config" class="hidden">
 <h2>设置</h2>
-<form method="post" action="index.php?action=update_setting">
+<form method="post" action="index.php?action=update_setting" id="setting_form" onsubmit="return post_win(this.action, this.id)">
 <input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
 <p>签到增强：</p>
 <p><label><input type="checkbox" checked disabled name="bdbowser" id="bdbowser" value="1" /> 模拟百度手机浏览器签到，额外经验+2</label></p>
 <p>签到方式：</p>
-<p><label><input type="radio" name="sign_method" id="sign_method_1" value="1" /> 签到方式 1 (推荐, 传统)</label></p>
-<p><label><input type="radio" name="sign_method" id="sign_method_2" value="2" /> 签到方式 2 (新)</label></p>
+<p><label><input type="radio" name="sign_method" id="sign_method_1" value="1" /> 签到方式 1 (传统)</label></p>
+<p><label><input type="radio" name="sign_method" id="sign_method_2" value="2" /> 签到方式 2 (推荐, 新)</label></p>
 <p>报告设置：</p>
 <p><label><input type="checkbox" checked disabled name="error_mail" id="error_mail" value="1" /> 当天有无法签到的贴吧时给我发送邮件</label></p>
 <p><label><input type="checkbox" disabled name="send_mail" id="send_mail" value="1" /> 每日发送一封签到报告邮件</label></p>
 <p><input type="submit" value="保存设置" /></p>
 </form>
+<br>
+<p>签到测试：</p>
+<p>随机选取一个贴吧，进行一次签到测试，检查你的设置有没有问题</p>
+<p><a href="index.php?action=test_sign&formhash=<?php echo $formhash; ?>" class="btn" onclick="return msg_redirect_action(this.href)">测试签到</a></p>
+<br>
 <p>更改密码：</p>
-<form method="post" action="index.php?action=change_password">
+<form method="post" action="index.php?action=change_password" id="password_form" onsubmit="return post_win(this.action, this.id)">
 <input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
 <p><input type="password" name="old_password" id="old_password" placeholder="旧密码" /></p>
 <p><input type="password" name="new_password" id="new_password" placeholder="新密码" /></p>
 <p><input type="password" name="new_password2" id="new_password2" placeholder="请重复输入新密码" /></p>
 <p><input type="submit" value="修改密码" /></p>
 </form>
+<br>
 <p>自动获取 Cookie:</p>
 <p>请将下面的链接拖动到收藏夹，然后再点击该链接并按照提示登录（推荐使用 Chrome 隐身窗口模式），登陆成功后再次点击便可复制。</p>
 <p><a href="javascript:(function(){if(document.cookie.indexOf('BDUSS')<0){alert('找不到BDUSS Cookie\n请先登陆 http://wapp.baidu.com/');location.href='http://wappass.baidu.com/passport/?login&u=http%3A%2F%2Fwapp.baidu.com%2F&ssid=&from=&uid=wapp_1375936328496_692&pu=&auth=&originid=2&mo_device=1&bd_page_type=1&tn=bdIndex&regtype=1&tpl=tb';}else{prompt('您的 Cookie 信息如下:', document.cookie);}})();" onclick="alert('请拖动到收藏夹');return false;" class="btn">获取手机百度贴吧 Cookie</a></p>
