@@ -70,7 +70,7 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .copyright { margin-top: 42px; color: #757575; text-align: center; font-size: 12px; padding-bottom: 2em; }
 .loading-icon { background: #fff; position: fixed; top: 50%; right: 50%; padding: 20px 50px; border: 1px solid #dedede; border-radius: 5px; line-height: 20px; height: 20px; width: 70px; font-size: 12px; cursor: default; display: block; margin: -30px -85px; text-align: center; box-shadow: #9c9c9c 0 0 100px; animation: showfwin .3s; -webkit-animation: showfwin .3s; -moz-animation: showfwin .3s; }
 .loading-icon img { padding: 2px 5px 2px 0; float: left; }
-.loading-icon.h { opacity: 0; filter: alpha(opacity=0); _display: none; animation: hidefwin .5s; -webkit-animation: hidefwin .5s; -moz-animation: hidefwin .5s; }
+.loading-icon.h { opacity: 0; filter: alpha(opacity=0); _display: none; animation: hidefwin .3s; -webkit-animation: hidefwin .3s; -moz-animation: hidefwin .3s; }
 .reload { display: block; width: 16px; height: 16px; position: absolute; top: 8px; right: 10px; padding: 5px; border: 1px solid #dedede; border-radius: 5px; background: #fff; }
 .menubtn { display: none; width: 16px; height: 16px; position: absolute; top: 8px; right: 10px; padding: 5px; border: 1px solid #dedede; border-radius: 5px; background: gray url(hamburger.gif) no-repeat 50% 50%; background-size: 50px; text-indent: -9999px; }
 .main-content table { width: 100%; margin-bottom: .48em; }
@@ -79,12 +79,13 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .main-content table tbody tr { background: #efefef; }
 .main-content table tbody tr:nth-child(odd) { background: #fafafa; }
 .main-content input[type=text], .main-content input[type=password] { width: 300px; }
-.fwin { animation: showfwin .7s; -webkit-animation: showfwin .7s; -moz-animation: showfwin .7s; position: absolute; position: fixed; width: 400px; top: 125px; left: 50%; margin-left: -230px; z-index: 50; background-color: #f5f5f5; border: 1px solid #cdcdcd; border-radius: 5px; padding: 5px; box-shadow: #9c9c9c 0 0 100px; }
+.fwin { animation: showfwin .3s; -webkit-animation: showfwin .3s; -moz-animation: showfwin .3s; position: absolute; position: fixed; width: 400px; top: 125px; left: 50%; margin-left: -230px; z-index: 50; background-color: #f5f5f5; border: 1px solid #cdcdcd; border-radius: 5px; padding: 5px; box-shadow: #9c9c9c 0 0 100px; }
 .fwin .close { display: block; position: relative; float: right; right: 3px; top: 3px; text-indent: -999px; width: 0; height: 0; background: url(close.gif); padding: 10px; cursor: pointer; }
 .fwin .close:hover { background-position: 0 100%; }
 .fwin h3 { font-size: 18px; padding: 0 5px; margin: 0 25px 0 0; height: 32px; line-height: 28px; }
 .fwin .fcontent { line-height: 20px; margin: 0 -5px; padding: 15px 10px 10px; border-top: 1px solid #dedede; }
 .fwin .btns { margin: 15px -10px -5px; border-top: 1px solid #dedede; padding: 10px 10px 0; }
+.fwin.h { opacity: 0; filter: alpha(opacity=0); _display: none; animation: hidefwin .3s; -webkit-animation: hidefwin .3s; -moz-animation: hidefwin .3s; }
 @keyframes showfwin{ from { opacity: 0; transform: scale(1.1, 1.1); } to { opacity: 1; transform: scale(1, 1); } }
 @-webkit-keyframes showfwin{ from { opacity: 0; -webkit-transform: scale(1.1, 1.1); } to { opacity: 1; -webkit-transform: scale(1, 1); } }
 @-moz-keyframes showfwin{ from { opacity: 0; -moz-transform: scale(1.1, 1.1); } to { opacity: 1; -moz-transform: scale(1, 1); } }

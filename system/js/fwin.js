@@ -20,7 +20,7 @@ function createWindow(){
 		btn.innerHTML = title;
 		btn.onclick = function(){
 			callback();
-			win.destroy();
+			win.close();
 		}
 		this.btns.appendChild(btn);
 		return this;
@@ -29,7 +29,7 @@ function createWindow(){
 		var btn = document.createElement('button');
 		btn.innerHTML = title;
 		btn.onclick = function(){
-			win.destroy();
+			win.close();
 		}
 		this.btns.appendChild(btn);
 		return this;
@@ -39,7 +39,9 @@ function createWindow(){
 			var closebtn = document.createElement('span');
 			closebtn.className = 'close';
 			closebtn.innerText = 'x';
-			closebtn.onclick = function(){ win.destroy(); }
+			closebtn.onclick = function(){ 
+				win.close();
+			};
 			this.obj.appendChild(closebtn);
 		}
 		var win_title = document.createElement('h3');
@@ -55,8 +57,9 @@ function createWindow(){
 		$('#append_parent')[0].appendChild(this.obj);
 		return false;
 	}
-	win.destroy = function(){
-		$('#append_parent')[0].removeChild(win.obj);
+	win.close = function(){
+		win.obj.className = 'fwin h';
+		setTimeout(function(){ $('#append_parent')[0].removeChild(win.obj); }, 1000);
 	}
 	return win;
 }
