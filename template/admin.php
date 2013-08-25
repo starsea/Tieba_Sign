@@ -58,7 +58,7 @@ if(!defined('IN_ADMINCP')) exit();
 <br>
 <p>邮件发送测试:</p>
 <p>当前发送方式：<?php echo $_config['mail']['type']; ?></p>
-<p><a href="admin.php?action=mail_test&method=default" class="btn">使用当前配置发送测试邮件</a></p>
+<p><a href="admin.php?action=mail_test&method=default" class="btn" onclick="return msg_win_action(this.href)">使用当前配置发送测试邮件</a></p>
 <br>
 <p>测试其它邮件发送方式 (调试用):</p>
 <p>使用 KK 提供的 SAE 邮件代理发送测试邮件 (发送者显示 KK-Open-Mail-System &lt;open_mail_api@ikk.me&gt;)</p>
