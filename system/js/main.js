@@ -35,36 +35,32 @@
 		if(mobile) $('.sidebar').fadeOut();
 	}
 	function load_loved_tieba(){
-		$('.loading-icon').fadeIn();
+		showloading();
 		$.getJSON("ajax.php?v=loved-tieba", function(result){
-			$('.loading-icon').finish();
-			$('.loading-icon').fadeOut();
 			if(!result) return;
 			$('#content-loved-tb table tbody')[0].innerHTML = '';
 			$.each(result, function(i, field){
 				$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td></tr>");
 			});
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addCloseButton('确定').append(); });;
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}
 	function load_sign_log(){
-		$('.loading-icon').fadeIn();
+		showloading();
 		$.getJSON("ajax.php?v=sign-log", function(result){
 			show_sign_log(result);
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); });;
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}
 	function load_sign_history(date){
 		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
 		$('.main-content div').addClass('hidden');
 		$('#content-sign-log')[0].className = '';
-		$('.loading-icon').fadeIn();
+		showloading();
 		$.getJSON("ajax.php?v=sign-history&date="+date, function(result){
 			show_sign_log(result);
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); });;
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}
 	function show_sign_log(result){
 		stat[0] = stat[1] = stat[2] = stat[3] = 0;
-		$('.loading-icon').finish();
-		$('.loading-icon').fadeOut();
 		if(!result || result.count == 0) return;
 		$('#content-sign-log table tbody')[0].innerHTML = '';
 		$('#content-sign-log h2')[0].innerHTML = result.date+" 签到记录";
@@ -85,13 +81,11 @@
 		$('#page-flip').html(pager_text);
 	}
 	function load_setting(){
-		$('.loading-icon').fadeIn();
+		showloading();
 		$('#bdbowser')[0].disabled = true;
 		$('#error_mail')[0].disabled = true;
 		$('#send_mail')[0].disabled = true;
 		$.getJSON("ajax.php?v=get-setting", function(result){
-			$('.loading-icon').finish();
-			$('.loading-icon').fadeOut();
 			if(!result) return;
 			$('#bdbowser')[0].checked = result.use_bdbowser == "1";
 			$('#error_mail')[0].checked = result.error_mail == "1";
@@ -106,7 +100,7 @@
 				$('#sign_method_1')[0].checked = true;
 				$('#sign_method_2')[0].checked = false;
 			}
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addCloseButton('确定').append(); });;
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}
 	function _status(status){
 		if(typeof status == 'undefined') status = 0;
@@ -145,6 +139,12 @@
 		}else{
 			$('#menu_sign_log')[0].onclick();
 		}
+	}
+	function showloading(){
+		$('.loading-icon')[0].className = 'loading-icon';
+	}
+	function hideloading(){
+		$('.loading-icon')[0].className = 'loading-icon h';
 	}
 	$('#menu_logout')[0].onclick = function(){
 		createWindow().setTitle('退出').setContent('确认要退出登录吗？').addButton('确定', function(){ location.href='member.php?action=logout&hash='+formhash; }).addCloseButton('取消').append();

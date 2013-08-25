@@ -63,24 +63,24 @@ function createWindow(){
 function msg_win_action(link){
 	link += link.indexOf('?') < 0 ? '?' : '&';
 	link += "format=json";
-	$('.loading-icon').finish();
-	$('.loading-icon').fadeIn();
+	showloading();
 	$.getJSON(link, function(result){
-		$('.loading-icon').finish();
-		$('.loading-icon').fadeOut();
 		createWindow().setTitle('系统消息').setContent(result.msg).addCloseButton('确定').append();
-	}).fail(function() { $('.loading-icon').finish(); $('.loading-icon').fadeOut(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addCloseButton('确定').append(); });
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	return false;
 }
 function msg_redirect_action(link){
 	link += link.indexOf('?') < 0 ? '?' : '&';
 	link += "format=json";
-	$('.loading-icon').finish();
-	$('.loading-icon').fadeIn();
+	showloading();
 	$.getJSON(link, function(result){
-		$('.loading-icon').finish();
-		$('.loading-icon').fadeOut();
 		createWindow().setTitle('系统消息').setContent(result.msg).addButton('确定', function(){ location.href = result.redirect; }).append();
-	}).fail(function() { $('.loading-icon').finish(); $('.loading-icon').fadeOut(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addCloseButton('确定').append(); });
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	return false;
+}
+function showloading(){
+	$('.loading-icon')[0].className = 'loading-icon';
+}
+function hideloading(){
+	$('.loading-icon')[0].className = 'loading-icon h';
 }
