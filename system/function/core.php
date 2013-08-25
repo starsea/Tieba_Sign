@@ -276,50 +276,6 @@ function curl_get($url, $uid, $mobile_ua = false, $postdata = ''){
     curl_close($ch);
     return $get_url;
 }
-function mobile_sign($uid, $tieba){
-	$sign_url = 'http://tieba.baidu.com/mo/q/sign?tbs='.get_tbs($uid).'&kw='.$tieba['unicode_name'].'&is_like=1&fid='.$tieba['fid'];
-	$c_sign = curl_init($sign_url);
-	$refer = 'Referer: http://tieba.baidu.com/f?kw='.$tieba['unicode_name'];
-	curl_setopt($c_sign, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1', 'Connection: Keep-Alive', $refer, 'Host: tieba.baidu.com', 'Origin: http://tieba.baidu.com'));
-	curl_setopt($c_sign, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($c_sign, CURLOPT_COOKIE, get_cookie($uid));
-	$sign_json = curl_exec($c_sign);
-	curl_close($c_sign);
-	$res = @json_decode($sign_json, true);
-	$date = date('Ymd', TIMESTAMP);
-	if(!$res) return 'JSON 解析错误';
-	if(strexists($sign_json, '"is_sign_in":1')){
-		$exp = $res['data']['msg'];
-		DB::query("UPDATE sign_log set status='2', exp='{$exp}' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
-		return "签到成功，经验值上升 {$exp}";
-	}else{
-		switch($res['no']){
-			case '1101':		// 已经签过
-				DB::query("UPDATE sign_log set status='2' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
-				return $res['data']['msg'];
-			//case '1012':		// 贴吧目录出问题?
-			case '1002':		// 不支持
-				DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-				return "ERROR-{$res[no]}: ".$res['data']['msg'];
-			case '1100':		// 零点 稍后再试
-			case '1102':		// 太快了
-			case '11000':		// 稍候重试
-				DB::query("UPDATE sign_log set status='1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-				return "ERROR-{$res[no]}: ".$res['data']['msg'];
-			default:
-				$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-				if($retry >= 5){
-					DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-				}else{
-					DB::query("UPDATE sign_log set status='1', retry=retry+1 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-				}
-				if($_GET['debug']) {
-					print_r($res);
-					exit();
-				}
-		}
-	}
-}
 function get_cookie($uid){
 	static $cookie = array();
 	if($cookie[$uid]) return $cookie[$uid];
