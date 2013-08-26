@@ -109,7 +109,7 @@ if(IN_MOBILE){
 </div>
 <p class="copyright">当前版本：<?php echo VERSION; ?> - <a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version=<?php echo VERSION; ?>" target="_blank" onclick="return show_updater_win(this.href)">检查更新</a><br>Design by kookxiang. 2013 &copy; KK's Laboratory</p>
 </div>
-<script src="system/js/jquery.min.js"></script>
+<script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">
 var mobile = <?php echo IN_MOBILE ? '1' : '0'; ?>;
 var formhash = '<?php echo $formhash; ?>';

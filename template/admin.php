@@ -76,7 +76,7 @@ if(!defined('IN_ADMINCP')) exit();
 </div>
 <p class="copyright">Design by kookxiang. 2013 &copy; KK's Laboratory</p>
 </div>
-<script src="system/js/jquery.min.js"></script>
+<script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">
 var mobile = <?php echo IN_MOBILE ? '1' : '0'; ?>;
 var formhash = '<?php echo $formhash; ?>';
