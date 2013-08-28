@@ -40,7 +40,7 @@
 			if(!result) return;
 			$('#content-loved-tb table tbody')[0].innerHTML = '';
 			$.each(result, function(i, field){
-				$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td></tr>");
+				$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td><input type=\"checkbox\" id=\"skip_"+field.tid+"\""+(field.skiped ? ' checked' : '')+" class=\"skip_sign\" /></td></tr>");
 			});
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}
