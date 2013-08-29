@@ -56,6 +56,7 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .login-info p { text-align: center; }
 .login-info input { width: 300px; }
 .btns { height: 30px; line-height: 30px; text-align: right; padding: 0 10px; }
+.btns * { margin-left: 5px; }
 .center-box { position: relative; top: 125px; width: 320px; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
 .main-box { position: relative; top: 35px; width: 80%; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
 .sidebar { float: left; width: 20%; padding: 0 0 10px; border-right: 1px solid #dedede; margin: 0 0 -10px -15px }
