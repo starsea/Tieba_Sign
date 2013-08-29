@@ -13,7 +13,7 @@ if(!$uid){
 			if(!DB::affected_rows()) showmessage('发生未知错误: 无法修改贴吧设置');
 			showmessage('修改签到设置成功！');
 		case 'test_sign':
-			if($_POST['formhash'] != $formhash) break;
+			if($_GET['formhash'] != $formhash) break;
 			require_once SYSTEM_ROOT.'./function/sign.php';
 			$tieba = DB::fetch_first("SELECT * FROM my_tieba WHERE uid='{$uid}' ORDER BY RAND() LIMIT 0,1");
 			if(!$tieba) showmessage('没有喜欢的贴吧，请先刷新喜欢的贴吧列表', './#loved');
