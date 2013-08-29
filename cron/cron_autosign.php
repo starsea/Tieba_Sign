@@ -19,7 +19,7 @@ if($date != $_date){
 		}
 	}
 	DB::query("ALTER TABLE sign_log CHANGE `date` `date` INT NOT NULL DEFAULT '{$date}'");
-	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
+	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba WHERE skiped=0");
 	$delete_date = date('Ymd', TIMESTAMP - 86400*30);
 	DB::query("DELETE FROM sign_log WHERE date<'{$delete_date}'");
 	saveSetting('date', $date);

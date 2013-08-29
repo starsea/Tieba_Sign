@@ -6,6 +6,12 @@ if(!$uid){
 	exit();
 }elseif($_GET['action']){
 	switch($_GET['action']){
+		case 'skip_tieba':
+			if($_GET['formhash'] != $formhash) break;
+			$tid = intval($_GET['tid']);
+			DB::query("UPDATE my_tieba SET skiped=1-skiped WHERE uid='{$uid}' AND tid='{$tid}'");
+			if(!DB::affected_rows()) showmessage('发生未知错误: 无法修改贴吧设置');
+			showmessage('修改签到设置成功！');
 		case 'test_sign':
 			if($_POST['formhash'] != $formhash) break;
 			require_once SYSTEM_ROOT.'./function/sign.php';

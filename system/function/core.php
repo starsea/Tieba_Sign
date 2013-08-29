@@ -205,7 +205,7 @@ function update_liked_tieba($uid, $ignore_error = false){
 			$insert++;
 		}
 	}
-	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
+	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba WHERE skiped=0");
 	if($my_tieba){
 		$tieba_ids = array();
 		foreach($my_tieba as $tieba){

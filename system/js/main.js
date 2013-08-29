@@ -40,7 +40,13 @@
 			if(!result) return;
 			$('#content-loved-tb table tbody')[0].innerHTML = '';
 			$.each(result, function(i, field){
-				$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td><input type=\"checkbox\" id=\"skip_"+field.tid+"\""+(field.skiped ? ' checked' : '')+" class=\"skip_sign\" /></td></tr>");
+				$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td><input type=\"checkbox\" value=\""+field.tid+"\""+(field.skiped=='1' ? ' checked' : '')+" class=\"skip_sign\" /></td></tr>");
+			});
+			$('#content-loved-tb .skip_sign').click(function(){
+				showloading();
+				this.disabled = 'disabled';
+				$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_loved_tieba(); }).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+				return false;
 			});
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}
