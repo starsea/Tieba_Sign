@@ -35,7 +35,7 @@
 			if(!result) return;
 			$('#content-user table tbody')[0].innerHTML = '';
 			$.each(result, function(i, field){
-				$("#content-user table tbody").append("<tr><td>"+field.uid+"</td><td>"+field.username+"</td><td>"+field.email+"</td><td><a href=\"admin.php?action=update_liked_tieba&uid="+field.uid+"&formhash="+formhash+"\">刷新喜欢的贴吧</a> | <a href=\"admin.php?action=deluser&uid="+field.uid+"&formhash="+formhash+"\">删除用户</a></td></tr>");
+				$("#content-user table tbody").append("<tr><td>"+field.uid+"</td><td>"+field.username+"</td><td>"+field.email+"</td><td><a href=\"admin.php?action=update_liked_tieba&uid="+field.uid+"&formhash="+formhash+"\" onclick=\"return msg_win_action(this.href)\">刷新喜欢的贴吧</a> | <a href=\"admin.php?action=deluser&uid="+field.uid+"&formhash="+formhash+"\" onclick=\"return msg_win_action(this.href)\">删除用户</a></td></tr>");
 			});
 		});
 	}
@@ -48,7 +48,7 @@
 			if(!result) return;
 			$('#content-stat table tbody')[0].innerHTML = '';
 			$.each(result, function(i, field){
-				if(parseInt(field.unsupport) > 0) field.unsupport += ' (<a href="admin.php?action=reset_failure&uid='+field.uid+'&formhash='+formhash+'">重置</a>)';
+				if(parseInt(field.unsupport) > 0) field.unsupport += ' (<a href="admin.php?action=reset_failure&uid='+field.uid+'&formhash='+formhash+'" onclick="return msg_win_action(this.href)">重置</a>)';
 				$("#content-stat table tbody").append("<tr><td>"+field.uid+"</td><td>"+field.username+"</td><td>"+field.succeed+"</td><td>"+field.waiting+"</td><td>"+field.retry+"</td><td>"+field.unsupport+"</td></tr>");
 			});
 		});

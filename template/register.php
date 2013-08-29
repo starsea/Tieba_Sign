@@ -4,7 +4,7 @@ if(!defined('IN_KKFRAME')) exit();
 <!DOCTYPE html>
 <html>
 <head>
-<title>注册</title>
+<title>注册 - 贴吧签到助手</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="HandheldFriendly" content="true" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
@@ -16,7 +16,7 @@ if(!defined('IN_KKFRAME')) exit();
 <body>
 <div class="wrapper" id="page_login">
 <div class="center-box">
-<h1>注册</h1>
+<h1>注册账号</h1>
 <form method="post" action="member.php?action=register">
 <div class="login-info">
 <p><input type="text" name="username" placeholder="用户名" required /></p>

@@ -4,11 +4,14 @@ define('IN_KKFRAME', true);
 define('SYSTEM_ROOT', dirname(__FILE__).'/');
 define('ROOT', dirname(SYSTEM_ROOT).'/');
 define('TIMESTAMP', time());
-define('VERSION', '1.13.8.19');
+define('VERSION', '1.13.8.21');
 if(!defined('IN_API')) define('IN_API', false);
 error_reporting(E_ALL ^ E_NOTICE);
 ob_start();
-header("Content-type: text/html; charset=utf-8");
+header('Content-type: text/html; charset=utf-8');
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Cache-Control: no-cache');
+header('Pragma: no-cache');
 @date_default_timezone_set('Asia/Shanghai');
 
 require_once SYSTEM_ROOT.'./config.cfg.php';

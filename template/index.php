@@ -16,6 +16,7 @@ if(!defined('IN_KKFRAME')) exit();
 </head>
 <body>
 <div class="wrapper" id="page_index">
+<div id="append_parent"></div>
 <div class="main-box clearfix">
 <h1>贴吧签到助手</h1>
 <div class="loading-icon"><img src="style/loading.gif" /> 载入中...</div>
@@ -23,12 +24,12 @@ if(!defined('IN_KKFRAME')) exit();
 <div class="menubtn">&nbsp;</div>
 <div class="sidebar">
 <ul class="menu">
-<li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
 <li id="menu_sign_log"><a href="#signlog">签到记录</a></li>
+<li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
 <li id="menu_config"><a href="#setting">设置</a></li>
-<?php if(is_admin($uid)) echo '<li id="menu_admincp"><a href="admin.php">管理面板</a></li><li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version='.VERSION.'" target="_blank">检查更新</a></li>'; ?>
 <li id="menu_logout"><a href="member.php?action=logout&hash=<?php echo $formhash; ?>">退出登录</a></li>
 </ul>
+<?php if(is_admin($uid)) echo '<br><p>= 管理菜单 =</p><ul class="menu"><li id="menu_admincp"><a href="admin.php">管理面板</a></li><li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version='.VERSION.'" target="_blank">检查更新</a></li></ul>'; ?>
 </div>
 <div class="main-content">
 <div id="content-loved-tb" class="hidden">
@@ -37,7 +38,7 @@ if(!defined('IN_KKFRAME')) exit();
 <thead><tr><td style="width: 40px">序号</td><td>贴吧</td></tr></thead>
 <tbody></tbody>
 </table>
-<p>如果此处显示的贴吧有缺失，请<a href="index.php?action=refresh_liked_tieba">点此刷新喜欢的贴吧</a>.</p>
+<p>如果此处显示的贴吧有缺失，请<a href="index.php?action=refresh_liked_tieba" onclick="return msg_redirect_action(this.href+'&formhash='+formhash)">点此刷新喜欢的贴吧</a>.</p>
 </div>
 <div id="content-sign-log" class="hidden">
 <h2>签到记录</h2>
@@ -98,5 +99,6 @@ var mobile = <?php echo IN_MOBILE ? '1' : '0'; ?>;
 var formhash = '<?php echo $formhash; ?>';
 </script>
 <script src="system/js/main.js"></script>
+<script src="system/js/fwin.js"></script>
 </body>
 </html>
