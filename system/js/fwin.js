@@ -97,6 +97,7 @@ function post_win(link, formid){
 	return false;
 }
 function show_updater_win(_url){
+	showloading();
 	$.ajax({
 		type: "get",
 		async: false,
@@ -105,6 +106,7 @@ function show_updater_win(_url){
 		jsonp: "callback",
 		jsonpCallback: "handleNewVersion",
 		success: function(json){
+			hideloading();
 			if(json.new){
 				createWindow().setTitle('检查更新').setContent('<p>发现新版本'+json.ver+'！</p><p>要查看更新说明吗？</p>').addButton('确定', function(){ window.open(json.url); }).addCloseButton('取消').append();
 			}else{
@@ -112,6 +114,7 @@ function show_updater_win(_url){
 			}
 		},
 		error: function(){
+			hideloading();
 			createWindow().setTitle('检查更新').setContent('检查更新过程出现错误').addCloseButton('确定').append();
 		}
 	});
