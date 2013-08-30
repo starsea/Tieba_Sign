@@ -12,7 +12,7 @@ if(!defined('IN_KKFRAME')) exit();
 <meta name="copyright" content="KK's Laboratory" />
 <link rel="shortcut icon" href="/favicon.ico" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<link rel="stylesheet" href="./style/main.css" type="text/css" />
+<link rel="stylesheet" href="./style/main.css?version=<?php echo VERSION; ?>" type="text/css" />
 </head>
 <body>
 <div class="wrapper" id="page_index">
@@ -114,7 +114,7 @@ if(IN_MOBILE){
 var mobile = <?php echo IN_MOBILE ? '1' : '0'; ?>;
 var formhash = '<?php echo $formhash; ?>';
 </script>
-<script src="system/js/main.js"></script>
-<script src="system/js/fwin.js"></script>
+<script src="system/js/main.js?version=<?php echo VERSION; ?>"></script>
+<script src="system/js/fwin.js?version=<?php echo VERSION; ?>"></script>
 </body>
 </html>

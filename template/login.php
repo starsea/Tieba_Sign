@@ -11,7 +11,7 @@ if(!defined('IN_KKFRAME')) exit();
 <meta name="author" content="kookxiang" />
 <meta name="copyright" content="KK's Laboratory" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<link rel="stylesheet" href="./style/main.css" type="text/css" />
+<link rel="stylesheet" href="./style/main.css?version=<?php echo VERSION; ?>" type="text/css" />
 </head>
 <body>
 <div class="wrapper" id="page_login">
@@ -29,6 +29,6 @@ if(!defined('IN_KKFRAME')) exit();
 </form>
 </div>
 </div>
-<script src="system/js/placeholder.fix.js"></script>
+<script src="system/js/placeholder.fix.js?version=<?php echo VERSION; ?>"></script>
 </body>
 </html>
