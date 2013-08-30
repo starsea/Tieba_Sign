@@ -9,7 +9,15 @@ if(!$uid){
 		case 'skip_tieba':
 			if($_GET['formhash'] != $formhash) break;
 			$tid = intval($_GET['tid']);
-			DB::query("UPDATE my_tieba SET skiped=1-skiped WHERE uid='{$uid}' AND tid='{$tid}'");
+			$skiped = DB::result_first("SELECT skiped FROM my_tieba WHERE uid='{$uid}' AND tid='{$tid}'");
+			$skiped = $skiped ? 0 : 1;
+			$date = date('Ymd', TIMESTAMP+900);
+			if($skiped == 1){
+				DB::query("UPDATE sign_log set status='-2' WHERE uid='{$uid}' tid='{$tid}' AND date='{$date}' AND status < 2");
+			}else{
+				DB::query("UPDATE sign_log set status='0' WHERE uid='{$uid}' tid='{$tid}' AND date='{$date}' AND status < 2");
+			}
+			DB::query("UPDATE my_tieba SET skiped='{$skiped}' WHERE uid='{$uid}' AND tid='{$tid}'");
 			if(!DB::affected_rows()) showmessage('发生未知错误: 无法修改贴吧设置');
 			showmessage('修改签到设置成功！');
 		case 'test_sign':

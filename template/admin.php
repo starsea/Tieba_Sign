@@ -41,7 +41,7 @@ if(!defined('IN_ADMINCP')) exit();
 <div id="content-stat" class="hidden">
 <h2>用户签到统计</h2>
 <table>
-<thead><tr><td style="width: 40px">UID</td><td>用户名</td><td>已成功</td><td>待签到</td><td>待重试</td><td>不支持</td></tr></thead>
+<thead><tr><td style="width: 40px">UID</td><td>用户名</td><td>已成功</td><td>已跳过</td><td>待签到</td><td>待重试</td><td>不支持</td></tr></thead>
 <tbody></tbody>
 </table>
 </div>

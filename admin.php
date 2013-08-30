@@ -13,6 +13,7 @@ switch($_GET['action']){
 			$_uid = $result['uid'];
 			$data[$_uid] = $result;
 			$data[$_uid]['succeed'] = 0;
+			$data[$_uid]['skiped'] = 0;
 			$data[$_uid]['waiting'] = 0;
 			$data[$_uid]['retry'] = 0;
 			$data[$_uid]['unsupport'] = 0;
@@ -36,6 +37,11 @@ switch($_GET['action']){
 		while($result = DB::fetch($query)){
 			$_uid = $result['uid'];
 			$data[$_uid]['unsupport'] = $result['COUNT(*)'];
+		}
+		$query = DB::query("SELECT uid, COUNT(*) FROM `sign_log` WHERE date='{$date}' AND status='-2' GROUP BY uid");
+		while($result = DB::fetch($query)){
+			$_uid = $result['uid'];
+			$data[$_uid]['skiped'] = $result['COUNT(*)'];
 		}
 		exit(json_encode($data));
 	case 'load_user':

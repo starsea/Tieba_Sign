@@ -1,6 +1,6 @@
 (function(){
 	var stat = [];
-	stat[0] = stat[1] = stat[2] = stat[3] = 0;
+	stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
 	$('#menu_loved_tb')[0].onclick = function (){
 		if($('#menu_loved_tb').hasClass('selected')) return;
 		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
@@ -66,7 +66,7 @@
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}
 	function show_sign_log(result){
-		stat[0] = stat[1] = stat[2] = stat[3] = 0;
+		stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
 		if(!result || result.count == 0) return;
 		$('#content-sign-log table tbody')[0].innerHTML = '';
 		$('#content-sign-log h2')[0].innerHTML = result.date+" 签到记录";
@@ -74,11 +74,12 @@
 			$("#content-sign-log table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td>"+_status(field.status)+"</td><td>"+_exp(field.exp)+"</td></tr>");
 		});
 		var result_text = "";
-		result_text += "共计 "+(stat[0] + stat[1] + stat[2] + stat[3])+" 个贴吧";
-		result_text += ", 成功签到 "+(stat[3])+" 个贴吧";
-		if(stat[1]) result_text += ", 有 "+(stat[1])+" 个贴吧尚未签到";
-		if(stat[2]) result_text += ", "+(stat[2])+" 个贴吧正在等待重试";
-		if(stat[0]) result_text += ", "+(stat[0])+" 个贴吧无法签到, <a href=\"index.php?action=reset_failure\" onclick=\"return msg_redirect_action(this.href)\">点此重置无法签到的贴吧</a>";
+		result_text += "共计 "+(stat[0] + stat[1] + stat[2] + stat[3] + stat[4])+" 个贴吧";
+		result_text += ", 成功签到 "+(stat[4])+" 个贴吧";
+		if(stat[2]) result_text += ", 有 "+(stat[2])+" 个贴吧尚未签到";
+		if(stat[0]) result_text += ", 已跳过 "+(stat[0])+" 个贴吧";
+		if(stat[3]) result_text += ", "+(stat[3])+" 个贴吧正在等待重试";
+		if(stat[1]) result_text += ", "+(stat[1])+" 个贴吧无法签到, <a href=\"index.php?action=reset_failure\" onclick=\"return msg_redirect_action(this.href)\">点此重置无法签到的贴吧</a>";
 		$('#sign-stat').html(result_text);
 		var pager_text = '';
 		if(result.before_date) pager_text += '<a href="#history-'+result.before_date+'">&laquo; 前一天</a> &nbsp; ';
@@ -111,9 +112,10 @@
 	function _status(status){
 		if(typeof status == 'undefined') status = 0;
 		status = parseInt(status);
-		stat[ (status+1) ]++;
+		stat[ (status+2) ]++;
 		if(mobile){
 			switch(status){
+				case -2:	return '<img src="style/warn.png" />';
 				case -1:	return '<img src="style/error.gif" />';
 				case 0:		return '<img src="style/retry.gif" />';
 				case 1:		return '<img src="style/warn.png" />';
@@ -121,6 +123,7 @@
 			}
 		}else{
 			switch(status){
+				case -2:	return '跳过签到';
 				case -1:	return '无法签到';
 				case 0:		return '待签到';
 				case 1:		return '签到失败';

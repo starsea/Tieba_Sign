@@ -19,7 +19,7 @@ if($date != $_date){
 		}
 	}
 	DB::query("ALTER TABLE sign_log CHANGE `date` `date` INT NOT NULL DEFAULT '{$date}'");
-	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba WHERE skiped=0");
+	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
 	$delete_date = date('Ymd', TIMESTAMP - 86400*30);
 	DB::query("DELETE FROM sign_log WHERE date<'{$delete_date}'");
 	saveSetting('date', $date);
@@ -54,6 +54,10 @@ $done = 0;
 $query = DB::query("SELECT * FROM my_tieba WHERE tid IN ({$tid})");
 while($tieba = DB::fetch($query)){
 	if($done > 20) break;
+	if($tieba['skiped']){
+		DB::query("UPDATE sign_log set status='-2' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
+		continue;
+	}
 	$uid = $tieba['uid'];
 	$setting = get_setting($uid);
 	if($setting['sign_method'] == 2){
