@@ -13,9 +13,9 @@ if(!$uid){
 			$skiped = $skiped ? 0 : 1;
 			$date = date('Ymd', TIMESTAMP+900);
 			if($skiped == 1){
-				DB::query("UPDATE sign_log set status='-2' WHERE uid='{$uid}' tid='{$tid}' AND date='{$date}' AND status < 2");
+				DB::query("UPDATE sign_log SET `status`='-2' WHERE uid='{$uid}' AND tid='{$tid}' AND date='{$date}' AND `status` < 2");
 			}else{
-				DB::query("UPDATE sign_log set status='0' WHERE uid='{$uid}' tid='{$tid}' AND date='{$date}' AND status < 2");
+				DB::query("UPDATE sign_log SET `status`='0' WHERE uid='{$uid}' AND tid='{$tid}' AND date='{$date}' AND `status` < 2");
 			}
 			DB::query("UPDATE my_tieba SET skiped='{$skiped}' WHERE uid='{$uid}' AND tid='{$tid}'");
 			if(!DB::affected_rows()) showmessage('发生未知错误: 无法修改贴吧设置');
