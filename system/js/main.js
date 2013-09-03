@@ -79,7 +79,7 @@
 		if(stat[2]) result_text += ", 有 "+(stat[2])+" 个贴吧尚未签到";
 		if(stat[0]) result_text += ", 已跳过 "+(stat[0])+" 个贴吧";
 		if(stat[3]) result_text += ", "+(stat[3])+" 个贴吧正在等待重试";
-		if(stat[1]) result_text += ", "+(stat[1])+" 个贴吧无法签到, <a href=\"index.php?action=reset_failure\" onclick=\"return msg_redirect_action(this.href)\">点此重置无法签到的贴吧</a>";
+		if(stat[1]) result_text += ", "+(stat[1])+" 个贴吧无法签到, <a href=\"index.php?action=reset_failure&formhash="+formhash+"\" onclick=\"return msg_redirect_action(this.href)\">点此重置无法签到的贴吧</a>";
 		$('#sign-stat').html(result_text);
 		var pager_text = '';
 		if(result.before_date) pager_text += '<a href="#history-'+result.before_date+'">&laquo; 前一天</a> &nbsp; ';
