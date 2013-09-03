@@ -67,7 +67,8 @@ if(!$uid){
 			break;
 		case 'reset_failure':
 			if($formhash != $_GET['formhash']) showmessage('请稍候...', '?action=reset_failure&formhash='.$formhash, 0);
-			DB::query("UPDATE sign_log SET status='0', retry='0' WHERE uid='{$uid}' AND status<0");
+			$date = date('Ymd');
+			DB::query("UPDATE sign_log SET status='0', retry='0' WHERE uid='{$uid}' AND date='{$date}' AND status<0");
 			showmessage('已经重置失败状态，稍后系统将自动重试', './#signlog', 1);
 			break;
 		case 'refresh_liked_tieba':
