@@ -106,5 +106,5 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 	.reload { right: 45px; }
 	.menubtn { display: block; }
 	.main-content input[type=text], .main-content input[type=password] { width: 90%; }
-	.fwin { width: 300px; top: 125px; left: 50%; margin: 0 -150px; border-radius: 0; }
+	.fwin { width: 300px; border-radius: 0; }
 }
