@@ -20,7 +20,7 @@ function createWindow(){
 		btn.innerHTML = title;
 		btn.onclick = function(){
 			callback();
-			win.destroy();
+			win.close();
 		}
 		this.btns.appendChild(btn);
 		return this;
@@ -29,7 +29,7 @@ function createWindow(){
 		var btn = document.createElement('button');
 		btn.innerHTML = title;
 		btn.onclick = function(){
-			win.destroy();
+			win.close();
 		}
 		this.btns.appendChild(btn);
 		return this;
@@ -39,11 +39,16 @@ function createWindow(){
 			var closebtn = document.createElement('span');
 			closebtn.className = 'close';
 			closebtn.innerText = 'x';
-			closebtn.onclick = function(){ win.destroy(); }
+			closebtn.onclick = function(){ 
+				win.close();
+			};
 			this.obj.appendChild(closebtn);
 		}
 		var win_title = document.createElement('h3');
 		win_title.innerHTML = this.title;
+		var obj = this.obj;
+		win_title.onmousedown = function(event){ try{ dragMenu(obj, event, 1); }catch(e){} };
+		win_title.unselectable = true;
 		this.obj.appendChild(win_title);
 		var win_content = document.createElement('div');
 		win_content.className = 'fcontent';
@@ -53,36 +58,94 @@ function createWindow(){
 		}
 		this.obj.appendChild(win_content);
 		$('#append_parent')[0].appendChild(this.obj);
+		var top = ($('body').height() - this.obj.clientHeight) / 2;
+		var left = ($('body').width() - this.obj.clientWidth) / 2;
+		this.obj.style.top = top + 'px';
+		this.obj.style.left = left + 'px';
 		return false;
 	}
-	win.destroy = function(){
-		$('#append_parent')[0].removeChild(win.obj);
+	win.close = function(){
+		win.obj.className = 'fwin h';
+		setTimeout(function(){ $('#append_parent')[0].removeChild(win.obj); }, 1000);
 	}
 	return win;
 }
 function msg_win_action(link){
 	link += link.indexOf('?') < 0 ? '?' : '&';
 	link += "format=json";
-	$('.loading-icon').finish();
-	$('.loading-icon').fadeIn();
+	showloading();
 	$.getJSON(link, function(result){
-		$('.loading-icon').finish();
-		$('.loading-icon').fadeOut();
-		if(!result) return;
 		createWindow().setTitle('系统消息').setContent(result.msg).addCloseButton('确定').append();
-	});
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	return false;
 }
 function msg_redirect_action(link){
 	link += link.indexOf('?') < 0 ? '?' : '&';
 	link += "format=json";
-	$('.loading-icon').finish();
-	$('.loading-icon').fadeIn();
+	showloading();
 	$.getJSON(link, function(result){
-		$('.loading-icon').finish();
-		$('.loading-icon').fadeOut();
-		if(!result) return;
 		createWindow().setTitle('系统消息').setContent(result.msg).addButton('确定', function(){ location.href = result.redirect; }).append();
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+	return false;
+}
+function showloading(){
+	$('.loading-icon')[0].className = 'loading-icon';
+}
+function hideloading(){
+	$('.loading-icon')[0].className = 'loading-icon h';
+}
+function post_win(link, formid){
+	link += link.indexOf('?') < 0 ? '?' : '&';
+	link += "format=json";
+	showloading();
+	$.post(link, $('#'+formid).serialize(), function(result){
+		createWindow().setTitle('系统消息').setContent(result.msg).addCloseButton('确定').append();
+	}, 'json').fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+	return false;
+}
+function show_updater_win(_url){
+	showloading();
+	$.ajax({
+		type: "get",
+		async: false,
+		url: _url,
+		dataType: "jsonp",
+		jsonp: "callback",
+		jsonpCallback: "handleNewVersion",
+		success: function(json){
+			hideloading();
+			if(json.new){
+				createWindow().setTitle('检查更新').setContent('<p>发现新版本'+json.ver+'！</p><p>要查看更新说明吗？</p>').addButton('确定', function(){ window.open(json.url); }).addCloseButton('取消').append();
+			}else{
+				createWindow().setTitle('检查更新').setContent('您当前使用的是最新版本').addCloseButton('确定').append();
+			}
+		},
+		error: function(){
+			hideloading();
+			createWindow().setTitle('检查更新').setContent('检查更新过程出现错误').addCloseButton('确定').append();
+		}
 	});
+	return false;
+}
+var JSMENU = [];
+function dragMenu(menuObj, e, op) {
+	e = e ? e : window.event;
+	if(op == 1) {
+		JSMENU['drag'] = [e.clientX, e.clientY];
+		JSMENU['drag'][2] = parseInt(menuObj.style.left);
+		JSMENU['drag'][3] = parseInt(menuObj.style.top);
+		document.onmousemove = function(e) { try{dragMenu(menuObj, e, 2); }catch(err){} };
+		document.onmouseup = function(e) { try{dragMenu(menuObj, e, 3); }catch(err){} };
+	}else if(op == 2 && JSMENU['drag'][0]) {
+		var menudragnow = [e.clientX, e.clientY];
+		menuObj.style.left = (JSMENU['drag'][2] + menudragnow[0] - JSMENU['drag'][0]) + 'px';
+		menuObj.style.top = (JSMENU['drag'][3] + menudragnow[1] - JSMENU['drag'][1]) + 'px';
+		menuObj.removeAttribute('top_');
+		menuObj.removeAttribute('left_');
+	}else if(op == 3) {
+		JSMENU['drag'] = [];
+		document.onmousemove = null;
+		document.onmouseup = null;
+	}
 	return false;
 }

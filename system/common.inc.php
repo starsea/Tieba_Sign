@@ -4,7 +4,7 @@ define('IN_KKFRAME', true);
 define('SYSTEM_ROOT', dirname(__FILE__).'/');
 define('ROOT', dirname(SYSTEM_ROOT).'/');
 define('TIMESTAMP', time());
-define('VERSION', '1.13.8.21');
+define('VERSION', '1.13.9.5');
 if(!defined('IN_API')) define('IN_API', false);
 error_reporting(E_ALL ^ E_NOTICE);
 ob_start();
@@ -31,6 +31,17 @@ if(strpos($ua, 'wap') || strpos($ua, 'mobi') || strpos($ua, 'opera') || $_GET['m
 }
 if(strpos($ua, 'bot') || strpos($ua, 'spider')) define('IN_ROBOT', true);
 check_update();
+
+if(SYS_KEY){
+	define('ENCRYPT_KEY', SYS_KEY);
+}elseif(!getSetting('SYS_KEY')){
+	$key = random(32);
+	saveSetting('SYS_KEY', $key);
+	define('ENCRYPT_KEY', $key);
+}else{
+	define('ENCRYPT_KEY', getSetting('SYS_KEY'));
+}
+
 $cookiever = '1';
 if(!empty($_COOKIE['token'])) {
     list($_cookiever, $uid, $username, $login_exp) = explode("\t", authcode($_COOKIE['token'], 'DECODE'));
@@ -50,5 +61,8 @@ if(!empty($_COOKIE['token'])) {
 } else {
     $uid = $username = '';
 }
-$formhash = substr(md5(substr(TIMESTAMP, 0, -7).$username.$uid.SYS_KEY.ROOT), 8, 8);
+$formhash = substr(md5(substr(TIMESTAMP, 0, -7).$username.$uid.ENCRYPT_KEY.ROOT), 8, 8);
 
+if($uid && SYS_KEY && getSetting('SYS_KEY') != SYS_KEY){
+	saveSetting('SYS_KEY', SYS_KEY);
+}

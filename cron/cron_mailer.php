@@ -60,6 +60,7 @@ EOF;
 }
 function _status($status){
 	switch($status){
+		case -2:	return '跳过签到';
 		case -1:	return '无法签到';
 		case 0:		return '待签到';
 		case 1:		return '签到失败';

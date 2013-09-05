@@ -13,6 +13,7 @@ switch($_GET['action']){
 			$_uid = $result['uid'];
 			$data[$_uid] = $result;
 			$data[$_uid]['succeed'] = 0;
+			$data[$_uid]['skiped'] = 0;
 			$data[$_uid]['waiting'] = 0;
 			$data[$_uid]['retry'] = 0;
 			$data[$_uid]['unsupport'] = 0;
@@ -36,6 +37,11 @@ switch($_GET['action']){
 		while($result = DB::fetch($query)){
 			$_uid = $result['uid'];
 			$data[$_uid]['unsupport'] = $result['COUNT(*)'];
+		}
+		$query = DB::query("SELECT uid, COUNT(*) FROM `sign_log` WHERE date='{$date}' AND status='-2' GROUP BY uid");
+		while($result = DB::fetch($query)){
+			$_uid = $result['uid'];
+			$data[$_uid]['skiped'] = $result['COUNT(*)'];
 		}
 		exit(json_encode($data));
 	case 'load_user':
@@ -81,7 +87,8 @@ switch($_GET['action']){
 	case 'reset_failure':
 		$_uid = intval($_GET['uid']);
 		if($formhash != $_GET['formhash']) showmessage('来源不可信，请重试', 'admin.php#stat');
-		DB::query("UPDATE sign_log SET status='0', retry='0' WHERE uid='{$_uid}' AND status<0");
+		$date = date('Ymd');
+		DB::query("UPDATE sign_log SET status='0', retry='0' WHERE uid='{$_uid}' AND date='{$date}' AND status<0");
 		showmessage('已经重置，稍后系统将自动重试', 'admin.php#stat', 1);
 		break;
 	case 'mail_test':
@@ -94,6 +101,7 @@ switch($_GET['action']){
 			case 'saemail':		$func = 'saemail';		$method = 'SAE SMTP 类';			break;
 			case 'bcms':		$func = 'bcms_mail';	$method = 'BAE 消息服务';		break;
 			case 'mail':		$func = 'mail';			$method = 'PHP mail() 函数';		break;
+			case 'smtp':		$func = 'smtp_mail';	$method = '内置 SMTP 类';		break;
 		}
 		$subject = '[贴吧签到助手] 测试邮件';
 		$content = "此封邮件仅用于检测邮件系统是否正常工作。<br>\r\n测试使用的邮件发送方式：{$method}";
