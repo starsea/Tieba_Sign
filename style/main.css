@@ -80,10 +80,10 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .main-content table tbody tr { background: #efefef; }
 .main-content table tbody tr:nth-child(odd) { background: #fafafa; }
 .main-content input[type=text], .main-content input[type=password] { width: 300px; }
-.fwin { animation: showfwin .3s; -webkit-animation: showfwin .3s; -moz-animation: showfwin .3s; position: absolute; position: fixed; width: 400px; top: 125px; left: 50%; margin-left: -230px; z-index: 50; background-color: #f5f5f5; border: 1px solid #cdcdcd; border-radius: 5px; padding: 5px; box-shadow: #9c9c9c 0 0 100px; }
-.fwin .close { display: block; position: relative; float: right; right: 3px; top: 3px; text-indent: -999px; width: 0; height: 0; background: url(close.gif); padding: 10px; cursor: pointer; }
+.fwin { animation: showfwin .3s; -webkit-animation: showfwin .3s; -moz-animation: showfwin .3s; position: absolute; position: fixed; width: 400px; z-index: 50; background-color: #f5f5f5; border: 1px solid #cdcdcd; border-radius: 5px; padding: 5px; box-shadow: #9c9c9c 0 0 100px; }
+.fwin .close { display: block; overflow: hidden; position: relative; float: right; right: 3px; top: 3px; text-indent: -999px; width: 0; height: 0; background: url(close.gif); padding: 10px; cursor: pointer; }
 .fwin .close:hover { background-position: 0 100%; }
-.fwin h3 { font-size: 18px; padding: 0 5px; margin: 0 25px 0 0; height: 32px; line-height: 28px; }
+.fwin h3 { font-size: 18px; padding: 0 5px; margin: 0 25px 0 0; height: 32px; line-height: 28px; cursor: move; }
 .fwin .fcontent { line-height: 20px; margin: 0 -5px; padding: 15px 10px 10px; border-top: 1px solid #dedede; }
 .fwin .btns { margin: 15px -10px -5px; border-top: 1px solid #dedede; padding: 10px 10px 0; }
 .fwin.h { opacity: 0; filter: alpha(opacity=0); _display: none; animation: hidefwin .3s; -webkit-animation: hidefwin .3s; -moz-animation: hidefwin .3s; }
@@ -106,5 +106,5 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 	.reload { right: 45px; }
 	.menubtn { display: block; }
 	.main-content input[type=text], .main-content input[type=password] { width: 90%; }
-	.fwin { width: 300px; margin: 0 -150px; border-radius: 0; }
+	.fwin { width: 300px; top: 125px; left: 50%; margin: 0 -150px; border-radius: 0; }
 }

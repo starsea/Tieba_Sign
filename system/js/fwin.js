@@ -46,6 +46,9 @@ function createWindow(){
 		}
 		var win_title = document.createElement('h3');
 		win_title.innerHTML = this.title;
+		var obj = this.obj;
+		win_title.onmousedown = function(event){ try{ dragMenu(obj, event, 1); }catch(e){} };
+		win_title.unselectable = true;
 		this.obj.appendChild(win_title);
 		var win_content = document.createElement('div');
 		win_content.className = 'fcontent';
@@ -55,6 +58,10 @@ function createWindow(){
 		}
 		this.obj.appendChild(win_content);
 		$('#append_parent')[0].appendChild(this.obj);
+		var top = ($('body').height() - this.obj.clientHeight) / 2;
+		var left = ($('body').width() - this.obj.clientWidth) / 2;
+		this.obj.style.top = top + 'px';
+		this.obj.style.left = left + 'px';
 		return false;
 	}
 	win.close = function(){
@@ -118,5 +125,27 @@ function show_updater_win(_url){
 			createWindow().setTitle('检查更新').setContent('检查更新过程出现错误').addCloseButton('确定').append();
 		}
 	});
+	return false;
+}
+var JSMENU = [];
+function dragMenu(menuObj, e, op) {
+	e = e ? e : window.event;
+	if(op == 1) {
+		JSMENU['drag'] = [e.clientX, e.clientY];
+		JSMENU['drag'][2] = parseInt(menuObj.style.left);
+		JSMENU['drag'][3] = parseInt(menuObj.style.top);
+		document.onmousemove = function(e) { try{dragMenu(menuObj, e, 2); }catch(err){} };
+		document.onmouseup = function(e) { try{dragMenu(menuObj, e, 3); }catch(err){} };
+	}else if(op == 2 && JSMENU['drag'][0]) {
+		var menudragnow = [e.clientX, e.clientY];
+		menuObj.style.left = (JSMENU['drag'][2] + menudragnow[0] - JSMENU['drag'][0]) + 'px';
+		menuObj.style.top = (JSMENU['drag'][3] + menudragnow[1] - JSMENU['drag'][1]) + 'px';
+		menuObj.removeAttribute('top_');
+		menuObj.removeAttribute('left_');
+	}else if(op == 3) {
+		JSMENU['drag'] = [];
+		document.onmousemove = null;
+		document.onmouseup = null;
+	}
 	return false;
 }
