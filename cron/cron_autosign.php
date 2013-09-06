@@ -63,6 +63,8 @@ while($tieba = DB::fetch($query)){
 	$setting = get_setting($uid);
 	if($setting['sign_method'] == 2){
 		list($status, $result, $exp) = mobile_sign($uid, $tieba);
+	}elseif($setting['sign_method'] == 3){
+		list($status, $result, $exp) = client_sign($uid, $tieba);
 	}else{
 		list($status, $result, $exp) = normal_sign($uid, $tieba);
 	}

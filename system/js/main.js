@@ -103,9 +103,15 @@
 			if(result.sign_method == 2){
 				$('#sign_method_1')[0].checked = false;
 				$('#sign_method_2')[0].checked = true;
+				$('#sign_method_3')[0].checked = false;
+			}else if(result.sign_method == 3){
+				$('#sign_method_1')[0].checked = false;
+				$('#sign_method_2')[0].checked = false;
+				$('#sign_method_3')[0].checked = true;
 			}else{
 				$('#sign_method_1')[0].checked = true;
 				$('#sign_method_2')[0].checked = false;
+				$('#sign_method_3')[0].checked = false;
 			}
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}
