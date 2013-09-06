@@ -12,6 +12,7 @@ if($date != $_date){
 			@set_time_limit(3);
 			update_liked_tieba($_uid, true);
 			$_uid = DB::result_first("SELECT uid FROM member WHERE uid>'{$_uid}' ORDER BY uid ASC LIMIT 0,1");
+			if(!$_uid) break;
 			if(++$num > 20){
 				saveSetting('autoupdate_uid', $_uid);
 				exit('等待二次刷新喜欢贴吧列表');
