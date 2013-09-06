@@ -97,9 +97,13 @@
 			$('#bdbowser')[0].checked = result.use_bdbowser == "1";
 			$('#error_mail')[0].checked = result.error_mail == "1";
 			$('#send_mail')[0].checked = result.send_mail == "1";
+			$('#zhidao_sign')[0].checked = result.zhidao_sign == "1";
+			$('#wenku_sign')[0].checked = result.wenku_sign == "1";
 			$('#bdbowser')[0].disabled = false;
 			$('#error_mail')[0].disabled = false;
 			$('#send_mail')[0].disabled = false;
+			$('#zhidao_sign')[0].disabled = false;
+			$('#wenku_sign')[0].disabled = false;
 			if(result.sign_method == 2){
 				$('#sign_method_1')[0].checked = false;
 				$('#sign_method_2')[0].checked = true;

@@ -52,6 +52,8 @@ if(!$uid){
 				'error_mail' => $_POST['error_mail'] ? 1 : 0,
 				'send_mail' => $_POST['send_mail'] ? 1 : 0,
 				'sign_method' => intval($_POST['sign_method']),
+				'zhidao_sign' => $_POST['zhidao_sign'] ? 1 : 0,
+				'wenku_sign' => $_POST['wenku_sign'] ? 1 : 0,
 				), "uid='{$uid}'");
 			showmessage('设置已经保存', './#setting', 1);
 			break;

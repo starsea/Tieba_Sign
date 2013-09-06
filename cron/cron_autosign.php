@@ -9,14 +9,13 @@ if($date != $_date){
 		$num = 0;
 		$_uid = getSetting('autoupdate_uid') ? getSetting('autoupdate_uid') : 1;
 		while($_uid){
-			@set_time_limit(3);
-			update_liked_tieba($_uid, true);
-			$_uid = DB::result_first("SELECT uid FROM member WHERE uid>'{$_uid}' ORDER BY uid ASC LIMIT 0,1");
-			if(!$_uid) break;
 			if(++$num > 20){
 				saveSetting('autoupdate_uid', $_uid);
 				exit('等待二次刷新喜欢贴吧列表');
 			}
+			@set_time_limit(3);
+			update_liked_tieba($_uid, true);
+			$_uid = DB::result_first("SELECT uid FROM member WHERE uid>'{$_uid}' ORDER BY uid ASC LIMIT 0,1");
 		}
 	}
 	DB::query("ALTER TABLE sign_log CHANGE `date` `date` INT NOT NULL DEFAULT '{$date}'");
@@ -24,6 +23,8 @@ if($date != $_date){
 	$delete_date = date('Ymd', TIMESTAMP - 86400*30);
 	DB::query("DELETE FROM sign_log WHERE date<'{$delete_date}'");
 	saveSetting('date', $date);
+	saveSetting('extsigned', 0);
+	saveSetting('extsign_uid', 0);
 	saveSetting('autoupdate_uid', 0);
 }
 
@@ -36,7 +37,24 @@ $query = DB::query("SELECT tid FROM sign_log WHERE status IN (0, 1) AND date='{$
 while($result = DB::fetch($query)){
 	$tids[] = $result['tid'];
 }
-if(!$tids) exit('所有贴吧都已经签到完成了~');
+if(!$tids){
+	if(!getSetting('extsigned')){
+		$num = 0;
+		$_uid = getSetting('extsign_uid') ? getSetting('extsign_uid') : 1;
+		while($_uid){
+			if(++$num > 20){
+				saveSetting('extsign_uid', $_uid);
+				exit('等待继续进行拓展签到');
+			}
+			$setting = get_setting($_uid);
+			if($setting['zhidao_sign']) zhidao_sign($_uid);
+			if($setting['wenku_sign']) wenku_sign($_uid);
+			$_uid = DB::result_first("SELECT uid FROM member WHERE uid>'{$_uid}' ORDER BY uid ASC LIMIT 0,1");
+		}
+		saveSetting('extsigned', 1);
+	}
+	exit('所有贴吧都已经签到完成了~');
+}
 echo <<<EOF
 <style type="text/css">
 * { font-size: 12px; }

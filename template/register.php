@@ -27,7 +27,7 @@ if($invite_code) echo '<p><input type="text" name="invite_code" placeholder="邀
 ?>
 </div>
 <p class="btns clearfix">
-<span class="float-left"><a href="member.php?action=login" class="tip-text">登陆</a></span>
+<span class="float-left"><a href="member.php?action=login" class="tip-text">登录</a></span>
 <input type="submit" value="注册" />
 </p>
 </form>

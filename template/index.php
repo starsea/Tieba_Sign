@@ -74,7 +74,10 @@ if(IN_MOBILE){
 <p>签到方式：</p>
 <p><label><input type="radio" name="sign_method" id="sign_method_1" value="1" /> 签到方式 1 (传统)</label></p>
 <p><label><input type="radio" name="sign_method" id="sign_method_2" value="2" /> 签到方式 2 (推荐, 新)</label></p>
-<p><label><input type="radio" name="sign_method" id="sign_method_3" value="3" /> 签到方式 3 (模拟客户端签到，+8经验)</label></p>
+<p><label><input type="radio" name="sign_method" id="sign_method_3" value="3" /> 签到方式 3 (测试版, 模拟客户端签到，+8经验)</label></p>
+<p>附加签到：</p>
+<p><label><input type="checkbox" disabled name="zhidao_sign" id="zhidao_sign" value="1" /> 自动签到百度知道 (测试版)</label></p>
+<p><label><input type="checkbox" disabled name="wenku_sign" id="wenku_sign" value="1" /> 自动签到百度文库 (测试版)</label></p>
 <p>报告设置：</p>
 <p><label><input type="checkbox" checked disabled name="error_mail" id="error_mail" value="1" /> 当天有无法签到的贴吧时给我发送邮件</label></p>
 <p><label><input type="checkbox" disabled name="send_mail" id="send_mail" value="1" /> 每日发送一封签到报告邮件</label></p>
@@ -108,7 +111,7 @@ if(IN_MOBILE){
 </div>
 </div>
 </div>
-<p class="copyright">当前版本：<?php echo VERSION; ?> - <a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version=<?php echo VERSION; ?>" target="_blank" onclick="return show_updater_win(this.href)">检查更新</a><br>Design by kookxiang. 2013 &copy; KK's Laboratory</p>
+<p class="copyright">当前版本：<?php echo VERSION; ?> - <a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version=<?php echo VERSION; ?>" target="_blank" onclick="return show_updater_win(this.href)">检查更新</a><br>Designed by kookxiang. 2013 &copy; KK's Laboratory</p>
 </div>
 <script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">
