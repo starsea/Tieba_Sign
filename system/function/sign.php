@@ -103,6 +103,7 @@ function client_sign($uid, $tieba){
 				return array(-1, "ERROR-{$res[error_code]}: ".$res['error_msg'].' （Cookie 过期或不正确）', 0);
 			case '160004':		// 不支持
 				return array(-1, "ERROR-{$res[error_code]}: ".$res['error_msg'], 0);
+			case '160003':		// 零点 稍后再试
 			case '160008':		// 太快了
 				return array(1, "ERROR-{$res[error_code]}: ".$res['error_msg'], 0);
 			default:
