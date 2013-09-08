@@ -54,7 +54,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 	$uid = DB::result_first("SELECT _uid FROM member_bind WHERE uid='{$uid}' AND _uid='{$target_uid}'");
 	if(!$uid) showmessage('您尚未绑定该账号，无法进行切换', './');
 	$username = get_username($uid);
-	dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$username}\t0", 'ENCODE'));
+	do_login($uid);
 	showmessage("您已经成功切换至 {$username}！", dreferer(), 1);
 }elseif($uid){
 	showmessage('您已经登录了~', dreferer(), 1);
