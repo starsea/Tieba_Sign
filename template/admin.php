@@ -74,7 +74,7 @@ if(!defined('IN_ADMINCP')) exit();
 </div>
 </div>
 </div>
-<p class="copyright">Design by kookxiang. 2013 &copy; KK's Laboratory</p>
+<p class="copyright">Designed by kookxiang. 2013 &copy; KK's Laboratory</p>
 </div>
 <script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">

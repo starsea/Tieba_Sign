@@ -45,16 +45,16 @@
 			$('#content-loved-tb .skip_sign').click(function(){
 				showloading();
 				this.disabled = 'disabled';
-				$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_loved_tieba(); }).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+				$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_loved_tieba(); }).fail(function() { hideloading(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); });
 				return false;
 			});
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function load_sign_log(){
 		showloading();
 		$.getJSON("ajax.php?v=sign-log", function(result){
 			show_sign_log(result);
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function load_sign_history(date){
 		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
@@ -63,7 +63,7 @@
 		showloading();
 		$.getJSON("ajax.php?v=sign-history&date="+date, function(result){
 			show_sign_log(result);
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function show_sign_log(result){
 		stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
@@ -97,17 +97,27 @@
 			$('#bdbowser')[0].checked = result.use_bdbowser == "1";
 			$('#error_mail')[0].checked = result.error_mail == "1";
 			$('#send_mail')[0].checked = result.send_mail == "1";
+			$('#zhidao_sign')[0].checked = result.zhidao_sign == "1";
+			$('#wenku_sign')[0].checked = result.wenku_sign == "1";
 			$('#bdbowser')[0].disabled = false;
 			$('#error_mail')[0].disabled = false;
 			$('#send_mail')[0].disabled = false;
+			$('#zhidao_sign')[0].disabled = false;
+			$('#wenku_sign')[0].disabled = false;
 			if(result.sign_method == 2){
 				$('#sign_method_1')[0].checked = false;
 				$('#sign_method_2')[0].checked = true;
+				$('#sign_method_3')[0].checked = false;
+			}else if(result.sign_method == 3){
+				$('#sign_method_1')[0].checked = false;
+				$('#sign_method_2')[0].checked = false;
+				$('#sign_method_3')[0].checked = true;
 			}else{
 				$('#sign_method_1')[0].checked = true;
 				$('#sign_method_2')[0].checked = false;
+				$('#sign_method_3')[0].checked = false;
 			}
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function _status(status){
 		if(typeof status == 'undefined') status = 0;
@@ -158,6 +168,11 @@
 	$('.menu_switch_user a').click(function(){
 		var link = this.href;
 		createWindow().setTitle('切换账号').setContent('确认要切换登陆账号吗？').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();
+		return false;
+	});
+	$('.menu_switch_user .del').click(function(){
+		var link = this.getAttribute('href');
+		createWindow().setTitle('解除绑定').setContent('确认要解除账号绑定吗？').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();
 		return false;
 	});
 	$('#menu_adduser a').click(function(){
