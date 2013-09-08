@@ -48,13 +48,13 @@
 				$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_loved_tieba(); }).fail(function() { hideloading(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); });
 				return false;
 			});
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function load_sign_log(){
 		showloading();
 		$.getJSON("ajax.php?v=sign-log", function(result){
 			show_sign_log(result);
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function load_sign_history(date){
 		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
@@ -63,7 +63,7 @@
 		showloading();
 		$.getJSON("ajax.php?v=sign-history&date="+date, function(result){
 			show_sign_log(result);
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function show_sign_log(result){
 		stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
@@ -117,7 +117,7 @@
 				$('#sign_method_2')[0].checked = false;
 				$('#sign_method_3')[0].checked = false;
 			}
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function _status(status){
 		if(typeof status == 'undefined') status = 0;
