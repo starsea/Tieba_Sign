@@ -34,7 +34,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 }elseif($uid && $_GET['action'] == 'switch'){
 	if($_GET['formhash'] != $formhash) showmessage('来源不可信，请重试', './');
 	$target_uid = intval($_GET['uid']);
-	$uid = DB::result_first("SELECT _uid FROM member_bind WHERE uid='{$uid}'");
+	$uid = DB::result_first("SELECT _uid FROM member_bind WHERE uid='{$uid}' AND _uid='{$target_uid}'");
 	if(!$uid) showmessage('您尚未绑定该账号，无法进行切换', './');
 	$username = get_username($uid);
 	dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$username}\t0", 'ENCODE'));
