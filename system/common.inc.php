@@ -42,17 +42,18 @@ if(SYS_KEY){
 	define('ENCRYPT_KEY', getSetting('SYS_KEY'));
 }
 
-$cookiever = '1';
+$cookiever = '2';
 if(!empty($_COOKIE['token'])) {
-    list($_cookiever, $uid, $username, $login_exp) = explode("\t", authcode($_COOKIE['token'], 'DECODE'));
+    list($_cookiever, $uid, $username, $login_exp, $password_hash) = explode("\t", authcode($_COOKIE['token'], 'DECODE'));
 	if(!$uid || $_cookiever != $cookiever){
 		unset($uid, $username, $login_exp);
 		dsetcookie('token');
 	}elseif($login_exp < TIMESTAMP){
 		$user = DB::fetch_first("SELECT * FROM member WHERE uid='{$uid}'");
-		if($user){
-			$login_exp = TIMESTAMP + 7200;
-			dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$user[username]}\t{$login_exp}", 'ENCODE'));
+		$_password_hash = substr(md5($user['password']), 8, 8);
+		if($user && $password_hash == $_password_hash){
+			$login_exp = TIMESTAMP + 900;
+			dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$user[username]}\t{$login_exp}\t{$password_hash}", 'ENCODE'));
 		}else{
 			unset($uid, $username, $login_exp);
 			dsetcookie('token');

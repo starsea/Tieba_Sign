@@ -122,7 +122,7 @@ EOF;
 				'email' => $email,
 			));
 			DB::insert('member_setting', array('uid' => $uid));
-			dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$username}\t0", 'ENCODE'));
+			do_login($uid);
 			showmessage("注册成功，您的用户名是 <b>{$username}</b> 记住了哦~！", dreferer(), 3);
 		}
 	}
@@ -138,8 +138,7 @@ EOF;
 		$username = $user['username'];
 		if($user) {
 			$login_exp = TIMESTAMP + 3600;
-			$uid = $user['uid'];
-			dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$username}\t0", 'ENCODE'));
+			do_login($user['uid']);
 			showmessage("欢迎回来，{$username}！", dreferer(), 1);
 		}else{
 			showmessage('对不起，您的用户名或密码错误，无法登录.', 'member.php?action=login', 3);
