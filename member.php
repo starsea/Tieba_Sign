@@ -58,6 +58,42 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 	showmessage("您已经成功切换至 {$username}！", dreferer(), 1);
 }elseif($uid){
 	showmessage('您已经登录了~', dreferer(), 1);
+}elseif($_GET['action'] == 'find_password'){
+	if($_GET['token']){
+		$str = authcode($_GET['token'], 'DECODE');
+		if(!$str) showmessage('链接有误，请重新获取', './');
+		list($uid, $exptime, $password, $random) = explode("\t", $str);
+		if($exptime < TIMESTAMP) showmessage('链接已过期，请重新获取', './');
+		$user = DB::fetch_first("SELECT * FROM member WHERE uid='{$uid}' AND password='{$password}'");
+		if(!$user) showmessage('链接已经失效，请重新获取', './');
+		$new_password = random(10);
+		$newpassword = md5(ENCRYPT_KEY.md5($new_password).ENCRYPT_KEY);
+		DB::update('member', array('password' => $newpassword), "uid='{$uid}'");
+		showmessage("您的密码已经重置为：<br>{$new_password}<br><br>请使用新密码登录并修改密码。");
+	}elseif($_POST['username'] && $_POST['email']){
+		$username = daddslashes($_POST['username']);
+		$email = daddslashes($_POST['email']);
+		$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}' AND email='{$email}'");
+		$info = array(
+			$user['uid'],			// UID
+			TIMESTAMP + 3600,		// Token 过期时间
+			$user['password'],		// 当前密码
+			random(32),				// 随机字符
+		);
+		$token = urlencode(authcode(implode("\t", $info), 'ENCODE'));
+		$link = "{$siteurl}member.php?action=find_password&token={$token}";
+		$message = <<<EOF
+<p>我们已经收到您的找回密码申请，请您点击下方的链接重新设置密码：</p>
+<blockquote><a href="{$link}">{$link}</a></blockquote>
+<p>（注：请在一小时内点击上面的链接，我们将向您提供新的密码）</p>
+<br>
+<p>如果您没有要求重置密码却收到本邮件，请及时删除此邮件以确保账户安全。</p>
+EOF;
+		$res = send_mail($user['email'], "贴吧签到助手 - 密码找回", $message);
+		showmessage($res ? '邮件发送成功，请到邮箱查收' : '邮件发送失败，请检查config中的设置', './');
+	}
+	include template('lost_password');
+	exit();
 }elseif($_GET['action'] == 'register'){
 	if(getSetting('block_register')) showmessage('抱歉，当前站点禁止新用户注册', 'member.php?action=login');
 	if($_POST){

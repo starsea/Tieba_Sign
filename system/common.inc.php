@@ -66,3 +66,6 @@ $formhash = substr(md5(substr(TIMESTAMP, 0, -7).$username.$uid.ENCRYPT_KEY.ROOT)
 if($uid && SYS_KEY && getSetting('SYS_KEY') != SYS_KEY){
 	saveSetting('SYS_KEY', SYS_KEY);
 }
+
+$sitepath = substr($_G['PHP_SELF'], 0, strrpos($_G['PHP_SELF'], '/'));
+$siteurl = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].$sitepath.'/');
