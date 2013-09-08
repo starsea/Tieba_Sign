@@ -19,16 +19,15 @@ if(!defined('IN_KKFRAME')) exit();
 <h1>登录贴吧签到助手</h1>
 <form method="post" action="member.php?action=login">
 <div class="login-info">
-<p><input type="text" name="username" placeholder="用户名" required /></p>
-<p><input type="password" name="password" placeholder="密　码" required /></p>
+<p>用户名：<input type="text" name="username" placeholder="用户名" required /></p>
+<p>密　码：<input type="password" name="password" placeholder="密　码" required /></p>
 </div>
 <p class="btns clearfix">
-<span class="float-left"><a href="member.php?action=register" class="tip-text">注册</a></span>
+<span class="float-left"><a href="member.php?action=register" class="tip-text">注册</a> &nbsp; <a href="member.php?action=find_password" class="tip-text">找回密码</a></span>
 <input type="submit" value="登录" />
 </p>
 </form>
 </div>
 </div>
-<script src="system/js/placeholder.fix.js?version=<?php echo VERSION; ?>"></script>
 </body>
 </html>
