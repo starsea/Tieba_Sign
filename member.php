@@ -27,6 +27,15 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 			'_uid' => $userid,
 			'username' => $user['username'],
 		));
+		$exists = DB::result_first("SELECT uid FROM member_bind WHERE _uid='{$uid}' AND uid='{$userid}'");
+		if(!$exists){
+			$username = DB::result_first("SELECT username FROM member WHERE uid='{$uid}'");
+			DB::insert('member_bind', array(
+				'uid' => $userid,
+				'_uid' => $uid,
+				'username' => $username,
+			));
+		}
 		showmessage("您已经成功绑定用户“{$user[username]}”", './');
 	}else{
 		showmessage('用户名/密码不正确！', './#');
