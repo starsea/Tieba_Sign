@@ -54,7 +54,7 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 #page_login h1 { color: #000; font-weight: bold; padding: 2px 0 10px 8px; }
 #page_index h1 { margin: 0 -15px; border-bottom: 1px solid #dedede; padding: 0 15px 0.46em; height: 25px; }
 .login-info p { text-align: center; }
-.login-info input { width: 300px; }
+.login-info input { width: 250px; margin-left: 5px; }
 .btns { height: 30px; line-height: 30px; text-align: right; padding: 0 10px; }
 .btns * { margin-left: 5px; }
 .center-box { position: relative; top: 125px; width: 320px; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
@@ -68,6 +68,8 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .menu li a { display: block; padding: 10px 5px 10px 15px; color: #5b5b5b; }
 .menu li.selected a { background: #dedede; padding-left: 18px; }
 .menu li a:hover { text-decoration: none; padding-left: 18px; }
+.menu_switch_user .del { float: right; background: url(error.gif) no-repeat 0 50%; padding: 18px 10px 18px 0; text-indent: -9999px; overflow: hidden; height: 0; display: none; }
+.menu_switch_user:hover .del{ display: block; }
 .copyright { margin-top: 42px; color: #757575; text-align: center; font-size: 12px; padding-bottom: 2em; }
 .loading-icon { background: #fff; position: fixed; top: 50%; right: 50%; padding: 20px 50px; border: 1px solid #dedede; border-radius: 5px; line-height: 20px; height: 20px; width: 70px; font-size: 12px; cursor: default; display: block; margin: -30px -85px; text-align: center; box-shadow: #9c9c9c 0 0 100px; animation: showfwin .3s; -webkit-animation: showfwin .3s; -moz-animation: showfwin .3s; }
 .loading-icon img { padding: 2px 5px 2px 0; float: left; }
@@ -98,6 +100,7 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 	.wrapper { padding: 0 5px 0 10px; }
 	#page_index h1 { margin: 0 -5px; }
 	.login-info input { width: 90%; }
+	.login-info p { text-align: left; line-height: 30px; text-indent: 5px; }
 	.center-box { top: 75px; width: 85%; }
 	.main-box { top: 15px; width: auto; padding: 10px 5px; }
 	.copyright { margin-top: 22px; font-size: 11px; }

@@ -34,7 +34,7 @@ if(!defined('IN_KKFRAME')) exit();
 <ul class="menu">
 <?php
 foreach ($users as $_uid => $username){
-	echo '<li class="menu_switch_user"><a href="member.php?action=switch&uid='.$_uid.'&formhash='.$formhash.'">切换至: '.$username.'</a></li>';
+	echo '<li class="menu_switch_user"><span class="del" href="member.php?action=unbind_user&uid='.$_uid.'&formhash='.$formhash.'">x</span><a href="member.php?action=switch&uid='.$_uid.'&formhash='.$formhash.'">切换至: '.$username.'</a></li>';
 }
 ?>
 <li id="menu_adduser"><a href="#user-new">绑定新用户</a></li>

@@ -5,6 +5,14 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 	dsetcookie('token', '');
 	$_COOKIE['token'] = '';
 	showmessage('您已经退出登录了！', dreferer(), 1);
+}elseif($uid && $_GET['action'] == 'unbind_user'){
+	if($_GET['formhash'] != $formhash) showmessage('来源不可信，请重试', './');
+	$_uid = intval($_GET['uid']);
+	$user = DB::fetch_first("SELECT * FROM member_bind WHERE uid='{$uid}' AND _uid='{$_uid}'");
+	if(!$user) showmessage('你并没有绑定该账号', './');
+	DB::query("DELETE FROM member_bind WHERE uid='{$uid}' AND _uid='{$_uid}'");
+	DB::query("DELETE FROM member_bind WHERE uid='{$_uid}' AND _uid='{$uid}'");
+	showmessage("成功解除与 {$user['username']} 的绑定！", './');
 }elseif($uid && $_GET['action'] == 'bind_user'){
 	if($_POST['formhash'] != $formhash) showmessage('来源不可信，请重试', './');
 	if(!$_POST['username']){
