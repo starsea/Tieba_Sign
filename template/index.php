@@ -28,6 +28,7 @@ if(!defined('IN_KKFRAME')) exit();
 <li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
 <li id="menu_config"><a href="#setting">设置</a></li>
 <li id="menu_logout"><a href="member.php?action=logout&hash=<?php echo $formhash; ?>">退出登录</a></li>
+</ul>
 <br>
 <p>= 多帐号管理 =</p>
 <ul class="menu">
@@ -37,7 +38,6 @@ foreach ($users as $_uid => $username){
 }
 ?>
 <li id="menu_adduser"><a href="#user-new">绑定新用户</a></li>
-</ul>
 </ul>
 <?php if(is_admin($uid)) echo '<br><p>= 管理菜单 =</p><ul class="menu"><li id="menu_admincp"><a href="admin.php">管理面板</a></li><li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version='.VERSION.'" target="_blank" onclick="return show_updater_win(this.href)">检查更新</a></li></ul>'; ?>
 </div>
