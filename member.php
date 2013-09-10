@@ -74,6 +74,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 		$username = daddslashes($_POST['username']);
 		$email = daddslashes($_POST['email']);
 		$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}' AND email='{$email}'");
+		if(!$user) showmessage('用户名 / 邮箱有误', './');
 		$info = array(
 			$user['uid'],			// UID
 			TIMESTAMP + 3600,		// Token 过期时间
