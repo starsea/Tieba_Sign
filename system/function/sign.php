@@ -74,10 +74,10 @@ function client_sign($uid, $tieba){
 	curl_setopt($ch, CURLOPT_POST, 1);
 	$array = array(
 		'BDUSS' => $BDUSS,
-		'_client_id' => '03-00-DA-59-05-00-72-96-06-00-01-00-04-00-4C-43-01-00-34-F4-02-00-BC-25-09-00-4E-36',
-		'_client_type' => '4',
-		'_client_version' => '1.2.1.17',
-		'_phone_imei' => '540b43b59d21b7a4824e1fd31b08e9a6',
+		'_client_id' => 'wappc_136'.random(10, true).'_564',
+		'_client_type' => '2',
+		'_client_version' => '2.0.3',
+		'_phone_imei' => md5(random(16)),
 		'fid' => $tieba['fid'],
 		'kw' => urldecode($tieba['unicode_name']),
 		'net_type' => '3',
