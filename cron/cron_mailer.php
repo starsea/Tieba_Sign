@@ -20,7 +20,7 @@ function check_if_msg($user){
 	$setting = get_setting($user['uid']);
 	if($setting['send_mail']) return true;
 	if(!$setting['error_mail']) return false;
-	$error_num = DB::result_first("SELECT COUNT(*) FROM sign_log WHERE status!=2 AND date='{$date}' AND uid='{$uid}'");
+	$error_num = DB::result_first("SELECT COUNT(*) FROM sign_log WHERE status!='2' AND status!='-2' AND date='{$date}' AND uid='{$uid}'");
 	if($error_num > 0) return true;
 }
 function sendmsg($user){
