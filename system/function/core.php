@@ -310,14 +310,13 @@ function send_mail($address, $subject, $message){
 	}
 }
 function php_mail($address, $subject, $message){
-
 $headers  = 'MIME-Version: 1.0' . "\r\n";
-$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-
-
+$headers .= 'Content-Type: text/html;charset=utf-8' . "\r\n";
+$headers .= "Content-Transfer-Encoding: quoted-printable\r\n";
 $headers .= "To: You <$address>" . "\r\n";
-$headers .= 'From: 贴吧助手' . "\r\n";
-return mail($address, $subject, $message,$headers);
+$headers .= 'From: 贴吧签到助手' . "\r\n";
+$message=quoted_printable_encode ( $message );
+return mail($address,"=?UTF-8?B?".base64_encode($subject)."?=",$message,$headers);
     
 }
 function bcms_mail($address, $subject, $message){
