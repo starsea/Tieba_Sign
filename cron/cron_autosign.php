@@ -26,6 +26,7 @@ if($date != $_date){
 	saveSetting('extsigned', 0);
 	saveSetting('extsign_uid', 0);
 	saveSetting('autoupdate_uid', 0);
+	CACHE::clear();
 }
 
 $time = date('Hi');

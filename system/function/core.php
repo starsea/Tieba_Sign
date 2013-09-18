@@ -317,7 +317,7 @@ $headers .= "To: You <$address>" . "\r\n";
 $headers .= 'From: 贴吧签到助手' . "\r\n";
 $message=quoted_printable_encode ( $message );
 return mail($address,"=?UTF-8?B?".base64_encode($subject)."?=",$message,$headers);
-    
+
 }
 function bcms_mail($address, $subject, $message){
 	global $_config;
@@ -372,13 +372,14 @@ function saemail($address, $subject, $message){
 	return true;
 }
 function getSetting($k, $force = false){
-	static $setting = array();
-	if(!$force && isset($setting[$k])) return $setting[$k];
-	return $setting[$k] = DB::result_first("SELECT v FROM setting WHERE k='{$k}'");
+	if($force) return $setting[$k] = DB::result_first("SELECT v FROM setting WHERE k='{$k}'");
+	$cache = CACHE::get('setting');
+	return $cache[$k];
 }
 function saveSetting($k, $v){
 	$v = addslashes($v);
 	DB::query("REPLACE INTO setting SET v='{$v}', k='{$k}'");
+	CACHE::update('setting');
 }
 function get_tbs($uid){
 	static $tbs = array();
