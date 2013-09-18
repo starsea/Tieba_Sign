@@ -1,44 +1,44 @@
 (function(){
 	var stat = [];
 	stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
-	$('#menu_loved_tb')[0].onclick = function (){
+	$('#menu_loved_tb').click(function (){
 		if($('#menu_loved_tb').hasClass('selected')) return;
-		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
+		$('.menu li.selected').removeClass('selected');
 		$('#menu_loved_tb').addClass('selected');
 		$('.main-content div').addClass('hidden');
-		$('#content-loved-tb')[0].className = '';
+		$('#content-loved-tb').removeClass('hidden');
 		load_loved_tieba();
 		if(mobile) $('.sidebar').fadeOut();
-	}
-	$('#menu_sign_log')[0].onclick = function (){
+	});
+	$('#menu_sign_log').click(function (){
 		if($('#menu_sign_log').hasClass('selected')) return;
-		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
+		$('.menu li.selected').removeClass('selected');
 		$('#menu_sign_log').addClass('selected');
 		$('.main-content div').addClass('hidden');
-		$('#content-sign-log')[0].className = '';
+		$('#content-sign-log').removeClass('hidden');
 		load_sign_log();
 		if(mobile) $('.sidebar').fadeOut();
-	}
-	$('#menu_config')[0].onclick = function (){
+	});
+	$('#menu_config').click(function (){
 		if($('#menu_config').hasClass('selected')) return;
-		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
+		$('.menu li.selected').removeClass('selected');
 		$('#menu_config').addClass('selected');
 		$('.main-content div').addClass('hidden');
-		$('#content-config')[0].className = '';
+		$('#content-config').removeClass('hidden');
 		load_setting();
 		if(mobile) $('.sidebar').fadeOut();
-	}
-	$('.reload')[0].onclick = function (){
+	});
+	$('.reload').click(function (){
 		if($('#menu_loved_tb').hasClass('selected')) load_loved_tieba();
 		if($('#menu_sign_log').hasClass('selected')) load_sign_log();
 		if($('#menu_config').hasClass('selected')) load_setting();
 		if(mobile) $('.sidebar').fadeOut();
-	}
+	});
 	function load_loved_tieba(){
 		showloading();
 		$.getJSON("ajax.php?v=loved-tieba", function(result){
 			if(!result) return;
-			$('#content-loved-tb table tbody')[0].innerHTML = '';
+			$('#content-loved-tb table tbody').html('');
 			$.each(result, function(i, field){
 				$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td><input type=\"checkbox\" value=\""+field.tid+"\""+(field.skiped=='1' ? ' checked' : '')+" class=\"skip_sign\" /></td></tr>");
 			});
@@ -57,9 +57,9 @@
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function load_sign_history(date){
-		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
+		$('.menu li.selected').removeClass('selected');
 		$('.main-content div').addClass('hidden');
-		$('#content-sign-log')[0].className = '';
+		$('#content-sign-log').removeClass('hidden');
 		showloading();
 		$.getJSON("ajax.php?v=sign-history&date="+date, function(result){
 			show_sign_log(result);
@@ -68,8 +68,8 @@
 	function show_sign_log(result){
 		stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
 		if(!result || result.count == 0) return;
-		$('#content-sign-log table tbody')[0].innerHTML = '';
-		$('#content-sign-log h2')[0].innerHTML = result.date+" 签到记录";
+		$('#content-sign-log table tbody').html('');
+		$('#content-sign-log h2').html(result.date+" 签到记录");
 		$.each(result.log, function(i, field){
 			$("#content-sign-log table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td>"+_status(field.status)+"</td><td>"+_exp(field.exp)+"</td></tr>");
 		});
@@ -89,33 +89,30 @@
 	}
 	function load_setting(){
 		showloading();
-		$('#bdbowser')[0].disabled = true;
-		$('#error_mail')[0].disabled = true;
-		$('#send_mail')[0].disabled = true;
 		$.getJSON("ajax.php?v=get-setting", function(result){
 			if(!result) return;
-			$('#bdbowser')[0].checked = result.use_bdbowser == "1";
-			$('#error_mail')[0].checked = result.error_mail == "1";
-			$('#send_mail')[0].checked = result.send_mail == "1";
-			$('#zhidao_sign')[0].checked = result.zhidao_sign == "1";
-			$('#wenku_sign')[0].checked = result.wenku_sign == "1";
-			$('#bdbowser')[0].disabled = false;
-			$('#error_mail')[0].disabled = false;
-			$('#send_mail')[0].disabled = false;
-			$('#zhidao_sign')[0].disabled = false;
-			$('#wenku_sign')[0].disabled = false;
+			$('#bdbowser').attr('checked', result.use_bdbowser == "1");
+			$('#error_mail').attr('checked', result.error_mail == "1");
+			$('#send_mail').attr('checked', result.send_mail == "1");
+			$('#zhidao_sign').attr('checked', result.zhidao_sign == "1");
+			$('#wenku_sign').attr('checked', result.wenku_sign == "1");
+			$('#bdbowser').removeAttr('disabled');
+			$('#error_mail').removeAttr('disabled');
+			$('#send_mail').removeAttr('disabled');
+			$('#zhidao_sign').removeAttr('disabled');
+			$('#wenku_sign').removeAttr('disabled');
 			if(result.sign_method == 2){
-				$('#sign_method_1')[0].checked = false;
-				$('#sign_method_2')[0].checked = true;
-				$('#sign_method_3')[0].checked = false;
+				$('#sign_method_1').attr('checked', false);
+				$('#sign_method_2').attr('checked', true);
+				$('#sign_method_3').attr('checked', false);
 			}else if(result.sign_method == 3){
-				$('#sign_method_1')[0].checked = false;
-				$('#sign_method_2')[0].checked = false;
-				$('#sign_method_3')[0].checked = true;
+				$('#sign_method_1').attr('checked', false);
+				$('#sign_method_2').attr('checked', false);
+				$('#sign_method_3').attr('checked', true);
 			}else{
-				$('#sign_method_1')[0].checked = true;
-				$('#sign_method_2')[0].checked = false;
-				$('#sign_method_3')[0].checked = false;
+				$('#sign_method_1').attr('checked', true);
+				$('#sign_method_2').attr('checked', false);
+				$('#sign_method_3').attr('checked', false);
 			}
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
@@ -148,22 +145,22 @@
 	function parse_hash(){
 		var hash = location.hash.substring(1);
 		if(hash == "loved"){
-			$('#menu_loved_tb')[0].onclick();
+			$('#menu_loved_tb').click();
 		}else if(hash == "signlog"){
-			$('#menu_sign_log')[0].onclick();
+			$('#menu_sign_log').click();
 		}else if(hash == "setting"){
-			$('#menu_config')[0].onclick();
+			$('#menu_config').click();
 		}else if(hash.split('-')[0] == "history"){
 			load_sign_history(hash.split('-')[1]);
 		}else{
-			$('#menu_sign_log')[0].onclick();
+			$('#menu_sign_log').click();
 		}
 	}
 	function showloading(){
-		$('.loading-icon')[0].className = 'loading-icon';
+		$('.loading-icon').removeClass('h');
 	}
 	function hideloading(){
-		$('.loading-icon')[0].className = 'loading-icon h';
+		$('.loading-icon').addClass('h');
 	}
 	$('.menu_switch_user a').click(function(){
 		var link = this.href;

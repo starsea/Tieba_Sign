@@ -57,7 +57,7 @@ function createWindow(){
 			win_content.appendChild(this.btns);
 		}
 		this.obj.appendChild(win_content);
-		$('#append_parent')[0].appendChild(this.obj);
+		$('#append_parent').append(this.obj);
 		var top = ($('body').height() - this.obj.clientHeight) / 2;
 		var left = ($('body').width() - this.obj.clientWidth) / 2;
 		this.obj.style.top = top + 'px';
@@ -66,7 +66,7 @@ function createWindow(){
 	}
 	win.close = function(){
 		win.obj.className = 'fwin h';
-		setTimeout(function(){ $('#append_parent')[0].removeChild(win.obj); }, 1000);
+		setTimeout(function(){ $(win.obj).remove(); }, 1000);
 	}
 	return win;
 }
@@ -89,10 +89,10 @@ function msg_redirect_action(link){
 	return false;
 }
 function showloading(){
-	$('.loading-icon')[0].className = 'loading-icon';
+	$('.loading-icon').removeClass('h');
 }
 function hideloading(){
-	$('.loading-icon')[0].className = 'loading-icon h';
+	$('.loading-icon').addClass('h');
 }
 function post_win(link, formid){
 	link += link.indexOf('?') < 0 ? '?' : '&';
@@ -114,7 +114,7 @@ function show_updater_win(_url){
 		jsonpCallback: "handleNewVersion",
 		success: function(json){
 			hideloading();
-			if(json.new){
+			if(json.hasnew){
 				createWindow().setTitle('检查更新').setContent('<p>发现新版本'+json.ver+'！</p><p>要查看更新说明吗？</p>').addButton('确定', function(){ window.open(json.url); }).addCloseButton('取消').append();
 			}else{
 				createWindow().setTitle('检查更新').setContent('您当前使用的是最新版本').addCloseButton('确定').append();

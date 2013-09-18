@@ -1,36 +1,36 @@
 (function(){
-	$('#menu_user')[0].onclick = function (){
+	$('#menu_user').click(function (){
 		if($('#menu_user').hasClass('selected')) return;
-		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
+		$('.menu li.selected').removeClass('selected');
 		$('#menu_user').addClass('selected');
 		$('.main-content div').addClass('hidden');
-		$('#content-user')[0].className = '';
+		$('#content-user').removeClass('hidden');
 		load_user();
 		if(mobile) $('.sidebar').fadeOut();
-	}
-	$('#menu_stat')[0].onclick = function (){
+	});
+	$('#menu_stat').click(function (){
 		if($('#menu_stat').hasClass('selected')) return;
-		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
+		$('.menu li.selected').removeClass('selected');
 		$('#menu_stat').addClass('selected');
 		$('.main-content div').addClass('hidden');
-		$('#content-stat')[0].className = '';
+		$('#content-stat').removeClass('hidden');
 		load_userstat();
 		if(mobile) $('.sidebar').fadeOut();
-	}
-	$('#menu_config')[0].onclick = function (){
+	});
+	$('#menu_config').click(function (){
 		if($('#menu_config').hasClass('selected')) return;
-		if($('.menu li.selected')[0]) $('.menu li.selected')[0].className = "";
+		$('.menu li.selected').removeClass('selected');
 		$('#menu_config').addClass('selected');
 		$('.main-content div').addClass('hidden');
-		$('#content-config')[0].className = '';
+		$('#content-config').removeClass('hidden');
 		load_setting();
 		if(mobile) $('.sidebar').fadeOut();
-	}
+	});
 	function load_user(){
 		showloading();
 		$.getJSON("admin.php?action=load_user", function(result){
 			if(!result) return;
-			$('#content-user table tbody')[0].innerHTML = '';
+			$('#content-user table tbody').html('');
 			$.each(result, function(i, field){
 				$("#content-user table tbody").append("<tr><td>"+field.uid+"</td><td>"+field.username+"</td><td>"+field.email+"</td><td><a href=\"admin.php?action=update_liked_tieba&uid="+field.uid+"&formhash="+formhash+"\" onclick=\"return msg_win_action(this.href)\">刷新喜欢的贴吧</a> | <a href=\"javascript:;\" onclick=\"return deluser('"+field.uid+"')\">删除用户</a></td></tr>");
 			});
@@ -40,7 +40,7 @@
 		showloading();
 		$.getJSON("admin.php?action=load_userstat", function(result){
 			if(!result) return;
-			$('#content-stat table tbody')[0].innerHTML = '';
+			$('#content-stat table tbody').html('');
 			$.each(result, function(i, field){
 				if(parseInt(field.unsupport) > 0) field.unsupport += ' (<a href="admin.php?action=reset_failure&uid='+field.uid+'&formhash='+formhash+'" onclick="return msg_win_action(this.href)">重置</a>)';
 				$("#content-stat table tbody").append("<tr><td>"+field.uid+"</td><td>"+field.username+"</td><td>"+field.succeed+"</td><td>"+field.skiped+"</td><td>"+field.waiting+"</td><td>"+field.retry+"</td><td>"+field.unsupport+"</td></tr>");
@@ -51,28 +51,28 @@
 		showloading();
 		$.getJSON("admin.php?action=load_setting", function(result){
 			if(!result) return;
-			$('#autoupdate')[0].checked = result.autoupdate ? 'checked' : '';
-			$('#block_register')[0].checked = result.block_register ? 'checked' : '';
-			$('#invite_code')[0].value = result.invite_code ? result.invite_code : '';
+			$('#autoupdate').attr('checked', result.autoupdate == 1);
+			$('#block_register').attr('checked', result.block_register == 1);
+			$('#invite_code').attr('value', result.invite_code ? result.invite_code : '');
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取当前系统设置').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 	}hideloading(); 
 	function parse_hash(){
 		var hash = location.hash.substring(1);
 		if(hash == "user"){
-			$('#menu_user')[0].onclick();
+			$('#menu_user').click();
 		}else if(hash == "stat"){
-			$('#menu_stat')[0].onclick();
+			$('#menu_stat').click();
 		}else if(hash == "config"){
-			$('#menu_config')[0].onclick();
+			$('#menu_config').click();
 		}else{
-			$('#menu_user')[0].onclick();
+			$('#menu_user').click();
 		}
 	}
 	function showloading(){
-		$('.loading-icon')[0].className = 'loading-icon';
+		$('.loading-icon').removeClass('h');
 	}
 	function hideloading(){
-		$('.loading-icon')[0].className = 'loading-icon h';
+		$('.loading-icon').addClass('h');
 	}
 	$('.menubtn').click(function(){
 		$('.sidebar').fadeToggle();
