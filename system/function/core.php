@@ -304,10 +304,20 @@ function send_mail($address, $subject, $message){
 		case 'kk_mail': return kk_mail($address, $subject, $message);
 		case 'bcms':	return bcms_mail($address, $subject, $message);
 		case 'saemail': return saemail($address, $subject, $message);
-		case 'mail':	return mail($address, $subject, $message);
+		case 'mail':	return php_mail($address, $subject, $message);
 		case 'smtp':	return smtp_mail($address, $subject, $message);
 		default: return false;
 	}
+}
+function php_mail($address, $subject, $message){
+$headers  = 'MIME-Version: 1.0' . "\r\n";
+$headers .= 'Content-Type: text/html;charset=utf-8' . "\r\n";
+$headers .= "Content-Transfer-Encoding: quoted-printable\r\n";
+$headers .= "To: You <$address>" . "\r\n";
+$headers .= 'From: 贴吧签到助手' . "\r\n";
+$message=quoted_printable_encode ( $message );
+return mail($address,"=?UTF-8?B?".base64_encode($subject)."?=",$message,$headers);
+    
 }
 function bcms_mail($address, $subject, $message){
 	global $_config;
