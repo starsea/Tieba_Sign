@@ -13,6 +13,5 @@ if(!in_array('member', $tables)){
 }elseif(!in_array('member_setting', $tables)){
 	include SYSTEM_ROOT.'./function/updater/1.13.8.18.php';
 }
-saveSetting('version', VERSION);
-showmessage('已经更新到 V'.VERSION.'<br>（更新过程没有更新数据库）', './');
+error::system_error('找不到更新程序，无法进行更新！');
 ?>

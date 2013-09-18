@@ -6,8 +6,6 @@ cron:
 - description: Sign
   url: cron/cron_autosign.php
   schedule: */1 0 * * *
-
-cron:
 - description: Mail-Services
   url: cron/cron_mailer.php
   schedule: 45 12 * * *

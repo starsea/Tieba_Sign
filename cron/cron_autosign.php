@@ -1,6 +1,7 @@
 <?php
 chdir('../');
 require_once './system/common.inc.php';
+require_once SYSTEM_ROOT.'./function/sign.php';
 $date = date('Ymd', TIMESTAMP+900);
 $_date = getSetting('date');
 if($date != $_date){
@@ -8,13 +9,13 @@ if($date != $_date){
 		$num = 0;
 		$_uid = getSetting('autoupdate_uid') ? getSetting('autoupdate_uid') : 1;
 		while($_uid){
-			@set_time_limit(3);
-			update_liked_tieba($_uid, true);
-			$_uid = DB::result_first("SELECT uid FROM member WHERE uid>'{$_uid}' ORDER BY uid ASC LIMIT 0,1");
 			if(++$num > 20){
 				saveSetting('autoupdate_uid', $_uid);
 				exit('等待二次刷新喜欢贴吧列表');
 			}
+			@set_time_limit(3);
+			update_liked_tieba($_uid, true);
+			$_uid = DB::result_first("SELECT uid FROM member WHERE uid>'{$_uid}' ORDER BY uid ASC LIMIT 0,1");
 		}
 	}
 	DB::query("ALTER TABLE sign_log CHANGE `date` `date` INT NOT NULL DEFAULT '{$date}'");
@@ -22,6 +23,8 @@ if($date != $_date){
 	$delete_date = date('Ymd', TIMESTAMP - 86400*30);
 	DB::query("DELETE FROM sign_log WHERE date<'{$delete_date}'");
 	saveSetting('date', $date);
+	saveSetting('extsigned', 0);
+	saveSetting('extsign_uid', 0);
 	saveSetting('autoupdate_uid', 0);
 }
 
@@ -34,7 +37,24 @@ $query = DB::query("SELECT tid FROM sign_log WHERE status IN (0, 1) AND date='{$
 while($result = DB::fetch($query)){
 	$tids[] = $result['tid'];
 }
-if(!$tids) exit('所有贴吧都已经签到完成了~');
+if(!$tids){
+	if(!getSetting('extsigned')){
+		$num = 0;
+		$_uid = getSetting('extsign_uid') ? getSetting('extsign_uid') : 1;
+		while($_uid){
+			if(++$num > 20){
+				saveSetting('extsign_uid', $_uid);
+				exit('等待继续进行拓展签到');
+			}
+			$setting = get_setting($_uid);
+			if($setting['zhidao_sign']) zhidao_sign($_uid);
+			if($setting['wenku_sign']) wenku_sign($_uid);
+			$_uid = DB::result_first("SELECT uid FROM member WHERE uid>'{$_uid}' ORDER BY uid ASC LIMIT 0,1");
+		}
+		saveSetting('extsigned', 1);
+	}
+	exit('所有贴吧都已经签到完成了~');
+}
 echo <<<EOF
 <style type="text/css">
 * { font-size: 12px; }
@@ -53,70 +73,37 @@ $done = 0;
 $query = DB::query("SELECT * FROM my_tieba WHERE tid IN ({$tid})");
 while($tieba = DB::fetch($query)){
 	if($done > 20) break;
+	if($tieba['skiped']){
+		DB::query("UPDATE sign_log set status='-2' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
+		continue;
+	}
 	$uid = $tieba['uid'];
 	$setting = get_setting($uid);
 	if($setting['sign_method'] == 2){
-		$result = mobile_sign($uid, $tieba);
-		echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>{$result}</td></tr>\r\n";
-		sleep(1);
-		$done += 0.7;
-		continue;
-	}
-	$url = "http://tieba.baidu.com/mo/m?kw={$tieba[unicode_name]}";
-	$get_url = curl_get($url, $uid);
-	if(!$get_url){
-		echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>服务器错误，签到失败，稍后会重试</td></tr>\r\n";
-		DB::query("UPDATE sign_log set status='1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-		continue;
-	}
-	$get_url = wrap_text($get_url);
-	preg_match('/<ahref="([^"]*?)">签到<\/a>/', $get_url, $matches);
-	if (isset($matches[1])){
-		if($first){ $first = false; sleep(2); }
-		$s = str_replace('&amp;', '&', $matches[1]);
-		$sign_url = 'http://tieba.baidu.com'.$s;
-		$get_sign = curl_get($sign_url, $uid, $setting['use_bdbowser']);
-		$done++;
-		if(!$get_sign){
-			echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>签到时服务器错误，可能已成功，稍后会重试</td></tr>\r\n";
-			DB::query("UPDATE sign_log set status='1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			continue;
-      	}
-      	$get_sign = wrap_text($get_sign);
-      	preg_match('/<spanclass="light">签到成功，经验值上升<spanclass="light">(\d+)<\/span>/', $get_sign, $matches);
-      	if ($matches[1]){
-          	echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>签到成功，经验值+{$matches[1]}</td></tr>\r\n";
-			DB::query("UPDATE sign_log set status='2', exp='{$matches[1]}' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
-			continue;
-        }else{
-			echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>签到错误，可能已成功，稍后会重试</td></tr>\r\n";
-			DB::query("UPDATE sign_log set status='1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			if($retry >= 25){
-				DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			}else{
-				DB::query("UPDATE sign_log set status='1', retry=retry+1 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			}
-			if($_GET['debug']) exit($sign_url.$get_sign);
-			continue;
-        }
+		list($status, $result, $exp) = mobile_sign($uid, $tieba);
+	}elseif($setting['sign_method'] == 3){
+		list($status, $result, $exp) = client_sign($uid, $tieba);
 	}else{
-      	preg_match('/<span>已签到<\/span>/', $get_url, $matches);
-      	if ($matches[0]){
-			echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>此前已成功签到</td></tr>\r\n";
+		list($status, $result, $exp) = normal_sign($uid, $tieba);
+	}
+	echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>{$result}</td></tr>\r\n";
+	if($status == 2){
+		if($exp){
+			DB::query("UPDATE sign_log set status='2', exp='{$exp}' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
+		}else{
 			DB::query("UPDATE sign_log set status='2' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			continue;
-        } else {
-			echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>找不到签到链接，稍后重试</td></tr>\r\n";
-			$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			if($retry >= 25){
-				DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			}else{
-				DB::query("UPDATE sign_log set status='1', retry=retry+7 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
-			}
-			if($_GET['debug']) exit($get_url);
-			continue;
-        }
-    }
+		}
+		$done += 0.7;
+	}else{
+		$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+		if($retry >= 100){
+			DB::query("UPDATE sign_log set status='-1' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+		}elseif($status == 1){
+			DB::query("UPDATE sign_log set status='1', retry=retry+1 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+		}else{
+			DB::query("UPDATE sign_log set status='1', retry=retry+15 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
+		}
+	}
+	sleep(1);
 }
 echo '</table><meta http-equiv="refresh" content="5" />';
