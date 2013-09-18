@@ -53,11 +53,8 @@ switch($_GET['action']){
 		exit(json_encode($data));
 		break;
 	case 'load_setting':
-		$data = array();
-		$query = DB::query('SELECT * FROM setting');
-		while($result = DB::fetch($query)){
-			if($result['v']) $data[$result['k']] = $result['v'];
-		}
+		$data = CACHE::get('setting');
+		unset($data['SYS_KEY']);
 		exit(json_encode($data));
 		break;
 	case 'save_setting':
