@@ -74,7 +74,7 @@ if(!defined('IN_ADMINCP')) exit();
 </div>
 </div>
 </div>
-<p class="copyright">Designed by kookxiang. 2013 &copy; KK's Laboratory</p>
+<p class="copyright">当前版本：<?php echo VERSION; ?> - <a href="https://me.alipay.com/kookxiang" target="_blank">赞助开发</a><br>Designed by <a href="http://www.ikk.me" target="_blank">kookxiang</a>. 2013 &copy; <a href="http://www.kookxiang.com" target="_blank">KK's Laboratory</a><br>请勿擅自修改程序版权信息或将本程序用于商业用途！</p>
 </div>
 <script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">
