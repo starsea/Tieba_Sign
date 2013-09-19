@@ -5,7 +5,8 @@ class CACHE{
 	public static function get($key){
 		static $_cache = array();
 		if(isset($_cache[$key])) return $_cache[$key];
-		$_cache[$key] = unserialize(DB::result_first("SELECT v FROM cache WHERE k='{$key}'"));
+		$query = DB::query("SELECT v FROM cache WHERE k='{$key}'", 'SILENT');
+		$_cache[$key] = unserialize(DB::fetch($query));
 		if(!$_cache[$key]){
 			return $_cache[$key] = self::update($key);
 		}
@@ -13,7 +14,7 @@ class CACHE{
 	}
 	public static function save($key, $value){
 		$value = addslashes(serialize($value));
-		DB::query("REPLACE INTO cache SET k='{$key}', v='{$value}'");
+		DB::query("REPLACE INTO cache SET k='{$key}', v='{$value}'", 'SILENT');
 	}
 	public static function update($key){
 		$builder_file = SYSTEM_ROOT."./function/cache/cache_{$key}.php";
@@ -25,7 +26,7 @@ class CACHE{
 		}
 	}
 	public static function clear(){
-		DB::query("TRUNCATE TABLE cache");
+		DB::query("TRUNCATE TABLE cache", 'SILENT');
 	}
 }
 
