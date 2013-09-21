@@ -16,7 +16,7 @@ function safeguard_check(){
 	$e = array();
 	foreach($a as $f){
 		list($p, $h) = explode("\t", $f);
-		$c = md5_file(ROOT.$p);
+		$c = md5(php_strip_whitespace(ROOT.$p));
 		if($c != $h) error::system_error("KK SafeGuard have detected a threat! Please RE-INSTALL this application.<!--{$p}-->");
 	}
 }
