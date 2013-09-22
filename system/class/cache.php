@@ -55,7 +55,7 @@ class MCACHE{
 		if(defined('MEMCACHE_INITED')) return $obj;
 		$obj = null;
 		if($_SERVER['HTTP_APPVERSION']){
-			$obj = memcache_init();
+			$obj = @memcache_init();
 		}elseif($_SERVER['USER'] == 'bae'){
 			require_once 'BaeMemcache.class.php';
 			$obj = new BaeMemcache();
