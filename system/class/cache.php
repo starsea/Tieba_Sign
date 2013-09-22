@@ -5,8 +5,8 @@ class CACHE{
 	public static function get($key){
 		static $_cache = array();
 		if(isset($_cache[$key])) return $_cache[$key];
-		if(MEMCACHE::isAvailable()){
-			$_cache[$key] = MEMCACHE::get($key);
+		if(MCACHE::isAvailable()){
+			$_cache[$key] = MCACHE::get($key);
 		}else{
 			$query = DB::query("SELECT v FROM cache WHERE k='{$key}'", 'SILENT');
 			$result = DB::fetch($query);
@@ -19,8 +19,8 @@ class CACHE{
 		return $_cache[$key];
 	}
 	public static function save($key, $value){
-		if(MEMCACHE::isAvailable()){
-			MEMCACHE::save($key, $value);
+		if(MCACHE::isAvailable()){
+			MCACHE::save($key, $value);
 		}else{
 			if(is_array($value)) $value = serialize($value);
 			$value = addslashes($value);
@@ -37,14 +37,14 @@ class CACHE{
 		}
 	}
 	public static function clear(){
-		MEMCACHE::clear();
+		MCACHE::clear();
 		DB::query("TRUNCATE TABLE cache", 'SILENT');
 	}
 }
 
-class MEMCACHE{
+class MCACHE{
 	public function isAvailable(){
-		$object = MEMCACHE::object();
+		$object = MCACHE::object();
 		if(!$object) return false;
 		if($object->get('test')) return true;
 		$object->set('test', '1');
@@ -64,17 +64,17 @@ class MEMCACHE{
 		return $obj;
 	}
 	function clear(){
-		$obj = MEMCACHE::object();
+		$obj = MCACHE::object();
 		if(!$obj) return;
 		return $obj->clear();
 	}
 	function get($key){
-		$obj = MEMCACHE::object();
+		$obj = MCACHE::object();
 		if(!$obj) return;
 		return $obj->get($key);
 	}
 	function save($key, $value, $exp = 3600){
-		$obj = MEMCACHE::object();
+		$obj = MCACHE::object();
 		if(!$obj) return;
 		return $obj->set($key, $value, $exp);
 	}
