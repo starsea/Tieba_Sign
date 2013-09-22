@@ -66,7 +66,7 @@ class MCACHE{
 	function clear(){
 		$obj = MCACHE::object();
 		if(!$obj) return;
-		return $obj->clear();
+		return $obj->flush();
 	}
 	function get($key){
 		$obj = MCACHE::object();
