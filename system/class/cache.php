@@ -10,7 +10,8 @@ class CACHE{
 		}else{
 			$query = DB::query("SELECT v FROM cache WHERE k='{$key}'", 'SILENT');
 			$result = DB::fetch($query);
-			$_cache[$key] = unserialize($result['v']);
+			$arr = @unserialize($result['v']);
+			$_cache[$key] = $arr ? $arr : $result['v'];
 		}
 		if(!$_cache[$key]){
 			return $_cache[$key] = self::update($key);
@@ -21,7 +22,8 @@ class CACHE{
 		if(MEMCACHE::isAvailable()){
 			MEMCACHE::save($key, $value);
 		}else{
-			$value = addslashes(serialize($value));
+			if(is_array($value)) $value = serialize($value);
+			$value = addslashes($value);
 			DB::query("REPLACE INTO cache SET k='{$key}', v='{$value}'", 'SILENT');
 		}
 	}

@@ -286,17 +286,24 @@ function curl_get($url, $uid, $mobile_ua = false, $postdata = ''){
 function get_cookie($uid){
 	static $cookie = array();
 	if($cookie[$uid]) return $cookie[$uid];
-	return $cookie[$uid] = DB::result_first("SELECT cookie FROM member WHERE uid='{$uid}'");
+	$cookie = CACHE::get('cookie');
+	return $cookie[$uid];
 }
 function get_username($uid){
 	static $username = array();
 	if($username[$uid]) return $username[$uid];
-	return $username[$uid] = DB::result_first("SELECT username FROM member WHERE uid='{$uid}'");
+	$username = CACHE::get('username');
+	return $username[$uid];
 }
 function get_setting($uid){
 	static $user_setting = array();
 	if($user_setting[$uid]) return $user_setting[$uid];
-	return $user_setting[$uid] = DB::fetch_first("SELECT * FROM member_setting WHERE uid='{$uid}'");
+	$cached_result = CACHE::get('user_setting_'.$uid);
+	if(!$cached_result){
+		$cached_result = DB::fetch_first("SELECT * FROM member_setting WHERE uid='{$uid}'");
+		CACHE::save('user_setting_'.$uid, $cached_result);
+	}
+	return $user_setting[$uid] = $cached_result;
 }
 function send_mail($address, $subject, $message){
 	global $_config;

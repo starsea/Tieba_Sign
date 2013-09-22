@@ -55,6 +55,7 @@ if(!$uid){
 				'zhidao_sign' => $_POST['zhidao_sign'] ? 1 : 0,
 				'wenku_sign' => $_POST['wenku_sign'] ? 1 : 0,
 				), "uid='{$uid}'");
+			CACHE::save('user_setting_'.$uid, '');
 			showmessage('设置已经保存', './#setting', 1);
 			break;
 		case 'change_password':
