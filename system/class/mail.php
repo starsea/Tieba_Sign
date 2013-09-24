@@ -21,6 +21,7 @@ class mailer{
 				$this->_setting[ $v[1] ] = $v[3];
 			}
 		}
+		$class = getSetting('mail_class');
 		$query = DB::query("SELECT * FROM setting WHERE k LIKE '_mail_{$class}_%'");
 		while($result = DB::fetch($query)){
 			$key = str_replace("_mail_{$class}_", '', $result['k']);
