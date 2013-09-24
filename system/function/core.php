@@ -306,77 +306,13 @@ function get_setting($uid){
 	return $user_setting[$uid] = $cached_result;
 }
 function send_mail($address, $subject, $message){
-	global $_config;
-	switch($_config['mail']['type']){
-		case 'kk_mail': return kk_mail($address, $subject, $message);
-		case 'bcms':	return bcms_mail($address, $subject, $message);
-		case 'saemail': return saemail($address, $subject, $message);
-		case 'mail':	return php_mail($address, $subject, $message);
-		case 'smtp':	return smtp_mail($address, $subject, $message);
-		default: return false;
-	}
-}
-function php_mail($address, $subject, $message){
-$headers  = 'MIME-Version: 1.0' . "\r\n";
-$headers .= 'Content-Type: text/html;charset=utf-8' . "\r\n";
-$headers .= "Content-Transfer-Encoding: quoted-printable\r\n";
-$headers .= "To: You <$address>" . "\r\n";
-$headers .= 'From: 贴吧签到助手' . "\r\n";
-$message=quoted_printable_encode ( $message );
-return mail($address,"=?UTF-8?B?".base64_encode($subject)."?=",$message,$headers);
-
-}
-function bcms_mail($address, $subject, $message){
-	global $_config;
-	require_once SYSTEM_ROOT.'./class/bcms.php';
-	$bcms = new Bcms();
-    $ret = $bcms->mail($_config['mail']['bcms']['queue'], '<!--HTML-->'.$message, array($address), array(Bcms::MAIL_SUBJECT => $subject));
-    if (false === $ret) {
-        return false;
-    } else {
-        return true;
-    }
-}
-function smtp_mail($address, $subject, $message){
-	global $_config;
-	require_once SYSTEM_ROOT.'./class/smtp.php';
-	$smtp = new smtp();
-    return $smtp->send($address, $subject, $message);
-}
-function kk_mail($address, $subject, $message){
-	global $_config;
-	$data = array(
-		'to' => $address,
-		'title' => $subject,
-		'content' => $message,
-		'ver' => VERSION,
-	);
-	$path = authcode(serialize($data), 'ENCODE', $_config['mail']['kk_mail']['api_key']);
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $_config['mail']['kk_mail']['api_path']);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, 'data='.urlencode($path));
-	$result = curl_exec($ch);
-	curl_close($ch);
-	return $result == 'ok';
-}
-function saemail($address, $subject, $message){
-	global $_config;
-	$mail = new SaeMail();
-	$mail->setOpt(array(
-		'from' => 'Mail-System <'.$_config['mail']['saemail']['address'].'>',
-		'to' => $address,
-		'smtp_host' => $_config['mail']['saemail']['smtp_server'],
-		'smtp_username' => $_config['mail']['saemail']['smtp_name'],
-		'smtp_password' => $_config['mail']['saemail']['smtp_pass'],
-		'subject' => $subject,
-		'content' => $message,
-		'content_type' => 'HTML',
-	));
-	$mail->send();
-	return true;
+	require_once SYSTEM_ROOT.'./class/mail.php';
+	$mail = new mail_content();
+	$mail->address = $address;
+	$mail->subject = $subject;
+	$mail->message = $message;
+	$sender = new mailsender();
+	return $sender->sendMail($mail);
 }
 function getSetting($k, $force = false){
 	if($force) return $setting[$k] = DB::result_first("SELECT v FROM setting WHERE k='{$k}'");

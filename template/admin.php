@@ -56,21 +56,22 @@ if(!defined('IN_ADMINCP')) exit();
 <p><input type="submit" value="保存设置" /></p>
 </form>
 <br>
-<p>邮件发送测试:</p>
-<p>当前发送方式：<?php echo $_config['mail']['type']; ?></p>
-<p><a href="admin.php?action=mail_test&method=default" class="btn" onclick="return msg_win_action(this.href)">使用当前配置发送测试邮件</a></p>
-<br>
-<p>测试其它邮件发送方式 (调试用):</p>
-<p>使用 KK 提供的 SAE 邮件代理发送测试邮件 (发送者显示 KK-Open-Mail-System &lt;open_mail_api@ikk.me&gt;)</p>
-<p><a href="admin.php?action=mail_test&method=kk_mail" class="btn" onclick="return msg_win_action(this.href)">发送测试邮件</a></p>
-<p>使用 BAE 提供的 BCMS 消息服务发送测试邮件 (发送者显示 *******@duapp.com，一般进垃圾箱)</p>
-<p><a href="admin.php?action=mail_test&method=bcms" class="btn" onclick="return msg_win_action(this.href)">发送测试邮件</a></p>
-<p>使用 SAE 提供的 SMTP 类发送测试邮件 (仅 SAE 用户可用, 发送者为您的邮箱)</p>
-<p><a href="admin.php?action=mail_test&method=saemail" class="btn" onclick="return msg_win_action(this.href)">发送测试邮件</a></p>
-<p>使用 内置的 SMTP 类 (需防火墙开放25端口)</p>
-<p><a href="admin.php?action=mail_test&method=smtp" class="btn" onclick="return msg_win_action(this.href)">发送测试邮件</a></p>
-<p>使用 PHP 的 mail 函数发送测试邮件 (成功率较低，定制性差)</p>
-<p><a href="admin.php?action=mail_test&method=mail" class="btn" onclick="return msg_win_action(this.href)">发送测试邮件</a></p>
+<p>邮件发送方式:</p>
+<form method="post" action="admin.php?action=mail_setting" id="mail_setting" onsubmit="return post_win(this.action, this.id)">
+<input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
+<?php
+foreach($classes as $id=>$obj){
+	$desc = $obj->description ? ' - '.$obj->description : '';
+	if(!$obj->isAvailable()) $desc = ' (当前服务器环境不支持)';
+	echo '<p><label><input type="radio" name="mail_sender" value="'.$id.'"'.($obj->isAvailable() ? '' : ' disabled').($id == getSetting('mail_class') ? ' checked' : '').' /> '.$obj->name.$desc.'</label></p>';
+}
+?>
+<p>
+<input type="submit" value="保存设置" />
+ &nbsp; <a href="javascript:;" class="btn" id="mail_advanced_config">高级设置</a>
+ &nbsp; <a href="admin.php?action=mail_test&formhash=<?php echo $formhash; ?>" class="btn" onclick="return msg_win_action(this.href)">发送测试</a>
+</p>
+</form>
 </div>
 </div>
 </div>

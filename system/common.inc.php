@@ -4,7 +4,7 @@ define('IN_KKFRAME', true);
 define('SYSTEM_ROOT', dirname(__FILE__).'/');
 define('ROOT', dirname(SYSTEM_ROOT).'/');
 define('TIMESTAMP', time());
-define('VERSION', '1.13.9.23');
+define('VERSION', '1.13.9.24');
 if(!defined('IN_API')) define('IN_API', false);
 error_reporting(E_ALL ^ E_NOTICE);
 ob_start();
@@ -70,7 +70,7 @@ if($uid && SYS_KEY && getSetting('SYS_KEY') != SYS_KEY){
 	saveSetting('SYS_KEY', SYS_KEY);
 }
 
-safeguard_init();
+_init();
 
 $sitepath = substr($_G['PHP_SELF'], 0, strrpos($_G['PHP_SELF'], '/'));
 $siteurl = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].$sitepath.'/');

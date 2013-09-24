@@ -88,28 +88,77 @@ switch($_GET['action']){
 		DB::query("UPDATE sign_log SET status='0', retry='0' WHERE uid='{$_uid}' AND date='{$date}' AND status<0");
 		showmessage('已经重置，稍后系统将自动重试', 'admin.php#stat', 1);
 		break;
+	case 'mail_setting':
+		if($formhash != $_POST['formhash']) showmessage('来源不可信，请重试', 'admin.php#config');
+		$classes = getClasses();
+		$class = $_POST['mail_sender'];
+		if(!$classes[$class]) showmessage('选择的邮件发送方式不正确.', 'admin.php#config');
+		if(!$classes[$class]->isAvailable()) showmessage('选择的邮件发送方式不可用.', 'admin.php#config');
+		saveSetting('mail_class', $class);
+		showmessage('保存成功<br>(请确认高级设置配置有效)', 'admin.php#config');
+		break;
+	case 'mail_advanced':
+		$classes = getClasses();
+		$class = getSetting('mail_class');
+		$obj = $classes[$class];
+		if(!$obj) showmessage('选择的邮件发送方式不正确.', 'admin.php#config');
+		if(!$obj->isAvailable()) showmessage('选择的邮件发送方式不可用.', 'admin.php#config');
+		$_config = $obj->config;
+		if($_POST['formhash'] == $formhash){
+			foreach($_config as $k=>$v){
+				$key = $v[1];
+				$value = daddslashes($_POST[$key]);
+				saveSetting("_mail_{$class}_{$key}", $value);
+			}
+			CACHE::save("mail_{$class}", '');
+			showmessage('保存成功！', 'admin.php#config');
+		}
+		$out = array();
+		$setting = array();
+		$query = DB::query("SELECT * FROM setting WHERE k LIKE '_mail_{$class}_%'");
+		while($result = DB::fetch($query)){
+			$key = str_replace("_mail_{$class}_", '', $result['k']);
+			$setting[$key] = $result['v'];
+		}
+		foreach($_config as $k=>$v){
+			$key = $v[1];
+			$item = array(
+				'key' => $v[1],
+				'name' => $v[0],
+				'description' => $v[2],
+				'value' => isset($setting[$key]) ? $setting[$key] : $v[3],
+				'type' => $v[4] ? $v[4] : 'text',
+			);
+			$out[] = $item;
+		}
+		echo json_encode($out);
+		break;
 	case 'mail_test':
 		$to = DB::result_first("SELECT email FROM member WHERE uid='{$uid}'");
-		switch($_GET['method']){
-			default:
-				showmessage('无效的邮件发送方式', 'admin.php#config');
-			case 'default':		$func = 'send_mail';	$method = '默认邮件发送方式';		break;
-			case 'kk_mail':		$func = 'kk_mail';		$method = 'SAE 邮件代理';		break;
-			case 'saemail':		$func = 'saemail';		$method = 'SAE SMTP 类';			break;
-			case 'bcms':		$func = 'bcms_mail';	$method = 'BAE 消息服务';		break;
-			case 'mail':		$func = 'mail';			$method = 'PHP mail() 函数';		break;
-			case 'smtp':		$func = 'smtp_mail';	$method = '内置 SMTP 类';		break;
-		}
 		$subject = '[贴吧签到助手] 测试邮件';
-		$content = "此封邮件仅用于检测邮件系统是否正常工作。<br>\r\n测试使用的邮件发送方式：{$method}";
-		try{
-			$result = $func($to, $subject, $content);
-		}catch(Exception $e){
-			$result = false;
-		}
+		$content = "<p>此封邮件仅用于检测邮件系统是否正常工作。</p>";
+		$result = send_mail($to, $subject, $content);
 		showmessage(($result ? '邮件发送成功，请查收' : '邮件发送失败'), 'admin.php#config' ,2);
 		break;
 	default:
+		$classes = getClasses();
 		include template('admin');
 		break;
+}
+
+function getClasses(){
+	require_once SYSTEM_ROOT.'./class/mail.php';
+	$handle = opendir(SYSTEM_ROOT.'./class/mail/');
+	$classes = array();
+	while (1){
+		$file = readdir($handle);
+		if (!$file) break;
+		if (strexists($file, '.php')){
+			$classname = str_replace('.php', '', $file);
+			require_once SYSTEM_ROOT."./class/mail/{$classname}.php";
+			$obj = new $classname();
+			$classes[$obj->id] = $obj;
+		}
+	}
+	return $classes;
 }

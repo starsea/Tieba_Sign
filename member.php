@@ -123,8 +123,8 @@ EOF;
 				'email' => $email,
 			));
 			DB::insert('member_setting', array('uid' => $uid));
-			do_login($uid);
 			CACHE::update('username');
+			CACHE::save('user_setting_'.$uid, '');
 			showmessage("注册成功，您的用户名是 <b>{$username}</b> 记住了哦~！", dreferer(), 3);
 		}
 	}

@@ -35,41 +35,4 @@ if(defined('SAE_MYSQL_DB')){						// 已自动设置好，无需干预
 }
 // -------------- END 非BAE、SAE 数据库设定 ------------------
 
-// ------------------ 邮件系统设定 ------------------
-/*
- * 注：选择相应的发送方式后，请填写对应的设置
- *
- * 邮件发送方式：
- * none			不发送邮件
- * kk_mail		由 KK 提供，经 SAE 发送邮件
- * bcms			BAE 用户可用，通过 BCMS 发送邮件（注：易被当作垃圾邮件拦截）
- * saemail		SAE 用户可用，通过 SAE 的 SMTP 类发送邮件
- * mail			其他服务器用户可用，调用 PHP 的 Mail 函数发邮件（成功率较低）
- * smtp			其他服务器用户可用，通过 SMTP 服务器发邮件
- */
-$_config['mail']['type'] = 'none';		// 邮件发送方式
-
-// kk_mail，由 KK 提供，经 SAE 发送邮件，API 和 key 已经给出，一般不需要修改
-$_config['mail']['kk_mail'] = array();
-$_config['mail']['kk_mail']['api_path'] = 'http://miota.sinaapp.com/api/bae_mail_helper_open.php';
-$_config['mail']['kk_mail']['api_key'] = '4b23f88a7fdd393b976b';
-
-// bcms，BAE 用户可用，通过 BCMS 发送邮件（注：易被当作垃圾邮件拦截）
-$_config['mail']['bcms'] = array();
-$_config['mail']['bcms']['queue'] = '123457890';		// 百度消息队列
-
-// saemail，SAE 用户可用，通过 SAE 的 SMTP 类发送邮件，请按给出的例子修改
-$_config['mail']['saemail'] = array();
-$_config['mail']['saemail']['smtp_server'] = 'smtp.exmail.qq.com';	// SMTP 服务器地址
-$_config['mail']['saemail']['address'] = 'system@ikk.me';			// 发送者邮箱地址
-$_config['mail']['saemail']['smtp_name'] = 'system@ikk.me';			// SMTP 用户名
-$_config['mail']['saemail']['smtp_pass'] = 'password';				// SMTP 密码
-
-// smtp 通过 SMTP 服务器发邮件，请按给出的例子修改
-$_config['mail']['smtp'] = array();
-$_config['mail']['smtp']['smtp_server'] = 'smtp.exmail.qq.com';	// SMTP 服务器地址
-$_config['mail']['smtp']['address'] = 'system@ikk.me';			// 发送者邮箱地址
-$_config['mail']['smtp']['smtp_name'] = 'system@ikk.me';		// SMTP 用户名
-$_config['mail']['smtp']['smtp_pass'] = 'password';				// SMTP 密码
-
 ?>

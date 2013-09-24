@@ -55,7 +55,7 @@
 			$('#block_register').attr('checked', result.block_register == 1);
 			$('#invite_code').attr('value', result.invite_code ? result.invite_code : '');
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取当前系统设置').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
-	}hideloading(); 
+	}hideloading();
 	function parse_hash(){
 		var hash = location.hash.substring(1);
 		if(hash == "user"){
@@ -74,6 +74,20 @@
 	function hideloading(){
 		$('.loading-icon').addClass('h');
 	}
+	$('#mail_advanced_config').click(function(){
+		showloading();
+		$.getJSON("admin.php?action=mail_advanced", function(result){
+			if(!result) return;
+			var content = '';
+			for(var i=0; i<result.length; i++){
+				content += '<p>'+result[i].name+':'+(result[i].description ? ' ('+result[i].description+')' : '')+'</p><p>';
+				content += '<input type="'+result[i].type+'" name="'+result[i].key+'" value="'+result[i].value+'" style="width: 95%" />';
+				content += '</p>';
+			}
+			createWindow().setTitle('邮件高级设置').setContent('<form method="post" action="admin.php?action=mail_advanced" id="advanced_mail_config" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'">'+content+'</form>').addButton('确定', function(){ $('#advanced_mail_config').submit(); }).addCloseButton('取消').append();
+		}).fail(function() { createWindow().setTitle('邮件高级设置').setContent('发生未知错误: 无法打开高级设置面板').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		return false;
+	});
 	$('.menubtn').click(function(){
 		$('.sidebar').fadeToggle();
 	});

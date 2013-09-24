@@ -1,5 +1,24 @@
 <?php
-class Bcms extends BaeBase{
+if(!defined('IN_KKFRAME')) exit('Access Denied');
+
+class bcms extends mailer{
+	var $id = 'bcms';
+	var $name = 'BCMS 百度消息队列';
+	var $description = '通过 百度消息队列 发邮件 (发送者显示 *******@duapp.com，一般进垃圾箱)';
+	var $config = array(
+		array('百度消息队列名', 'smtp_server', '（一般为随机的字母+数字）', ''),
+	);
+	function isAvailable(){
+		return $_SERVER['USER'] == 'bae';
+	}
+	function send($mail){
+		$bcms = new _Bcms();
+		$ret = $bcms->mail($this->_get_setting('queue'), '<!--HTML-->'.$mail->message, array($mail->address), array(Bcms::MAIL_SUBJECT => $mail->subject));
+		return $ret !== false;
+	}
+}
+
+class _Bcms extends BaeBase{
 	const QUEUE_TYPE = 'queue_type';
 	const QUEUE_ALIAS_NAME = 'queue_alias_name';
 	const FROM = 'from';
