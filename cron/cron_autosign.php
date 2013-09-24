@@ -30,7 +30,7 @@ if($date != $_date){
 }
 
 $time = date('Hi');
-if($time < 3 || $time > 2357) exit('wait for retry');
+if($time < 15 || $time > 2345) exit('wait for retry');
 @set_time_limit(90);
 $tid = DB::result_first("SELECT tid FROM sign_log WHERE status IN (0, 1) AND date='{$date}' ORDER BY RAND() LIMIT 0,1");
 if(!$tid){
