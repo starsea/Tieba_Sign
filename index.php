@@ -43,6 +43,7 @@ if(!$uid){
 			if(!preg_match('/BAIDUID=(.+?)/', $cookie)) showmessage('Cookie 信息不完整，请尝试重新获取', './#setting', 1);
 			$cookie = daddslashes($cookie);
 			DB::query("UPDATE member SET cookie='{$cookie}' WHERE uid='{$uid}'");
+			CACHE::update('cookie');
 			showmessage('您的 Cookie 信息已经更新<script type="text/javascript" src="?action=refresh_liked_tieba&formhash='.$formhash.'"></script>', './#setting', 1);
 			break;
 		case 'update_setting':
