@@ -27,6 +27,7 @@ if(!defined('IN_KKFRAME')) exit();
 <li id="menu_sign_log"><a href="#signlog">签到记录</a></li>
 <li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
 <li id="menu_config"><a href="#setting">设置</a></li>
+<?php HOOK::run('main_menu'); ?>
 <li id="menu_logout"><a href="member.php?action=logout&hash=<?php echo $formhash; ?>">退出登录</a></li>
 </ul>
 <br>
@@ -83,6 +84,7 @@ if(IN_MOBILE){
 <p><label><input type="checkbox" disabled name="send_mail" id="send_mail" value="1" /> 每日发送一封签到报告邮件</label></p>
 <p><input type="submit" value="保存设置" /></p>
 </form>
+<?php HOOK::run('user_setting'); ?>
 <br>
 <p>签到测试：</p>
 <p>随机选取一个贴吧，进行一次签到测试，检查你的设置有没有问题</p>
@@ -109,9 +111,10 @@ if(IN_MOBILE){
 </p>
 </form>
 </div>
+<?php HOOK::run('tabs'); ?>
 </div>
 </div>
-<p class="copyright">当前版本：<?php echo VERSION; ?> <?php if(MCACHE::isAvailable()) echo '- Memcached '; ?>- <a href="https://me.alipay.com/kookxiang" target="_blank">赞助开发</a><br>Designed by <a href="http://www.ikk.me" target="_blank">kookxiang</a>. 2013 &copy; <a href="http://www.kookxiang.com" target="_blank">KK's Laboratory</a><br>请勿擅自修改程序版权信息或将本程序用于商业用途！</p>
+<p class="copyright">当前版本：<?php echo VERSION; ?> <?php if(MCACHE::isAvailable()) echo '- Memcached '; ?>- <a href="https://me.alipay.com/kookxiang" target="_blank">赞助开发</a><br>Designed by <a href="http://www.ikk.me" target="_blank">kookxiang</a>. 2013 &copy; <a href="http://www.kookxiang.com" target="_blank">KK's Laboratory</a><br>请勿擅自修改程序版权信息或将本程序用于商业用途！<br><?php HOOK::run('page_footer'); ?></p>
 </div>
 <script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">

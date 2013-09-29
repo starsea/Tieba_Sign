@@ -13,7 +13,7 @@ class DEBUG{
 	function output(){
 		$return[] = 'MySQL 请求 '.$GLOBALS['debug']['query_num'].' 次';
 		$return[] = '运行时间：'.number_format((self::getmicrotime() - $GLOBALS['debug']['time_start']), 6).'秒';
-		return implode('</li><li>', $return);
+		return implode(' , ', $return);
 	}
 	function query_counter(){
 		$GLOBALS['debug']['query_num']++;

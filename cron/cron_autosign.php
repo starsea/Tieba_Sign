@@ -51,7 +51,7 @@ if(!$tid){
 	}
 	exit('所有贴吧都已经签到完成了~');
 }
-DEBUG::msg(<<<EOF
+echo <<<EOF
 <style type="text/css">
 * { font-size: 12px; }
 table { width: 80%; margin: .48em auto; border-collapse: collapse; border-spacing: 0; }
@@ -62,7 +62,7 @@ table tbody tr:nth-child(odd) { background: #fafafa; }
 </style>
 <table border="0">
 <thead><tr><td>用户</td><td>贴吧</td><td>状态</td></tr></thead>
-EOF);
+EOF;
 $first = true;
 $done = 0;
 while($tid){
@@ -81,14 +81,14 @@ while($tid){
 	}else{
 		list($status, $result, $exp) = normal_sign($uid, $tieba);
 	}
-	DEBUG::msg('<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>{$result}</td></tr>");
+	echo '<tr><td>'.get_username($uid).'</td><td>'.$tieba['name']."</td><td>{$result}</td></tr>\r\n";
 	if($status == 2){
 		if($exp){
 			DB::query("UPDATE sign_log set status='2', exp='{$exp}' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
 		}else{
 			DB::query("UPDATE sign_log set status='2' WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
 		}
-		$done++;
+		$done += 0.7;
 	}else{
 		$retry = DB::result_first("SELECT retry FROM sign_log WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
 		if($retry >= 100){
@@ -99,6 +99,7 @@ while($tid){
 			DB::query("UPDATE sign_log set status='1', retry=retry+15 WHERE tid='{$tieba[tid]}' AND date='{$date}' AND status<2");
 		}
 	}
-	sleep(3);
+	sleep(1);
 	$tid = DB::result_first("SELECT tid FROM sign_log WHERE status IN (0, 1) AND date='{$date}' ORDER BY RAND() LIMIT 0,1");
 }
+echo '</table><meta http-equiv="refresh" content="5" />';

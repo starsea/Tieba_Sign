@@ -29,6 +29,7 @@ function daddslashes($string, $force = 0, $strip = FALSE) {
 	return $string;
 }
 function template($file){
+	HOOK::run("template_load_{$file}");
 	if(IN_MOBILE){
 		$mobilefile = ROOT."./template/mobile/{$file}.php";
 		if(file_exists($mobilefile)) return $mobilefile;
@@ -109,9 +110,7 @@ function authcode($string, $operation = 'DECODE', $key = '', $expiry = 0) {
 	}
 }
 function showmessage($msg = '', $redirect = '', $delay = 3){
-	if(IN_API){
-		exit($msg);
-	}elseif($_GET['format'] == 'json'){
+	if($_GET['format'] == 'json'){
 		$result = array('msg' => $msg, 'redirect' => $redirect, 'delay' => $delay);
 		echo json_encode($result);
 		exit();
