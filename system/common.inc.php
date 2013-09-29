@@ -13,7 +13,13 @@ header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 header('Cache-Control: no-cache');
 header('Pragma: no-cache');
 @date_default_timezone_set('Asia/Shanghai');
-
+if($_GET['debug']){
+	define('DEBUG_ENABLED', true);
+	error_reporting(E_ALL ^ E_NOTICE);
+}else{
+	define('DEBUG_ENABLED', false);
+	error_reporting(E_ERROR);
+}
 require_once SYSTEM_ROOT.'./config.cfg.php';
 require_once SYSTEM_ROOT.'./class/error.php';
 require_once SYSTEM_ROOT.'./class/db.php';
@@ -22,9 +28,7 @@ require_once SYSTEM_ROOT.'./class/cache.php';
 require_once SYSTEM_ROOT.'./function/core.php';
 require_once SYSTEM_ROOT.'./function/updater.php';
 require_once SYSTEM_ROOT.'./function/safeguard.php';
-
 DEBUG::INIT();
-
 $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 if(strpos($ua, 'wap') || strpos($ua, 'mobi') || strpos($ua, 'opera') || $_GET['mobile']){
 	define('IN_MOBILE', true);
@@ -33,7 +37,6 @@ if(strpos($ua, 'wap') || strpos($ua, 'mobi') || strpos($ua, 'opera') || $_GET['m
 }
 if(strpos($ua, 'bot') || strpos($ua, 'spider')) define('IN_ROBOT', true);
 check_update();
-
 if(SYS_KEY){
 	define('ENCRYPT_KEY', SYS_KEY);
 }elseif(!getSetting('SYS_KEY')){
@@ -43,7 +46,6 @@ if(SYS_KEY){
 }else{
 	define('ENCRYPT_KEY', getSetting('SYS_KEY'));
 }
-
 $cookiever = '2';
 if(!empty($_COOKIE['token'])) {
     list($_cookiever, $uid, $username, $login_exp, $password_hash) = explode("\t", authcode($_COOKIE['token'], 'DECODE'));
@@ -65,12 +67,9 @@ if(!empty($_COOKIE['token'])) {
     $uid = $username = '';
 }
 $formhash = substr(md5(substr(TIMESTAMP, 0, -7).$username.$uid.ENCRYPT_KEY.ROOT), 8, 8);
-
 if($uid && SYS_KEY && getSetting('SYS_KEY') != SYS_KEY){
 	saveSetting('SYS_KEY', SYS_KEY);
 }
-
 _init();
-
 $sitepath = substr($_G['PHP_SELF'], 0, strrpos($_G['PHP_SELF'], '/'));
 $siteurl = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].$sitepath.'/');

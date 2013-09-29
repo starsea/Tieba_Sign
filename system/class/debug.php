@@ -18,4 +18,7 @@ class DEBUG{
 	function query_counter(){
 		$GLOBALS['debug']['query_num']++;
 	}
+	function MSG($string){
+		if($_GET['debug']) echo "{$string}\r\n";
+	}
 }
