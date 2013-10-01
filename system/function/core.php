@@ -336,3 +336,14 @@ function get_tbs($uid){
 	$tbs = json_decode($tbs_json, 1);
 	return $tbs[$uid] = $tbs['tbs'];
 }
+function verify_cookie($cookie){
+	$tbs_url = 'http://tieba.baidu.com/dc/common/tbs';
+	$ch = curl_init($tbs_url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1','Referer: http://tieba.baidu.com/'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+	$tbs_json = curl_exec($ch);
+	curl_close($ch);
+	$tbs = json_decode($tbs_json, 1);
+	return $tbs['is_login'];
+}

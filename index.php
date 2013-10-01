@@ -41,6 +41,7 @@ if(!$uid){
 			$cookie = daddslashes($_POST['cookie']);
 			if(!preg_match('/BDUSS=(.+?)/', $cookie)) showmessage('Cookie 信息不完整，请尝试重新获取', './#setting', 1);
 			if(!preg_match('/BAIDUID=(.+?)/', $cookie)) showmessage('Cookie 信息不完整，请尝试重新获取', './#setting', 1);
+			if(!verify_cookie($cookie)) showmessage('无法登陆百度贴吧，请检查 Cookie 是否填写正确', './#setting', 1);
 			$cookie = daddslashes($cookie);
 			DB::query("UPDATE member SET cookie='{$cookie}' WHERE uid='{$uid}'");
 			CACHE::update('cookie');
