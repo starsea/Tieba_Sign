@@ -123,5 +123,6 @@ var formhash = '<?php echo $formhash; ?>';
 </script>
 <script src="system/js/main.js?version=<?php echo VERSION; ?>"></script>
 <script src="system/js/fwin.js?version=<?php echo VERSION; ?>"></script>
+<?php HOOK::run('page_footer_js'); ?>
 </body>
 </html>
