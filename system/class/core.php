@@ -3,7 +3,7 @@ if(!defined('IN_KKFRAME')) exit();
 
 class kk_sign{
 	var $system_modules = array('db', 'cache', 'debug', 'error');
-	var $modules = array('updater', 'hooks', 'mail');
+	var $modules = array('updater', 'hooks');
 	function kk_sign($modules = array()){
 		global $_config;
 		require_once SYSTEM_ROOT.'./config.cfg.php';
@@ -25,6 +25,10 @@ class kk_sign{
 	}
 	function __destruct(){
 		HOOK::run('on_unload');
+		flush();
+		ob_end_flush();
+		$this->mail_cron();
+		$this->run_cron();
 	}
 	function init_output(){
 		ob_start();
@@ -84,6 +88,7 @@ class kk_sign{
 		$this->init_cookie();
 		require_once SYSTEM_ROOT.'./function/safeguard.php';
 		_init();
+		@ignore_user_abort(true);
 		HOOK::run('on_load');
 	}
 	function _load_module_hooks(){
@@ -96,5 +101,36 @@ class kk_sign{
 	}
 	function _load_module($classname){
 		require_once SYSTEM_ROOT."./class/{$classname}.php";
+	}
+	function run_cron(){
+		$nowtime = TIMESTAMP;
+		$checktime = getSetting('next_cron');
+		$date = date('Ymd', TIMESTAMP+900);
+		$_date = getSetting('date');
+		if($date != $_date){
+			$runtime = TIMESTAMP + 900;
+			DB::query("UPDATE cron SET enabled='1', nextrun='{$runtime}'");
+			DB::query("UPDATE cron SET nextrun='{$nowtime}' WHERE id='daily'");
+			saveSetting('date', $date);
+			return;
+		}
+		if($checktime > $nowtime) return;
+		$task = DB::fetch_first("SELECT * FROM cron WHERE enabled='1' AND nextrun<'{$nowtime}' ORDER BY `order` LIMIT 0,1");
+		$script = SYSTEM_ROOT."./function/cron/{$task[id]}.php";
+		if(file_exists($script)) include $script;
+		if(defined('CRON_FINISHED')) DB::query("UPDATE cron SET enabled='0' WHERE id='{$task[id]}'");
+		$cron_next_run = DB::result_first("SELECT nextrun FROM cron WHERE enabled='1' ORDER BY nextrun ASC LIMIT 0,1");
+		saveSetting('next_cron', $cron_next_run ? $cron_next_run : TIMESTAMP + 3600);
+	}
+	function mail_cron(){
+		$queue = getSetting('mail_queue');
+		if(!$queue) return;
+		$mail = DB::fetch_first("SELECT * FROM mail_queue LIMIT 0,1");
+		if($mail){
+			DB::query("DELETE FROM mail_queue WHERE id='{$mail[id]}'");
+			send_mail($mail['to'], $mail['subject'], $mail['content'], false);
+		}else{
+			saveSetting('mail_queue', 0);
+		}
 	}
 }

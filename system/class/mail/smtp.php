@@ -15,7 +15,7 @@ class smtp extends mailer{
 		return !isset($_SERVER['HTTP_APPVERSION']) && $_SERVER['USER'] != 'bae';
 	}
 	function send($mail){
-		$smtp = new smtp($this);
+		$smtp = new _smtp($this);
 		return $smtp->send($mail->address, $mail->subject, $mail->message);
 	}
 }

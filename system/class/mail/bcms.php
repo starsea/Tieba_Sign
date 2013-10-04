@@ -13,7 +13,7 @@ class bcms extends mailer{
 	}
 	function send($mail){
 		$bcms = new _Bcms();
-		$ret = $bcms->mail($this->_get_setting('queue'), '<!--HTML-->'.$mail->message, array($mail->address), array(Bcms::MAIL_SUBJECT => $mail->subject));
+		$ret = $bcms->mail($this->_get_setting('queue'), '<!--HTML-->'.$mail->message, array($mail->address), array(_Bcms::MAIL_SUBJECT => $mail->subject));
 		return $ret !== false;
 	}
 }
