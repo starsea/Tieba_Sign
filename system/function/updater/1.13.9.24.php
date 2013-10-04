@@ -11,11 +11,11 @@ CREATE TABLE IF NOT EXISTS `cron` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `cron` (`id`, `enabled`, `nextrun`, `order`) VALUES
-('daily', 0, 0, 0),
-('update_tieba', 0, 0, 10),
-('sign', 0, 0, 20),
-('ext_sign', 0, 0, 50),
-('mail', 0, 0, 100);
+('daily', 1, 0, 0),
+('update_tieba', 1, 0, 10),
+('sign', 1, 0, 20),
+('ext_sign', 1, 0, 50),
+('mail', 1, 0, 100);
 
 CREATE TABLE IF NOT EXISTS `mail_queue` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
