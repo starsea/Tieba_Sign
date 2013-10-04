@@ -41,10 +41,10 @@ div.wrapper .result_table tbody tr { background: #efefef; }
 div.wrapper .result_table tbody tr:nth-child(odd) { background: #fafafa; }
 </style>
 <div class="wrapper">
-<p class="sign_title">Ìù°ÉÇ©µ½ÖúÊÖ - Ç©µ½±¨¸æ</p>
-<p>{$mdate}<br>ÈôÓĞ´óÁ¿Ìù°ÉÇ©µ½Ê§°Ü£¬½¨ÒéÄúÖØĞÂÉèÖÃ Cookie Ïà¹ØĞÅÏ¢</p>
+<p class="sign_title">è´´å§ç­¾åˆ°åŠ©æ‰‹ - ç­¾åˆ°æŠ¥å‘Š</p>
+<p>{$mdate}<br>è‹¥æœ‰å¤§é‡è´´å§ç­¾åˆ°å¤±è´¥ï¼Œå»ºè®®æ‚¨é‡æ–°è®¾ç½® Cookie ç›¸å…³ä¿¡æ¯</p>
 <table class="result_table">
-<thead><tr><td style="width: 40px">#</td><td>Ìù°É</td><td style="width: 75px">×´Ì¬</td><td style="width: 75px">¾­Ñé</td></tr></thead>
+<thead><tr><td style="width: 40px">#</td><td>è´´å§</td><td style="width: 75px">çŠ¶æ€</td><td style="width: 75px">ç»éªŒ</td></tr></thead>
 <tbody>
 EOF;
 	while($result = DB::fetch($query)){
@@ -52,16 +52,16 @@ EOF;
 		$log[] = $result;
 	}
 	$message .= '</tbody></table></div></body></html>';
-	$res = send_mail($user['email'], "[{$mdate}] Ìù°ÉÇ©µ½ÖúÊÖ - {$user[username]} - Ç©µ½±¨¸æ", $message);
-	echo $res ? 'ÓÊ¼ş·¢ËÍ³É¹¦<br>' : 'ÓÊ¼ş·¢ËÍÊ§°Ü<br>';
+	$res = send_mail($user['email'], "[{$mdate}] è´´å§ç­¾åˆ°åŠ©æ‰‹ - {$user[username]} - ç­¾åˆ°æŠ¥å‘Š", $message);
+	echo $res ? 'é‚®ä»¶å‘é€æˆåŠŸ<br>' : 'é‚®ä»¶å‘é€å¤±è´¥<br>';
 }
 function _status($status){
 	switch($status){
-		case -2:	return 'Ìø¹ıÇ©µ½';
-		case -1:	return 'ÎŞ·¨Ç©µ½';
-		case 0:		return '´ıÇ©µ½';
-		case 1:		return 'Ç©µ½Ê§°Ü';
-		case 2:		return 'ÒÑÇ©µ½';
+		case -2:	return 'è·³è¿‡ç­¾åˆ°';
+		case -1:	return 'æ— æ³•ç­¾åˆ°';
+		case 0:		return 'å¾…ç­¾åˆ°';
+		case 1:		return 'ç­¾åˆ°å¤±è´¥';
+		case 2:		return 'å·²ç­¾åˆ°';
 	}
 }
 function _exp($exp){
