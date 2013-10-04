@@ -1,33 +1,22 @@
 <?php
 if(!defined('IN_KKFRAME')) exit();
-function create_updatelog_menu(){
-	echo '<li id="menu_update_log"><a href="#update_log">更新公告</a></li>';
+class update_log{
+	const PAGE_ID = 'update_log';
+	const PAGE_NAME = '更新公告';
+	public function register_hooks(){
+		HOOK::register('main_menu', 'update_log::create_menu');
+		HOOK::register('page_footer_js', 'update_log::create_tab');
+		HOOK::register('tabs', 'update_log::bind_js');
+	}
+	public function create_menu(){
+		echo '<li id="menu_'.self::PAGE_ID.'"><a href="#'.self::PAGE_ID.'">'.self::PAGE_NAME.'</a></li>';
+	}
+	public function create_tab(){
+		echo '<div id="content-'.self::PAGE_ID.'" class="hidden"><h2>'.self::PAGE_NAME.'</h2><script src="http://sign.ikk.me/update_log.js"></script></div>';
+	}
+	public function bind_js(){
+		echo '<script type="text/javascript">$("#menu_'.self::PAGE_ID.'").click(function (){ if($("#menu_'.self::PAGE_ID.'").hasClass("selected")) return; $(".menu li.selected").removeClass("selected"); $("#menu_'.self::PAGE_ID.'").addClass("selected"); $(".main-content div").addClass("hidden"); $("#content-'.self::PAGE_ID.'").removeClass("hidden"); if(mobile) $(".sidebar").fadeOut(); hideloading(); });</script>';
+	}
 }
-function updatelog_js(){
-	echo <<<EOF
-<script type="text/javascript">
-$('#menu_update_log').click(function (){
-	if($('#menu_update_log').hasClass('selected')) return;
-	$('.menu li.selected').removeClass('selected');
-	$('#menu_update_log').addClass('selected');
-	$('.main-content div').addClass('hidden');
-	$('#content-update_log').removeClass('hidden');
-	if(mobile) $('.sidebar').fadeOut();
-	hideloading();
-});
-</script>
-EOF;
-}
-function create_updatelog_tabs(){
-	echo <<<EOF
-<div id="content-update_log" class="hidden">
-<h2>更新公告</h2>
-<!-- 从服务器上获取公告 -->
-<script src="http://sign.ikk.me/update_log.js"></script>
-</div>
-EOF;
-}
-HOOK::register('main_menu', 'create_updatelog_menu');
-HOOK::register('page_footer_js', 'updatelog_js');
-HOOK::register('tabs', 'create_updatelog_tabs');
+update_log::register_hooks();
 ?>
