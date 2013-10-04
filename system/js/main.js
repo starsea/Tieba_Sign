@@ -152,6 +152,8 @@
 			$('#menu_config').click();
 		}else if(hash.split('-')[0] == "history"){
 			load_sign_history(hash.split('-')[1]);
+		}else if($('#menu_'+hash).length > 0){
+			$('#menu_'+hash).click();
 		}else{
 			$('#menu_sign_log').click();
 		}
@@ -186,5 +188,7 @@
 	$(window).on('hashchange', function() {
 		parse_hash();
 	});
-	parse_hash();
+	$(document).ready(function() {
+		parse_hash();
+	});
 })();

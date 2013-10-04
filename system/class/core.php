@@ -3,7 +3,7 @@ if(!defined('IN_KKFRAME')) exit();
 
 class kk_sign{
 	var $system_modules = array('db', 'cache', 'debug', 'error');
-	var $modules = array('hooks', 'updater', 'mail');
+	var $modules = array('updater', 'hooks', 'mail');
 	function kk_sign($modules = array()){
 		global $_config;
 		require_once SYSTEM_ROOT.'./config.cfg.php';
