@@ -114,6 +114,7 @@ class kk_sign{
 			DB::query("UPDATE cron SET enabled='1', nextrun='{$runtime}'");
 			DB::query("UPDATE cron SET nextrun='{$nowtime}' WHERE id='daily'");
 			saveSetting('date', $date);
+			saveSetting('next_cron', TIMESTAMP);
 			return;
 		}
 		if($checktime > $nowtime) return;
@@ -122,7 +123,7 @@ class kk_sign{
 		if(file_exists($script)) include $script;
 		if(defined('CRON_FINISHED')) DB::query("UPDATE cron SET enabled='0' WHERE id='{$task[id]}'");
 		$res = DB::fetch_first("SELECT nextrun FROM cron WHERE enabled='1' ORDER BY nextrun ASC LIMIT 0,1");
-		saveSetting('next_cron', $res ? $res['nextrun'] : TIMESTAMP + 3600);
+		saveSetting('next_cron', $res ? $res['nextrun'] : TIMESTAMP + 1200);
 	}
 	function mail_cron(){
 		$queue = getSetting('mail_queue');
