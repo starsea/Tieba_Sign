@@ -3,12 +3,9 @@ name: appid
 version: 1
 
 cron:
-- description: Sign
-  url: cron/cron_autosign.php
-  schedule: */1 0 * * *
-- description: Mail-Services
-  url: cron/cron_mailer.php
-  schedule: 45 12 * * *
+- description: Task
+  url: cron.php
+  schedule: */1 * * * *
 
 handle:
 - expire: if( path ~ "css" ) time 864000
