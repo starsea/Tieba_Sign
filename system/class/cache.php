@@ -64,6 +64,7 @@ class MCACHE{
 		return $obj;
 	}
 	function clear(){
+		if($_SERVER['USER'] == 'bae') return;	// FUCKING BAIDU!!!
 		$obj = MCACHE::object();
 		if(!$obj) return;
 		return $obj->flush();

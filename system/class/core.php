@@ -12,6 +12,8 @@ class kk_sign{
 		}
 		DEBUG::INIT();
 		require_once SYSTEM_ROOT.'./function/core.php';
+		$this->init_output();
+		$this->init_useragent();
 		$modules = $modules ? $modules : $this->modules;
 		foreach($modules as $module){
 			$method = "_load_module_{$module}";
@@ -22,8 +24,10 @@ class kk_sign{
 			}
 		}
 		$this->init_system();
+		define('SYSTEM_STARTED', true);
 	}
 	function __destruct(){
+		if(!defined('SYSTEM_STARTED')) return;
 		HOOK::run('on_unload');
 		flush();
 		ob_end_flush();
@@ -82,8 +86,6 @@ class kk_sign{
 		}
 	}
 	function init_system(){
-		$this->init_output();
-		$this->init_useragent();
 		$this->init_encrypt_key();
 		$this->init_cookie();
 		require_once SYSTEM_ROOT.'./function/safeguard.php';

@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `setting` (
 CREATE TABLE IF NOT EXISTS `sign_log` (
   `tid` int(10) unsigned NOT NULL,
   `uid` int(10) unsigned NOT NULL,
-  `date` int(11) NOT NULL DEFAULT '20131004',
+  `date` int(11) NOT NULL DEFAULT '0',
   `status` tinyint(4) NOT NULL DEFAULT '0',
   `exp` tinyint(4) NOT NULL DEFAULT '0',
   `retry` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -79,11 +79,11 @@ CREATE TABLE IF NOT EXISTS `sign_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `cron` (`id`, `enabled`, `nextrun`, `order`) VALUES
-('daily', 0, 0, 0),
-('update_tieba', 0, 0, 10),
-('sign', 0, 0, 20),
-('ext_sign', 0, 0, 50),
-('mail', 0, 0, 100);
+('daily', 1, 0, 0),
+('update_tieba', 1, 0, 10),
+('sign', 1, 0, 20),
+('ext_sign', 1, 0, 50),
+('mail', 1, 0, 100);
 EOF;
 
 $sql_array = explode(';', $sql);
