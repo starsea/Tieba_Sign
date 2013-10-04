@@ -110,7 +110,7 @@ class kk_sign{
 		$date = date('Ymd', TIMESTAMP);
 		$_date = getSetting('date');
 		if($date != $_date){
-			$runtime = TIMESTAMP + 900;
+			$runtime = TIMESTAMP + 1800;
 			DB::query("UPDATE cron SET enabled='1', nextrun='{$runtime}'");
 			DB::query("UPDATE cron SET nextrun='{$nowtime}' WHERE id='daily'");
 			saveSetting('date', $date);
