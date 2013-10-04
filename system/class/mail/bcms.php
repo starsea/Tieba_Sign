@@ -6,7 +6,7 @@ class bcms extends mailer{
 	var $name = 'BCMS 百度消息队列';
 	var $description = '通过 百度消息队列 发邮件 (发送者显示 *******@duapp.com，一般进垃圾箱)';
 	var $config = array(
-		array('百度消息队列名', 'smtp_server', '（一般为随机的字母+数字）', ''),
+		array('百度消息队列名', 'queue', '一般为随机的字母+数字', ''),
 	);
 	function isAvailable(){
 		return $_SERVER['USER'] == 'bae';

@@ -137,7 +137,7 @@ switch($_GET['action']){
 		$to = DB::result_first("SELECT email FROM member WHERE uid='{$uid}'");
 		$subject = '[贴吧签到助手] 测试邮件';
 		$content = "<p>此封邮件仅用于检测邮件系统是否正常工作。</p>";
-		$result = send_mail($to, $subject, $content);
+		$result = send_mail($to, $subject, $content, false);
 		showmessage(($result ? '邮件发送成功，请查收' : '邮件发送失败'), 'admin.php#config' ,2);
 		break;
 	default:
