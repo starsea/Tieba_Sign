@@ -107,7 +107,7 @@ class kk_sign{
 	function run_cron(){
 		$nowtime = TIMESTAMP;
 		$checktime = getSetting('next_cron');
-		$date = date('Ymd', TIMESTAMP+900);
+		$date = date('Ymd', TIMESTAMP);
 		$_date = getSetting('date');
 		if($date != $_date){
 			$runtime = TIMESTAMP + 900;
@@ -121,8 +121,8 @@ class kk_sign{
 		$script = SYSTEM_ROOT."./function/cron/{$task[id]}.php";
 		if(file_exists($script)) include $script;
 		if(defined('CRON_FINISHED')) DB::query("UPDATE cron SET enabled='0' WHERE id='{$task[id]}'");
-		$cron_next_run = DB::result_first("SELECT nextrun FROM cron WHERE enabled='1' ORDER BY nextrun ASC LIMIT 0,1");
-		saveSetting('next_cron', $cron_next_run ? $cron_next_run : TIMESTAMP + 3600);
+		$res = DB::fetch_first("SELECT nextrun FROM cron WHERE enabled='1' ORDER BY nextrun ASC LIMIT 0,1");
+		saveSetting('next_cron', $res ? $res['nextrun'] : TIMESTAMP + 3600);
 	}
 	function mail_cron(){
 		$queue = getSetting('mail_queue');
