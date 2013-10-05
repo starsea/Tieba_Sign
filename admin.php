@@ -135,10 +135,13 @@ switch($_GET['action']){
 		break;
 	case 'mail_test':
 		$to = DB::result_first("SELECT email FROM member WHERE uid='{$uid}'");
-		$subject = '[贴吧签到助手] 测试邮件';
-		$content = "<p>此封邮件仅用于检测邮件系统是否正常工作。</p>";
+		$subject = '[贴吧签到助手] 邮件单发测试';
+		$content = "<p>此封邮件仅用于检测邮件系统是否正常工作。</p><p>此封邮件是由邮件系统直接发送的</p>";
 		$result = send_mail($to, $subject, $content, false);
-		showmessage(($result ? '邮件发送成功，请查收' : '邮件发送失败'), 'admin.php#config' ,2);
+		$subject = '[贴吧签到助手] 邮件群发测试';
+		$content = "<p>此封邮件仅用于检测邮件队列是否正常工作。</p><p>此封邮件是从系统邮件队列中读取并发送的</p>";
+		send_mail($to, $subject, $content);
+		showmessage(($result ? '2 封邮件已经发送，请查收' : '邮件发送失败'), 'admin.php#config' ,2);
 		break;
 	default:
 		$classes = getClasses();
