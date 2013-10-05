@@ -74,14 +74,24 @@ function client_sign($uid, $tieba){
 	curl_setopt($ch, CURLOPT_POST, 1);
 	$array = array(
 		'BDUSS' => $BDUSS,
-		'_client_id' => 'wappc_136'.random(10, true).'_564',
+		'_client_id' => 'wappc_136'.random(10, true).'_'.random(3, true),
 		'_client_type' => '2',
-		'_client_version' => '2.0.3',
+		'_client_version' => '4.5.3',
 		'_phone_imei' => md5(random(16)),
+		'cuid' => md5(random(16)).'|'.random(15, true),
 		'fid' => $tieba['fid'],
+		'from' => 'tieba',
 		'kw' => urldecode($tieba['unicode_name']),
+		'model' => 'MiOne',
 		'net_type' => '3',
+		'stErrorNums' => '0',
+		'stMethod' => '1',
+		'stMode' => '1',
+		'stSize' => random(5, true),
+		'stTime' => random(3, true),
+		'stTimesNum' => '0',
 		'tbs' => get_tbs($uid),
+		'timestamp' => time().rand(1000, 9999),
 	);
 	$sign_str = '';
 	foreach($array as $k=>$v) $sign_str .= $k.'='.$v;
