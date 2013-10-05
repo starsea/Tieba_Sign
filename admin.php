@@ -143,6 +143,18 @@ switch($_GET['action']){
 		send_mail($to, $subject, $content);
 		showmessage(($result ? '2 封邮件已经发送，请查收' : '邮件发送失败'), 'admin.php#config' ,2);
 		break;
+	case 'send_mail':
+		if($formhash != $_POST['formhash']) showmessage('来源不可信，请重试', 'admin.php#mail');
+		$title = daddslashes($_POST['title']);
+		$content = daddslashes($_POST['content']);
+		$content = nl2br(htmlspecialchars($content));
+		$content .= "<p style=\"padding: 1.5em 1em 0; color: #999; font-size: 12px;\">—— 本邮件由 贴吧签到助手 (<a href=\"{$siteurl}\">{$siteurl}</a>) 管理员发送</p>";
+		$query = DB::query("SELECT email FROM member");
+		while($result = DB::fetch($query)){
+			send_mail($result['email'], $title, $content);
+		}
+		showmessage('已经添加至邮件队列，稍后将由系统自动发送', 'admin.php#mail');
+		break;
 	default:
 		$classes = getClasses();
 		include template('admin');

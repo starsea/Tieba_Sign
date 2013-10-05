@@ -26,6 +26,7 @@ if(!defined('IN_ADMINCP')) exit();
 <li id="menu_user"><a href="#user">用户管理</a></li>
 <li id="menu_stat"><a href="#stat">用户签到统计</a></li>
 <li id="menu_config"><a href="#config">系统设置</a></li>
+<li id="menu_mail"><a href="#mail">邮件群发</a></li>
 <li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version=<?php echo VERSION; ?>" target="_blank" onclick="return show_updater_win(this.href)">检查更新</a></li>
 <li><a href="./">返回前台</a></li>
 </ul>
@@ -71,6 +72,20 @@ foreach($classes as $id=>$obj){
  &nbsp; <a href="javascript:;" class="btn" id="mail_advanced_config">高级设置</a>
  &nbsp; <a href="admin.php?action=mail_test&formhash=<?php echo $formhash; ?>" class="btn" onclick="return msg_win_action(this.href)">发送测试</a>
 </p>
+</form>
+</div>
+<div id="content-mail" class="hidden">
+<h2>邮件群发</h2>
+<p>此功能用于向本站已经注册的所有用户发送邮件公告</p>
+<p>为避免用户反感，建议您不要经常发送邮件</p>
+<br>
+<form method="post" action="admin.php?action=send_mail" id="send_mail" onsubmit="return post_win(this.action, this.id)">
+<input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
+<p>邮件标题：</p>
+<p><input type="text" name="title" style="width: 80%" /></p>
+<p>邮件内容：</p>
+<p><textarea name="content" rows="10" style="width: 80%"></textarea></p>
+<p><input type="submit" value="确认发送" /></p>
 </form>
 </div>
 </div>

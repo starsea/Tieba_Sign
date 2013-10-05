@@ -26,6 +26,14 @@
 		load_setting();
 		if(mobile) $('.sidebar').fadeOut();
 	});
+	$('#menu_mail').click(function (){
+		if($('#menu_mail').hasClass('selected')) return;
+		$('.menu li.selected').removeClass('selected');
+		$('#menu_mail').addClass('selected');
+		$('.main-content div').addClass('hidden');
+		$('#content-mail').removeClass('hidden');
+		if(mobile) $('.sidebar').fadeOut();
+	});
 	function load_user(){
 		showloading();
 		$.getJSON("admin.php?action=load_user", function(result){
@@ -64,6 +72,8 @@
 			$('#menu_stat').click();
 		}else if(hash == "config"){
 			$('#menu_config').click();
+		}else if(hash == "mail"){
+			$('#menu_mail').click();
 		}else{
 			$('#menu_user').click();
 		}
