@@ -5,8 +5,8 @@ class update_log{
 	const PAGE_NAME = '更新公告';
 	public function register_hooks(){
 		HOOK::register('main_menu', 'update_log::create_menu');
-		HOOK::register('page_footer_js', 'update_log::create_tab');
-		HOOK::register('tabs', 'update_log::bind_js');
+		HOOK::register('page_footer_js', 'update_log::bind_js');
+		HOOK::register('tabs', 'update_log::create_tab');
 	}
 	public function create_menu(){
 		echo '<li id="menu_'.self::PAGE_ID.'"><a href="#'.self::PAGE_ID.'">'.self::PAGE_NAME.'</a></li>';
