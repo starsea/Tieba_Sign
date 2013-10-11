@@ -28,6 +28,18 @@
 		load_setting();
 		if(mobile) $('.sidebar').fadeOut();
 	});
+	$('#menu_baidu_bind').click(function (){
+		if($('#menu_baidu_bind').hasClass('selected')) return;
+		$('.menu li.selected').removeClass('selected');
+		$('#menu_baidu_bind').addClass('selected');
+		$('.main-content div').addClass('hidden');
+		$('#content-baidu_bind').removeClass('hidden');
+		load_baidu_bind();
+		if(mobile) $('.sidebar').fadeOut();
+	});
+	$('#show_cookie_setting').click(function (){
+		$('.tab-cookie').toggleClass('hidden');
+	});
 	$('.reload').click(function (){
 		if($('#menu_loved_tb').hasClass('selected')) load_loved_tieba();
 		if($('#menu_sign_log').hasClass('selected')) load_sign_log();
@@ -116,6 +128,18 @@
 			}
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
+	function load_baidu_bind(){
+		showloading();
+		$.getJSON("ajax.php?v=get-bind-status", function(result){
+			if(!result) return;
+			$('#content-baidu_bind .tab').addClass('hidden');
+			if(result.status){
+				$('#content-baidu_bind .tab-binded').removeClass('hidden');
+			}else{
+				$('#content-baidu_bind .tab-bind').removeClass('hidden');
+			}
+		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取绑定状态').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
+	}
 	function _status(status){
 		if(typeof status == 'undefined') status = 0;
 		status = parseInt(status);
@@ -148,6 +172,8 @@
 			$('#menu_loved_tb').click();
 		}else if(hash == "signlog"){
 			$('#menu_sign_log').click();
+		}else if(hash == "baidu_bind"){
+			$('#menu_baidu_bind').click();
 		}else if(hash == "setting"){
 			$('#menu_config').click();
 		}else if(hash.split('-')[0] == "history"){
@@ -164,6 +190,11 @@
 	function hideloading(){
 		$('.loading-icon').addClass('h');
 	}
+	$('#unbind_btn').click(function(){
+		var link = this.href;
+		createWindow().setTitle('解除绑定').setContent('确认要解除绑定吗？<br>(解除绑定后自动签到将停止，所有记录将被清除)').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();
+		return false;
+	});
 	$('.menu_switch_user a').click(function(){
 		var link = this.href;
 		createWindow().setTitle('切换账号').setContent('确认要切换登陆账号吗？').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();

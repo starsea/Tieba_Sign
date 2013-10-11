@@ -36,16 +36,32 @@ if(!$uid){
 			$status = $status==2 ? '签到成功' : '签到失败';
 			showmessage("<p>测试贴吧：{$tieba[name]}</p><p>测试结果：{$status}</p><p>详细信息：{$result}</p>", './#setting', 1);
 			break;
+		case 'clear_cookie':
+			if($_GET['formhash'] != $formhash) break;
+			DB::query("UPDATE member SET cookie='' WHERE uid='{$uid}'");
+			CACHE::update('cookie');
+			DB::query("DELETE FROM my_tieba WHERE uid='{$uid}'");
+			DB::query("DELETE FROM sign_log WHERE uid='{$uid}'");
+			showmessage('已经解除百度账号绑定<br>您可以稍后重新进行绑定', './#baidu_bind', 1);
+		case 'receive_cookie':
+			if(!$_GET['cookie']) break;
+			if($_GET['formhash'] != $formhash) break;
+			$cookie = pack('H*', daddslashes($_GET['cookie']));
+			if(!$cookie) showmessage('非法调用！', './#baidu_bind', 1);
+			if(!verify_cookie($cookie)) showmessage('无法登陆百度贴吧，请尝试重新绑定', './#baidu_bind', 1);
+			DB::query("UPDATE member SET cookie='{$cookie}' WHERE uid='{$uid}'");
+			CACHE::update('cookie');
+			showmessage('绑定百度账号成功！<script type="text/javascript" src="?action=refresh_liked_tieba&formhash='.$formhash.'"></script>', './#baidu_bind', 1);
 		case 'update_cookie':
 			if(!$_POST['cookie']) break;
 			$cookie = daddslashes($_POST['cookie']);
-			if(!preg_match('/BDUSS=(.+?)/', $cookie)) showmessage('Cookie 信息不完整，请尝试重新获取', './#setting', 1);
-			if(!preg_match('/BAIDUID=(.+?)/', $cookie)) showmessage('Cookie 信息不完整，请尝试重新获取', './#setting', 1);
-			if(!verify_cookie($cookie)) showmessage('无法登陆百度贴吧，请检查 Cookie 是否填写正确', './#setting', 1);
+			if(!preg_match('/BDUSS=(.+?)/', $cookie)) showmessage('Cookie 信息不完整，请尝试重新获取', './#baidu_bind', 1);
+			if(!preg_match('/BAIDUID=(.+?)/', $cookie)) showmessage('Cookie 信息不完整，请尝试重新获取', './#baidu_bind', 1);
+			if(!verify_cookie($cookie)) showmessage('无法登陆百度贴吧，请检查 Cookie 是否填写正确', './#baidu_bind', 1);
 			$cookie = daddslashes($cookie);
 			DB::query("UPDATE member SET cookie='{$cookie}' WHERE uid='{$uid}'");
 			CACHE::update('cookie');
-			showmessage('您的 Cookie 信息已经更新<script type="text/javascript" src="?action=refresh_liked_tieba&formhash='.$formhash.'"></script>', './#setting', 1);
+			showmessage('您的 Cookie 信息已经更新<script type="text/javascript" src="?action=refresh_liked_tieba&formhash='.$formhash.'"></script>', './#baidu_bind', 1);
 			break;
 		case 'update_setting':
 			if($_POST['formhash'] != $formhash) break;

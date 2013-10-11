@@ -26,6 +26,7 @@ if(!defined('IN_KKFRAME')) exit();
 <ul class="menu">
 <li id="menu_sign_log"><a href="#signlog">签到记录</a></li>
 <li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
+<li id="menu_baidu_bind"><a href="#baidu_bind">百度账号绑定</a></li>
 <li id="menu_config"><a href="#setting">设置</a></li>
 <?php HOOK::run('main_menu'); ?>
 <li id="menu_logout"><a href="member.php?action=logout&hash=<?php echo $formhash; ?>">退出登录</a></li>
@@ -98,18 +99,39 @@ if(IN_MOBILE){
 <p><input type="password" name="new_password2" id="new_password2" placeholder="请重复输入新密码" /></p>
 <p><input type="submit" value="修改密码" /></p>
 </form>
+</div>
+<div id="content-baidu_bind" class="hidden">
+<h2>百度账号绑定</h2>
+<div class="tab tab-binded">
+<p>您的百度账号绑定正常！</p>
 <br>
-<p>自动获取 Cookie:</p>
-<p>将本链接拖到收藏栏，在新页面点击收藏栏中的链接（推荐使用 Chrome 隐身窗口模式），按提示登陆wapp.baidu.com，登陆成功后，在该页面再次点击收藏栏中的链接即可复制cookies信息。</p>
-<p><a href="javascript:(function(){if(document.cookie.indexOf('BDUSS')<0){alert('找不到BDUSS Cookie\n请先登陆 http://wapp.baidu.com/');location.href='http://wappass.baidu.com/passport/?login&u=http%3A%2F%2Fwapp.baidu.com%2F&ssid=&from=&uid=wapp_1375936328496_692&pu=&auth=&originid=2&mo_device=1&bd_page_type=1&tn=bdIndex&regtype=1&tpl=tb';}else{prompt('您的 Cookie 信息如下:', document.cookie);}})();" onclick="alert('请拖动到收藏夹');return false;" class="btn">获取手机百度贴吧 Cookie</a></p>
+<p>本程序会根据设定的时间自动进行签到。</p>
 <br>
-<p>手动更新 Cookie:</p>
+<p><a href="index.php?action=clear_cookie&formhash=<?php echo $formhash; ?>" id="unbind_btn" class="btn">解除绑定</a> &nbsp; (解除绑定后自动签到将停止)</p>
+</div>
+<div class="tab tab-bind">
+<p>您还没有绑定百度账号！</p>
+<br>
+<p>只有绑定百度账号之后程序才能自动进行签到。</p>
+<p>您可以使用百度通行证登陆，或是手动填写 Cookie 进行绑定。</p>
+<br>
+<p><a href="http://sign.ikk.me/api/login.php?callback=<?php echo rawurlencode($siteurl)."&formhash={$formhash}"; ?>" class="btn" target="_blank">点击此处登陆百度通行证</a> &nbsp; <a href="javascript:;" class="btn" id="show_cookie_setting">手动绑定</a></p>
+</div>
+<div class="tab-cookie hidden">
+<br>
+<h2>手动绑定百度账号</h2>
+<p>请填写百度贴吧 Cookie:</p>
 <form method="post" action="index.php?action=update_cookie">
 <p>
 <input type="text" name="cookie" style="width: 60%" placeholder="请在此粘贴百度贴吧的 cookie" />
 <input type="submit" value="更新" />
 </p>
 </form>
+<br>
+<p>Cookie 获取工具:</p>
+<p>将本链接拖到收藏栏，在新页面点击收藏栏中的链接（推荐使用 Chrome 隐身窗口模式），按提示登陆wapp.baidu.com，登陆成功后，在该页面再次点击收藏栏中的链接即可复制cookies信息。</p>
+<p><a href="javascript:(function(){if(document.cookie.indexOf('BDUSS')<0){alert('找不到BDUSS Cookie\n请先登陆 http://wapp.baidu.com/');location.href='http://wappass.baidu.com/passport/?login&u=http%3A%2F%2Fwapp.baidu.com%2F&ssid=&from=&uid=wapp_1375936328496_692&pu=&auth=&originid=2&mo_device=1&bd_page_type=1&tn=bdIndex&regtype=1&tpl=tb';}else{prompt('您的 Cookie 信息如下:', document.cookie);}})();" onclick="alert('请拖动到收藏夹');return false;" class="btn">获取手机百度贴吧 Cookie</a></p>
+</div>
 </div>
 <?php HOOK::run('tabs'); ?>
 </div>

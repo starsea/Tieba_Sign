@@ -11,6 +11,9 @@ switch($_GET['v']){
 			$data[] = $result;
 		}
 		break;
+	case 'get-bind-status':
+		$data = array('status' => (boolean)verify_cookie(get_cookie($uid)));
+		break;
 	case 'get-setting':
 		$data = get_setting($uid);
 		break;
