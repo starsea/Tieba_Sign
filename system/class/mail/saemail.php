@@ -15,8 +15,8 @@ class saemail extends mailer{
 		return isset($_SERVER['HTTP_APPVERSION']);
 	}
 	function send($mail){
-		$mail = new SaeMail();
-		$mail->setOpt(array(
+		$saemail = new SaeMail();
+		$saemail->setOpt(array(
 			'from' => 'Mail-System <'.$this->_get_setting('address').'>',
 			'to' => $mail->address,
 			'smtp_host' => $this->_get_setting('smtp_server'),
@@ -26,7 +26,7 @@ class saemail extends mailer{
 			'content' => $mail->message,
 			'content_type' => 'HTML',
 		));
-		$mail->send();
+		$saemail->send();
 		return true;
 	}
 }
