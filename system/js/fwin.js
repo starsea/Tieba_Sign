@@ -39,7 +39,7 @@ function createWindow(){
 			var closebtn = document.createElement('span');
 			closebtn.className = 'close';
 			closebtn.innerText = 'x';
-			closebtn.onclick = function(){ 
+			closebtn.onclick = function(){
 				win.close();
 			};
 			this.obj.appendChild(closebtn);
@@ -66,7 +66,7 @@ function createWindow(){
 	}
 	win.close = function(){
 		win.obj.className = 'fwin h';
-		setTimeout(function(){ $(win.obj).remove(); }, 1000);
+		setTimeout(function(){ $(win.obj).remove(); }, 300);
 	}
 	return win;
 }
