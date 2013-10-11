@@ -1,5 +1,6 @@
 (function(){
 	var stat = [];
+	var redirected = false;
 	stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
 	$('#menu_loved_tb').click(function (){
 		if($('#menu_loved_tb').hasClass('selected')) return;
@@ -65,6 +66,10 @@
 	function load_sign_log(){
 		showloading();
 		$.getJSON("ajax.php?v=sign-log", function(result){
+			if(result.count == 0 && !redirected){
+				redirected = true;
+				$('#menu_baidu_bind').click();
+			}
 			show_sign_log(result);
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
