@@ -24,7 +24,6 @@ class kk_sign{
 			}
 		}
 		$this->init_system();
-		define('SYSTEM_STARTED', true);
 	}
 	function __destruct(){
 		if(!defined('SYSTEM_STARTED')) return;
