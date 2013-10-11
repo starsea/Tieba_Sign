@@ -2,7 +2,7 @@
 if(!defined('IN_KKFRAME')) exit();
 class update_log{
 	const PAGE_ID = 'update_log';
-	const PAGE_NAME = '更新公告';
+	const PAGE_NAME = '新功能推荐';
 	public static function register_hooks(){
 		HOOK::register('main_menu', 'update_log::create_menu');
 		HOOK::register('page_footer_js', 'update_log::bind_js');
