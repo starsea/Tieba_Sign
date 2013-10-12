@@ -12,7 +12,7 @@ switch($_GET['v']){
 		}
 		break;
 	case 'get-bind-status':
-		$data = array('status' => (boolean)verify_cookie(get_cookie($uid)));
+		$data = get_baidu_userinfo($uid);
 		break;
 	case 'get-setting':
 		$data = get_setting($uid);

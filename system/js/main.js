@@ -138,8 +138,14 @@
 		$.getJSON("ajax.php?v=get-bind-status", function(result){
 			if(!result) return;
 			$('#content-baidu_bind .tab').addClass('hidden');
-			if(result.status){
+			if(result.no == 0){
 				$('#content-baidu_bind .tab-binded').removeClass('hidden');
+				$('.tab-binded div').removeClass('hidden');
+				$('.tab-binded div').html('');
+				$('.tab-binded div').append('<img src="http://tb.himg.baidu.com/sys/portrait/item/' + result.data.user_portrait + '" class="float-left">');
+				$('.tab-binded div').append('<p>百度通行证：<a href="http://tieba.baidu.com/home/main?un=' + result.data.user_name_url + '" target="_blank">' + result.data.user_name_show + '</a></p>');
+				$('.tab-binded div').append('<p>安全手机：' + result.data.mobilephone + '</p>');
+				$('.tab-binded div').append('<p>安全邮箱：' + result.data.email + '</p>');
 			}else{
 				$('#content-baidu_bind .tab-bind').removeClass('hidden');
 			}
