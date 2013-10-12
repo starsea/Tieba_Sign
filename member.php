@@ -24,7 +24,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 	if($_username == $username) showmessage('请输入其他账户的信息', './#');
 	$email = daddslashes($_POST['email']);
 	$password = md5(ENCRYPT_KEY.md5($_POST['password']).ENCRYPT_KEY);
-	if(strlen($_username) > 12) showmessage('用户名过长，请修改', dreferer(), 5);
+	if(strlen($_username) > 24) showmessage('用户名过长，请修改', dreferer(), 5);
 	$user = DB::fetch_first("SELECT * FROM member WHERE username='{$_username}' AND password='{$password}'");
 	$userid = $user['uid'];
 	if($user){
@@ -112,7 +112,7 @@ EOF;
 			if(!$username || !$password || !$email) showmessage('您输入的信息不完整', 'member.php?action=register');
 			if(preg_match('/[<>\'\\"]/i', $username)) showmessage('用户名中有被禁止使用的关键字', 'member.php?action=register');
 			if(strlen($username) < 6) showmessage('用户名至少要6个字符(即2个中文 或 6个英文)，请修改', dreferer(), 5);
-			if(strlen($username) > 12) showmessage('用户名过长，请修改', dreferer(), 5);
+			if(strlen($username) > 24) showmessage('用户名过长，请修改', dreferer(), 5);
 			$un = strtolower($username);
 			if(strexists($un, 'admin') || strexists($un, 'guanli')) showmessage('用户名不和谐，请修改', dreferer(), 5);
 			$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}'");
@@ -135,7 +135,7 @@ EOF;
 		$username = daddslashes($_POST['username']);
 		$password = md5(ENCRYPT_KEY.md5($_POST['password']).ENCRYPT_KEY);
 		$un = strtolower($username);
-		if(strlen($username) > 12) showmessage('用户名过长，请修改', dreferer(), 5);
+		if(strlen($username) > 24) showmessage('用户名过长，请修改', dreferer(), 5);
 		$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}' AND password='{$password}'");
 		$username = $user['username'];
 		if($user) {
