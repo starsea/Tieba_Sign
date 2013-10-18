@@ -13,6 +13,8 @@ define('CRON_FINISHED', true);
 function check_if_msg($user){
 	$date = date('Ymd', TIMESTAMP+900);
 	$uid = $user['uid'];
+	$total_num = DB::result_first("SELECT COUNT(*) FROM sign_log WHERE date='{$date}' AND uid='{$uid}'");
+	if($total_num > 200) return false;
 	$setting = get_setting($user['uid']);
 	if($setting['send_mail']) return true;
 	if(!$setting['error_mail']) return false;

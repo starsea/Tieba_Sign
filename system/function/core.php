@@ -186,19 +186,10 @@ function update_liked_tieba($uid, $ignore_error = false){
 		if($ignore_error) return;
 		showmessage('无法获取喜欢的贴吧，请更新 Cookie 信息', './#baidu_bind');
 	}
-	if(!is_array($liked_tieba)){
-		if($ignore_error) return;
-		showmessage($liked_tieba, './#setting');
-	}
 	$my_tieba = array();
 	$query = DB::query("SELECT name, fid, tid FROM my_tieba WHERE uid='{$uid}'");
 	while($r = DB::fetch($query)) {
 		$my_tieba[$r['name']] = $r;
-	}
-	if(count($my_tieba) >= 200){
-		$deleted = count($my_tieba);
-		DB::query("DELETE FROM my_tieba WHERE uid='{$uid}'");
-		$my_tieba = array();
 	}
 	foreach($liked_tieba as $tieba){
 		if($my_tieba[$tieba['name']]){
@@ -237,7 +228,6 @@ function get_liked_tieba($cookie){
 	$pn = 0;
 	$kw_name = array();
 	while (true){
-		if($pn++ >= 10) return '超过数量限制';
 		$mylikeurl = "http://tieba.baidu.com/f/like/mylike?&pn=$pn";
 		$ch = curl_init($mylikeurl);
 		curl_setopt($ch, CURLOPT_URL, $mylikeurl);
