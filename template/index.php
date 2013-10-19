@@ -71,12 +71,8 @@ if(IN_MOBILE){
 <h2>设置</h2>
 <form method="post" action="index.php?action=update_setting" id="setting_form" onsubmit="return post_win(this.action, this.id)">
 <input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
-<p>签到增强：</p>
-<p><label><input type="checkbox" checked disabled name="bdbowser" id="bdbowser" value="1" /> 模拟百度手机浏览器签到，额外经验+2</label></p>
 <p>签到方式：</p>
-<p><label><input type="radio" name="sign_method" id="sign_method_1" value="1" /> 签到方式 1 (传统)</label></p>
-<p><label><input type="radio" name="sign_method" id="sign_method_2" value="2" /> 签到方式 2 (推荐, 新)</label></p>
-<p><label><input type="radio" name="sign_method" id="sign_method_3" value="3" /> 签到方式 3 (测试版, 模拟客户端签到，+8经验)</label></p>
+<p><label><input type="radio" name="sign_method" id="sign_method_3" value="3" checked readonly /> 3.0 (模拟客户端签到，+8经验)</label></p>
 <p>附加签到：</p>
 <p><label><input type="checkbox" disabled name="zhidao_sign" id="zhidao_sign" value="1" /> 自动签到百度知道 (测试版)</label></p>
 <p><label><input type="checkbox" disabled name="wenku_sign" id="wenku_sign" value="1" /> 自动签到百度文库 (测试版)</label></p>

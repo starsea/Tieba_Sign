@@ -108,7 +108,6 @@
 		showloading();
 		$.getJSON("ajax.php?v=get-setting", function(result){
 			if(!result) return;
-			$('#bdbowser').attr('checked', result.use_bdbowser == "1");
 			$('#error_mail').attr('checked', result.error_mail == "1");
 			$('#send_mail').attr('checked', result.send_mail == "1");
 			$('#zhidao_sign').attr('checked', result.zhidao_sign == "1");
@@ -118,19 +117,6 @@
 			$('#send_mail').removeAttr('disabled');
 			$('#zhidao_sign').removeAttr('disabled');
 			$('#wenku_sign').removeAttr('disabled');
-			if(result.sign_method == 2){
-				$('#sign_method_1').attr('checked', false);
-				$('#sign_method_2').attr('checked', true);
-				$('#sign_method_3').attr('checked', false);
-			}else if(result.sign_method == 3){
-				$('#sign_method_1').attr('checked', false);
-				$('#sign_method_2').attr('checked', false);
-				$('#sign_method_3').attr('checked', true);
-			}else{
-				$('#sign_method_1').attr('checked', true);
-				$('#sign_method_2').attr('checked', false);
-				$('#sign_method_3').attr('checked', false);
-			}
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function load_baidu_bind(){

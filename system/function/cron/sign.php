@@ -17,13 +17,7 @@ if($count){
 		}
 		$uid = $tieba['uid'];
 		$setting = get_setting($uid);
-		if($setting['sign_method'] == 2){
-			list($status, $result, $exp) = mobile_sign($uid, $tieba);
-		}elseif($setting['sign_method'] == 3){
-			list($status, $result, $exp) = client_sign($uid, $tieba);
-		}else{
-			list($status, $result, $exp) = normal_sign($uid, $tieba);
-		}
+		list($status, $result, $exp) = client_sign($uid, $tieba);
 		if($status == 2){
 			if($exp){
 				DB::query("UPDATE sign_log SET status='2', exp='{$exp}' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
