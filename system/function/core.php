@@ -357,11 +357,13 @@ function verify_cookie($cookie){
 	return $tbs['is_login'];
 }
 function get_baidu_userinfo($uid){
+	$cookie = get_cookie($uid);
+	if(!$cookie) return array('no' => 4);
 	$tbs_url = 'http://tieba.baidu.com/f/user/json_userinfo';
 	$ch = curl_init($tbs_url);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Referer: http://tieba.baidu.com/'));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_COOKIE, get_cookie($uid));
+	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
 	$tbs_json = curl_exec($ch);
 	curl_close($ch);
 	return json_decode($tbs_json, true);
