@@ -6,7 +6,7 @@ if(!$uid) exit('Access Denied');
 $data = array();
 switch($_GET['v']){
 	case 'loved-tieba':
-		$query = DB::query("SELECT * FROM my_tieba WHERE uid='{$uid}' ORDER BY tid");
+		$query = DB::query("SELECT * FROM my_tieba WHERE uid='{$uid}'");
 		while($result = DB::fetch($query)){
 			$data[] = $result;
 		}
@@ -26,7 +26,7 @@ switch($_GET['v']){
 			$data['date'] = substr($date, 0, 4).'-'.substr($date, 4, 2).'-'.substr($date, 6, 2);
 		}
 		$data['log'] = array();
-		$query = DB::query("SELECT * FROM sign_log l LEFT JOIN my_tieba t ON t.tid=l.tid WHERE l.uid='{$uid}' AND l.date='{$date}' ORDER BY l.status DESC, l.tid ASC");
+		$query = DB::query("SELECT * FROM sign_log l LEFT JOIN my_tieba t ON t.tid=l.tid WHERE l.uid='{$uid}' AND l.date='{$date}' ORDER BY l.status DESC");
 		while($result = DB::fetch($query)){
 			$data['log'][] = $result;
 		}
