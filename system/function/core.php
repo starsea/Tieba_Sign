@@ -228,6 +228,7 @@ function get_liked_tieba($cookie){
 	$pn = 0;
 	$kw_name = array();
 	while (true){
+		$pn++;
 		$mylikeurl = "http://tieba.baidu.com/f/like/mylike?&pn=$pn";
 		$ch = curl_init($mylikeurl);
 		curl_setopt($ch, CURLOPT_URL, $mylikeurl);
