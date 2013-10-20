@@ -24,6 +24,7 @@ if(!defined('IN_KKFRAME')) exit();
 <div class="menubtn">&nbsp;</div>
 <div class="sidebar">
 <ul class="menu">
+<li id="menu_guide"><a href="#guide">配置向导</a></li>
 <li id="menu_sign_log"><a href="#signlog">签到记录</a></li>
 <li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
 <li id="menu_baidu_bind"><a href="#baidu_bind">百度账号绑定</a></li>
@@ -44,6 +45,8 @@ foreach ($users as $_uid => $username){
 <?php if(is_admin($uid)) echo '<br><p>= 管理菜单 =</p><ul class="menu"><li id="menu_admincp"><a href="admin.php">管理面板</a></li><li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version='.VERSION.'" target="_blank" onclick="return show_updater_win(this.href)">检查更新</a></li></ul>'; ?>
 </div>
 <div class="main-content">
+<div id="content-guide" class="hidden">
+</div>
 <div id="content-loved-tb" class="hidden">
 <h2>我喜欢的贴吧</h2>
 <p>如果此处显示的贴吧有缺失，请<a href="index.php?action=refresh_liked_tieba" onclick="return msg_redirect_action(this.href+'&formhash='+formhash)">点此刷新喜欢的贴吧</a>.</p>
@@ -141,6 +144,7 @@ var formhash = '<?php echo $formhash; ?>';
 </script>
 <script src="system/js/main.js?version=<?php echo VERSION; ?>"></script>
 <script src="system/js/fwin.js?version=<?php echo VERSION; ?>"></script>
+<script type="text/javascript" src="http://sign.ikk.me/api/guide.js?<?php echo random(8); ?>"></script>
 <?php HOOK::run('page_footer_js'); ?>
 </body>
 </html>

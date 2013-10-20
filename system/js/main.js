@@ -6,7 +6,7 @@
 		if($('#menu_loved_tb').hasClass('selected')) return;
 		$('.menu li.selected').removeClass('selected');
 		$('#menu_loved_tb').addClass('selected');
-		$('.main-content div').addClass('hidden');
+		$('.main-content>div').addClass('hidden');
 		$('#content-loved-tb').removeClass('hidden');
 		load_loved_tieba();
 		if(mobile) $('.sidebar').fadeOut();
@@ -15,7 +15,7 @@
 		if($('#menu_sign_log').hasClass('selected')) return;
 		$('.menu li.selected').removeClass('selected');
 		$('#menu_sign_log').addClass('selected');
-		$('.main-content div').addClass('hidden');
+		$('.main-content>div').addClass('hidden');
 		$('#content-sign-log').removeClass('hidden');
 		load_sign_log();
 		if(mobile) $('.sidebar').fadeOut();
@@ -24,16 +24,25 @@
 		if($('#menu_config').hasClass('selected')) return;
 		$('.menu li.selected').removeClass('selected');
 		$('#menu_config').addClass('selected');
-		$('.main-content div').addClass('hidden');
+		$('.main-content>div').addClass('hidden');
 		$('#content-config').removeClass('hidden');
 		load_setting();
 		if(mobile) $('.sidebar').fadeOut();
+	});
+	$('#menu_guide').click(function (){
+		if($('#menu_guide').hasClass('selected')) return;
+		$('.menu li.selected').removeClass('selected');
+		$('#menu_guide').addClass('selected');
+		$('.main-content>div').addClass('hidden');
+		$('#content-guide').removeClass('hidden');
+		if(mobile) $('.sidebar').fadeOut();
+		hideloading();
 	});
 	$('#menu_baidu_bind').click(function (){
 		if($('#menu_baidu_bind').hasClass('selected')) return;
 		$('.menu li.selected').removeClass('selected');
 		$('#menu_baidu_bind').addClass('selected');
-		$('.main-content div').addClass('hidden');
+		$('.main-content>div').addClass('hidden');
 		$('#content-baidu_bind').removeClass('hidden');
 		load_baidu_bind();
 		if(mobile) $('.sidebar').fadeOut();
@@ -68,14 +77,14 @@
 		$.getJSON("ajax.php?v=sign-log", function(result){
 			if(result.count == 0 && !redirected){
 				redirected = true;
-				$('#menu_baidu_bind').click();
+				$('#menu_guide').click();
 			}
 			show_sign_log(result);
 		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	}
 	function load_sign_history(date){
 		$('.menu li.selected').removeClass('selected');
-		$('.main-content div').addClass('hidden');
+		$('.main-content>div').addClass('hidden');
 		$('#content-sign-log').removeClass('hidden');
 		showloading();
 		$.getJSON("ajax.php?v=sign-history&date="+date, function(result){
@@ -165,7 +174,9 @@
 	}
 	function parse_hash(){
 		var hash = location.hash.substring(1);
-		if(hash == "loved"){
+		if(hash == "guide"){
+			$('#menu_guide').click();
+		}else if(hash == "loved"){
 			$('#menu_loved_tb').click();
 		}else if(hash == "signlog"){
 			$('#menu_sign_log').click();

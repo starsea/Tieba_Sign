@@ -21,6 +21,7 @@ if(!defined('IN_KKFRAME')) exit();
 <div class="login-info">
 <p>用户名：<input type="text" name="username" placeholder="用户名" required /></p>
 <p>密　码：<input type="password" name="password" placeholder="密　码" required /></p>
+<p>(此账号仅用于登陆代签系统，不同于百度通行证)</p>
 </div>
 <p class="btns clearfix">
 <span class="float-left"><a href="member.php?action=register" class="tip-text">注册</a> &nbsp; <a href="member.php?action=find_password" class="tip-text">找回密码</a></span>
