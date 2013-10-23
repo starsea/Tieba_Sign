@@ -26,13 +26,7 @@ if(!$uid){
 			$tieba = DB::fetch_first("SELECT * FROM my_tieba WHERE uid='{$uid}' ORDER BY RAND() LIMIT 0,1");
 			if(!$tieba) showmessage('没有喜欢的贴吧，请先刷新喜欢的贴吧列表', './#loved');
 			$setting = get_setting($uid);
-			if($setting['sign_method'] == 2){
-				list($status, $result, $exp) = mobile_sign($uid, $tieba);
-			}elseif($setting['sign_method'] == 3){
-				list($status, $result, $exp) = client_sign($uid, $tieba);
-			}else{
-				list($status, $result, $exp) = normal_sign($uid, $tieba);
-			}
+			list($status, $result, $exp) = client_sign($uid, $tieba);
 			$status = $status==2 ? '签到成功' : '签到失败';
 			showmessage("<p>测试贴吧：{$tieba[name]}</p><p>测试结果：{$status}</p><p>详细信息：{$result}</p>", './#setting', 1);
 			break;
