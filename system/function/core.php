@@ -264,24 +264,6 @@ function wrap_text($str) {
 	$str = str_replace(' ', '', $str);
     return trim($str);
 }
-function curl_get($url, $uid, $mobile_ua = false, $postdata = ''){
-	$ch = curl_init($url);
-	if ($mobile_ua){
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1'));
-    } else {
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent:Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36', 'Connection:keep-alive', 'Referer:http://wapp.baidu.com/'));
-    }
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_COOKIE, get_cookie($uid));
-	if($postdata) curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-	$get_url = curl_exec($ch);
-	if($get_url !== false){
-		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($statusCode >= 500) return false;
-  	}
-    curl_close($ch);
-    return $get_url;
-}
 function get_cookie($uid){
 	static $cookie = array();
 	if($cookie[$uid]) return $cookie[$uid];
