@@ -104,7 +104,7 @@ if(IN_MOBILE){
 <div class="tab tab-binded">
 <p>您的百度账号绑定正常。</p>
 <br>
-<div class="clearfix baidu_account"></div>
+<div class="baidu_account"></div>
 <br>
 <p><a href="index.php?action=clear_cookie&formhash=<?php echo $formhash; ?>" id="unbind_btn" class="btn">解除绑定</a> &nbsp; (解除绑定后自动签到将停止)</p>
 </div>

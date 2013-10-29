@@ -61,9 +61,9 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .btns .float-left { margin-left: -10px; }
 .center-box { position: relative; top: 125px; width: 320px; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
 .main-box { position: relative; top: 35px; width: 80%; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
-.sidebar { float: left; width: 20%; padding: 0 0 10px; border-right: 1px solid #dedede; margin: 0 0 -10px -15px }
+.sidebar { float: left; width: 250px; padding: 0 0 10px; border-right: 1px solid #dedede; margin: 0 0 -10px -15px; }
 .sidebar p { text-align: center; margin-bottom: 0; padding-bottom: .75em; border-bottom: 1px solid #DEDEDE; }
-.main-content { margin: 0 0 -10px -1px; border-left: 1px solid #dedede; padding: 10px 0 10px 10px; float: left; width: 80%; }
+.main-content { margin: 0 0 -10px 235px; border-left: 1px solid #dedede; padding: 10px 0 10px 10px; }
 .menu { margin: 0; }
 .menu li { border-top: 1px solid #dedede; margin: 0; padding: 0; }
 .menu li:first-child { border-top: none; }
@@ -113,7 +113,7 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 	.copyright { margin-top: 22px; font-size: 11px; }
 	#page_login .copyright { margin-top: 100px; }
 	.sidebar { display: none; float: none; width: auto; padding: 0 0 10px; margin: 0 -5px -10px; border: none; }
-	.main-content { border-left: none; border-top: 1px solid #dedede; padding: 10px 5px; margin: -1px 0 0 -5px; float: none; width: auto; }
+	.main-content { border-left: none; border-top: 1px solid #dedede; padding: 10px 5px; margin: -1px 0 0 -5px; float: none; width: auto; margin-left: -1px; }
 	.reload { right: 45px; }
 	.menubtn { display: block; }
 	.main-content input[type=text], .main-content input[type=password] { width: 90%; }
