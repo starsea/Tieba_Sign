@@ -15,7 +15,7 @@ class update_log{
 		echo '<div id="content-'.self::PAGE_ID.'" class="hidden"><h2>'.self::PAGE_NAME.'</h2><script src="http://sign.ikk.me/update_log.js?'.random(8).'"></script></div>';
 	}
 	public static function bind_js(){
-		echo '<script type="text/javascript">$("#menu_'.self::PAGE_ID.'").click(function (){ if($("#menu_'.self::PAGE_ID.'").hasClass("selected")) return; $(".menu li.selected").removeClass("selected"); $("#menu_'.self::PAGE_ID.'").addClass("selected"); $(".main-content div").addClass("hidden"); $("#content-'.self::PAGE_ID.'").removeClass("hidden"); if(mobile) $(".sidebar").fadeOut(); hideloading(); });</script>';
+		echo '<script type="text/javascript">$("#menu_'.self::PAGE_ID.'").click(function (){ if($("#menu_'.self::PAGE_ID.'").hasClass("selected")) return; $(".menu li.selected").removeClass("selected"); $("#menu_'.self::PAGE_ID.'").addClass("selected"); $(".main-content>div").addClass("hidden"); $("#content-'.self::PAGE_ID.'").removeClass("hidden"); if(mobile) $(".sidebar").fadeOut(); hideloading(); });</script>';
 	}
 }
 update_log::register_hooks();
