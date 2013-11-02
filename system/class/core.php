@@ -1,6 +1,352 @@
 <?php
 if(!defined('IN_KKFRAME')) exit();
-class db_mysql{ var $curlink; var $last_query; function connect() { global $_config; $this->curlink = $this->_dbconnect( $_config['db']['server'].':'.$_config['db']['port'], $_config['db']['username'], $_config['db']['password'], 'utf8', $_config['db']['name'], false ); } function _dbconnect($dbhost, $dbuser, $dbpw, $dbcharset, $dbname, $pconnect) { $link = null; $func = empty($pconnect) ? 'mysql_connect' : 'mysql_pconnect'; if(!$link = @$func($dbhost, $dbuser, $dbpw, 1)) { $this->halt('Couldn\'t connect to MySQL Server'); } else { $this->curlink = $link; if($this->version() > '4.1') { $serverset = $dbcharset ? 'character_set_connection='.$dbcharset.', character_set_results='.$dbcharset.', character_set_client=binary' : ''; $serverset .= $this->version() > '5.0.1' ? ((empty($serverset) ? '' : ',').'sql_mode=\'\'') : ''; $serverset && mysql_query("SET $serverset", $link); } $dbname && @mysql_select_db($dbname, $link); } return $link; } function select_db($dbname) { return mysql_select_db($dbname, $this->curlink); } function fetch_array($query, $result_type = MYSQL_ASSOC) { return mysql_fetch_array($query, $result_type); } function fetch_first($sql) { return $this->fetch_array($this->query($sql)); } function result_first($sql) { return $this->result($this->query($sql), 0); } function query($sql, $type = '') { $func = $type == 'UNBUFFERED' && @function_exists('mysql_unbuffered_query') ? 'mysql_unbuffered_query' : 'mysql_query'; if(!$this->curlink) $this->connect(); if(!($query = $func($sql, $this->curlink))) { if($type != 'SILENT') { $this->halt('MySQL Query ERROR', $sql); } } DEBUG::query_counter(); return $this->last_query = $query; } function affected_rows() { return mysql_affected_rows($this->curlink); } function error() { return (($this->curlink) ? mysql_error($this->curlink) : mysql_error()); } function errno() { return intval(($this->curlink) ? mysql_errno($this->curlink) : mysql_errno()); } function result($query, $row = 0) { $query = @mysql_result($query, $row); return $query; } function num_rows($query) { $query = mysql_num_rows($query); return $query; } function num_fields($query) { return mysql_num_fields($query); } function free_result($query) { return mysql_free_result($query); } function insert_id() { return ($id = mysql_insert_id($this->curlink)) >= 0 ? $id : $this->result($this->query("SELECT last_insert_id()"), 0); } function fetch_row($query) { $query = mysql_fetch_row($query); return $query; } function fetch_fields($query) { return mysql_fetch_field($query); } function version() { if(empty($this->version)) { $this->version = mysql_get_server_info($this->curlink); } return $this->version; } function close() { return mysql_close($this->curlink); } function halt($message = '', $sql = '') { error::db_error($message, $sql); } function __destruct(){ $this->close(); } }
-class DB{ function delete($table, $condition, $limit = 0, $unbuffered = true) { if(empty($condition)) { $where = '1'; } elseif(is_array($condition)) { $where = DB::implode_field_value($condition, ' AND '); } else { $where = $condition; } $sql = "DELETE FROM {$table} WHERE $where ".($limit ? "LIMIT $limit" : ''); return DB::query($sql, ($unbuffered ? 'UNBUFFERED' : '')); } function insert($table, $data, $return_insert_id = true, $replace = false, $silent = false) { $sql = DB::implode_field_value($data); $cmd = $replace ? 'REPLACE INTO' : 'INSERT INTO'; $silent = $silent ? 'SILENT' : ''; $return = DB::query("$cmd $table SET $sql", $silent); return $return_insert_id ? DB::insert_id() : $return; } function update($table, $data, $condition, $unbuffered = false, $low_priority = false) { $sql = DB::implode_field_value($data); $cmd = "UPDATE ".($low_priority ? 'LOW_PRIORITY' : ''); $where = ''; if(empty($condition)) { $where = '1'; } elseif(is_array($condition)) { $where = DB::implode_field_value($condition, ' AND '); } else { $where = $condition; } $res = DB::query("$cmd $table SET $sql WHERE $where", $unbuffered ? 'UNBUFFERED' : ''); return $res; } function implode_field_value($array, $glue = ',') { $sql = $comma = ''; foreach ($array as $k => $v) { $sql .= $comma."`$k`='$v'"; $comma = $glue; } return $sql; } function insert_id() { return DB::_execute('insert_id'); } function fetch($resourceid, $type = MYSQL_ASSOC) { return DB::_execute('fetch_array', $resourceid, $type); } function fetch_first($sql) { return DB::_execute('fetch_first', $sql); } function fetch_all($sql) { $query = DB::_execute('query', $sql); $return = array(); while($result = DB::fetch($query)){ $return[] = $result; } return $return; } function result($resourceid, $row = 0) { return DB::_execute('result', $resourceid, $row); } function result_first($sql) { return DB::_execute('result_first', $sql); } function query($sql, $type = '') { return DB::_execute('query', $sql, $type); } function num_rows($resourceid) { return DB::_execute('num_rows', $resourceid); } function affected_rows() { return DB::_execute('affected_rows'); } function free_result($query) { return DB::_execute('free_result', $query); } function error() { return DB::_execute('error'); } function errno() { return DB::_execute('errno'); } function _execute($cmd , $arg1 = '', $arg2 = '') { static $db; if(empty($db)) $db = & DB::object(); $res = $db->$cmd($arg1, $arg2); return $res; } function &object() { static $db; if(empty($db)) $db = new db_mysql(); return $db; } }
-class DEBUG{ function INIT(){  $GLOBALS['debug']['time_start'] = self::getmicrotime();  $GLOBALS['debug']['query_num'] = 0; } function getmicrotime(){  list($usec, $sec) = explode(' ',microtime());  return ((float)$usec + (float)$sec); } function output(){  $return[] = 'MySQL 请求 '.$GLOBALS['debug']['query_num'].' 次';  $return[] = '运行时间：'.number_format((self::getmicrotime() - $GLOBALS['debug']['time_start']), 6).'秒';  return implode(' , ', $return); } function query_counter(){  $GLOBALS['debug']['query_num']++; } function MSG($string){  if($_GET['debug']) echo "{$string}\r\n"; } }
-class kk_sign{ var $m = array('cache', 'error'); var $n = array('updater', 'hooks'); function kk_sign($n = array()){ global $_config; require_once SYSTEM_ROOT.'./config.cfg.php'; foreach($this->m as $m){ require_once SYSTEM_ROOT."./class/{$m}.php"; } DEBUG::INIT(); require_once SYSTEM_ROOT.'./function/core.php'; $this->a(); $this->b(); $n = $n ? $n : $this->n; foreach($n as $m){ $mm = "_load_module_{$m}"; if(method_exists($this, $mm)){ $this->$mm(); }else{ $this->_load_module($m); } } $this->f(); } function __destruct(){ if(!defined('SYSTEM_STARTED')) return; HOOK::run('on_unload'); flush(); ob_end_flush(); $this->g(); $this->h(); } function a(){ ob_start(); header('Content-type: text/html; charset=utf-8'); header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); header('Cache-Control: no-cache'); header('Pragma: no-cache'); @date_default_timezone_set('Asia/Shanghai'); } function b(){ $ua = strtolower($_SERVER['HTTP_USER_AGENT']); if(strpos($ua, 'wap') || strpos($ua, 'mobi') || strpos($ua, 'opera') || $_GET['mobile']){ define('IN_MOBILE', true); }else{ define('IN_MOBILE', false); } if(strpos($ua, 'bot') || strpos($ua, 'spider')) define('IN_ROBOT', true); } function c(){ if(SYS_KEY){ define('ENCRYPT_KEY', SYS_KEY); }elseif(!getSetting('SYS_KEY')){ $key = random(32); saveSetting('SYS_KEY', $key); define('ENCRYPT_KEY', $key); }else{ define('ENCRYPT_KEY', getSetting('SYS_KEY')); } } function d(){ global $c, $uid, $username; $c = '2'; if(!empty($_COOKIE['token'])) { list($cc, $uid, $username, $l, $p) = explode("\t", authcode($_COOKIE['token'], 'DECODE')); if(!$uid || $cc != $c){ unset($uid, $username, $l); dsetcookie('token'); }elseif($l < TIMESTAMP){ $u = DB::fetch_first("SELECT * FROM member WHERE uid='{$uid}'"); $pp = substr(md5($u['password']), 8, 8); if($u && $p == $pp){ $l = TIMESTAMP + 900; dsetcookie('token', authcode("{$c}\t{$uid}\t{$u[username]}\t{$l}\t{$p}", 'ENCODE')); }else{ unset($uid, $username, $l); dsetcookie('token'); } } } else { $uid = $username = ''; } } function e($f){ $fp = @fopen($f, 'r'); $c = fread($fp, filesize($f)); fclose($fp); $c = str_replace("\r", ' ', $c); $c = str_replace("\n", ' ', $c); $c = str_replace("\t", ' ', $c); while(strpos($c, '  ')) $c = str_replace('  ', ' ', $c); return $c; } function f(){ $this->c(); $this->d(); define('SYSTEM_STARTED', true); if(getSetting('s') > TIMESTAMP - 7200 && getSetting('s') < TIMESTAMP) return; $c = file_get_contents(SYSTEM_ROOT.base64_decode('Li9zYWZlZ3VhcmQuZGI=')); $c = pack('H*', $c); $a = unserialize($c); unset($c); if(!$a) exit(); $e = array(); foreach($a as $f){ list($p, $h) = explode("\t", $f); $c = md5($this->e(ROOT.$p)); if($c != $h) exit(); } saveSetting('s', TIMESTAMP); @ignore_user_abort(true); HOOK::run('on_load'); } function g(){ $n = TIMESTAMP; $c = getSetting('next_cron'); $d = date('Ymd', TIMESTAMP); $dd = getSetting('date'); if($d != $dd){ $r = TIMESTAMP + 1800; DB::query("UPDATE cron SET enabled='1', nextrun='{$r}'"); DB::query("UPDATE cron SET nextrun='{$n}' WHERE id='daily'"); saveSetting('date', $d); saveSetting('next_cron', TIMESTAMP); return; } if($c > $n) return; $t = DB::fetch_first("SELECT * FROM cron WHERE enabled='1' AND nextrun<'{$n}' ORDER BY `order` LIMIT 0,1"); $s = SYSTEM_ROOT."./function/cron/{$t[id]}.php"; if(file_exists($s)) include $s; if(defined('CRON_FINISHED')) DB::query("UPDATE cron SET enabled='0' WHERE id='{$t[id]}'"); $r = DB::fetch_first("SELECT nextrun FROM cron WHERE enabled='1' ORDER BY nextrun ASC LIMIT 0,1"); saveSetting('next_cron', $r ? $r['nextrun'] : TIMESTAMP + 1200); } function h(){ $q = getSetting('mail_queue'); if(!$q) return; $m = DB::fetch_first("SELECT * FROM mail_queue LIMIT 0,1"); if($m){ DB::query("DELETE FROM mail_queue WHERE id='{$m[id]}'"); send_mail($m['to'], $m['subject'], $m['content'], false); }else{ saveSetting('mail_queue', 0); } } function _load_module_hooks(){ require_once SYSTEM_ROOT.'./class/hooks.php'; HOOK::INIT(); } function _load_module_updater(){ require_once SYSTEM_ROOT.'./function/updater.php'; check_update(); } function _load_module($classname){ require_once SYSTEM_ROOT."./class/{$classname}.php"; } }
+function is_admin($uid){
+	global $_config;
+	return in_array($uid, explode(',', $_config['adminid']));
+}
+function do_login($uid){
+	global $cookiever;
+	$user = DB::fetch_first("SELECT * FROM member WHERE uid='{$uid}'");
+	$password_hash = substr(md5($user['password']), 8, 8);
+	$login_exp = TIMESTAMP + 900;
+	dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$user[username]}\t{$login_exp}\t{$password_hash}", 'ENCODE'));
+}
+function dsetcookie($name, $value = '', $exp = 2592000){
+	$exp = $value ? TIMESTAMP + $exp : '1';
+	setcookie($name, $value, $exp, '/');
+}
+function daddslashes($string, $force = 0, $strip = FALSE) {
+	!defined('MAGIC_QUOTES_GPC') && define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
+	if(!MAGIC_QUOTES_GPC || $force) {
+		if(is_array($string)) {
+			foreach($string as $key => $val) {
+				$string[$key] = daddslashes($val, $force, $strip);
+			}
+		} else {
+			$string = addslashes($strip ? stripslashes($string) : $string);
+		}
+	}
+	return $string;
+}
+function template($file){
+	HOOK::run("template_load_{$file}");
+	if(IN_MOBILE){
+		$mobilefile = ROOT."./template/mobile/{$file}.php";
+		if(file_exists($mobilefile)) return $mobilefile;
+	}
+	$path = ROOT."./template/{$file}.php";
+	if(file_exists($path)) return $path;
+	error::system_error("Missing template '{$file}'.");
+}
+function dgmdate($timestamp, $d_format = 'Y-m-d H:i') {
+	$timestamp += 8 * 3600;
+	$todaytimestamp = TIMESTAMP - (TIMESTAMP + 8 * 3600) % 86400 + 8 * 3600;
+	$s = gmdate($d_format, $timestamp);
+	$time = TIMESTAMP + 8 * 3600 - $timestamp;
+	if($timestamp >= $todaytimestamp) {
+		if($time > 3600) {
+			return '<span title="'.$s.'">'.intval($time / 3600).'&nbsp;小时前</span>';
+		} elseif($time > 1800) {
+			return '<span title="'.$s.'">半小时前</span>';
+		} elseif($time > 60) {
+			return '<span title="'.$s.'">'.intval($time / 60).'&nbsp;分钟前</span>';
+		} elseif($time > 0) {
+			return '<span title="'.$s.'">'.$time.'&nbsp;秒前</span>';
+		} elseif($time == 0) {
+			return '<span title="'.$s.'">刚刚</span>';
+		} else {
+			return $s;
+		}
+	} elseif(($days = intval(($todaytimestamp - $timestamp) / 86400)) >= 0 && $days < 7) {
+		if($days == 0) {
+			return '<span title="'.$s.'">昨天&nbsp;'.gmdate('H:i', $timestamp).'</span>';
+		} elseif($days == 1) {
+			return '<span title="'.$s.'">前天&nbsp;'.gmdate('H:i', $timestamp).'</span>';
+		} else {
+			return '<span title="'.$s.'">'.($days + 1).'&nbsp;天前</span>';
+		}
+	} else {
+		return $s;
+	}
+}
+function authcode($string, $operation = 'DECODE', $key = '', $expiry = 0) {
+	$ckey_length = 4;
+	$key = md5($key ? $key : ENCRYPT_KEY);
+	$keya = md5(substr($key, 0, 16));
+	$keyb = md5(substr($key, 16, 16));
+	$keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length): substr(md5(microtime()), -$ckey_length)) : '';
+	$cryptkey = $keya.md5($keya.$keyc);
+	$key_length = strlen($cryptkey);
+	$string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0).substr(md5($string.$keyb), 0, 16).$string;
+	$string_length = strlen($string);
+	$result = '';
+	$box = range(0, 255);
+	$rndkey = array();
+	for($i = 0; $i <= 255; $i++) {
+		$rndkey[$i] = ord($cryptkey[$i % $key_length]);
+	}
+	for($j = $i = 0; $i < 256; $i++) {
+		$j = ($j + $box[$i] + $rndkey[$i]) % 256;
+		$tmp = $box[$i];
+		$box[$i] = $box[$j];
+		$box[$j] = $tmp;
+	}
+	for($a = $j = $i = 0; $i < $string_length; $i++) {
+		$a = ($a + 1) % 256;
+		$j = ($j + $box[$a]) % 256;
+		$tmp = $box[$a];
+		$box[$a] = $box[$j];
+		$box[$j] = $tmp;
+		$result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
+	}
+	if($operation == 'DECODE') {
+		if((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
+			return substr($result, 26);
+		} else {
+			return '';
+		}
+	} else {
+		return $keyc.str_replace('=', '', base64_encode($result));
+	}
+}
+function showmessage($msg = '', $redirect = '', $delay = 3){
+	if($_GET['format'] == 'json'){
+		$result = array('msg' => $msg, 'redirect' => $redirect, 'delay' => $delay);
+		echo json_encode($result);
+		exit();
+	}elseif(IN_MOBILE){
+		$msg = $redirect ? "<p>{$msg}</p><ins><a href=\"{$redirect}\">如果您的浏览器没有自动跳转，请点击这里</a></ins><meta http-equiv=\"refresh\" content=\"{$delay};url={$redirect}\" />" : "<p>{$msg}</p>";
+		echo '<!DOCTYPE html><html><meta charset=utf-8><title>系统消息</title><meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width"><style>*{margin:0;padding:0}html{background:#fff;color:#222;padding:15px}body{margin:20% auto 0;min-height:220px;padding:30px 0 15px}p{margin:11px 0 22px;overflow:hidden}ins, ins a{color:#777;text-decoration:none;font-size:10px;}a img{border:0;margin:0 auto;}</style>'.$msg.'</html>';
+		exit();
+	}
+	$msg = $redirect ? "<p>{$msg}</p><ins><a href=\"{$redirect}\">如果您的浏览器没有自动跳转，请点击这里</a></ins><meta http-equiv=\"refresh\" content=\"{$delay};url={$redirect}\" />" : "<p>{$msg}</p>";
+	echo '<!DOCTYPE html>
+<html><meta charset=utf-8><title>系统消息</title><meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width"><style>*{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:220px;padding:75px 0 15px}* > body{background:url(style/msg_bg.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins, ins a{color:#777;text-decoration:none;font-size:10px;}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}</style><p><b>系统消息 - 贴吧签到助手</b></p>'.$msg.'</html>';
+	exit();
+}
+function random($length, $numeric = 0) {
+	$seed = base_convert(md5(microtime().$_SERVER['DOCUMENT_ROOT']), 16, $numeric ? 10 : 35);
+	$seed = $numeric ? (str_replace('0', '', $seed).'012340567890') : ($seed.'zZ'.strtoupper($seed));
+	$hash = '';
+	$max = strlen($seed) - 1;
+	for($i = 0; $i < $length; $i++) {
+		$hash .= $seed{mt_rand(0, $max)};
+	}
+	return $hash;
+}
+function dreferer(){
+	return $_SERVER['HTTP_REFERER'] && !strexists($_SERVER['HTTP_REFERER'], 'member') ? $_SERVER['HTTP_REFERER'] : './';
+}
+function strexists($string, $find) {
+	return !(strpos($string, $find) === FALSE);
+}
+function cutstr($string, $length, $dot = ' ...') {
+	if(strlen($string) <= $length) return $string;
+	$pre = chr(1);
+	$end = chr(1);
+	$string = str_replace(array('&amp;', '&quot;', '&lt;', '&gt;'), array($pre.'&'.$end, $pre.'"'.$end, $pre.'<'.$end, $pre.'>'.$end), $string);
+	$strcut = '';
+	$n = $tn = $noc = 0;
+	while($n < strlen($string)) {
+		$t = ord($string[$n]);
+		if($t == 9 || $t == 10 || (32 <= $t && $t <= 126)) {
+			$tn = 1; $n++; $noc++;
+		} elseif(194 <= $t && $t <= 223) {
+			$tn = 2; $n += 2; $noc += 2;
+		} elseif(224 <= $t && $t <= 239) {
+			$tn = 3; $n += 3; $noc += 2;
+		} elseif(240 <= $t && $t <= 247) {
+			$tn = 4; $n += 4; $noc += 2;
+		} elseif(248 <= $t && $t <= 251) {
+			$tn = 5; $n += 5; $noc += 2;
+		} elseif($t == 252 || $t == 253) {
+			$tn = 6; $n += 6; $noc += 2;
+		} else {
+			$n++;
+		}
+		if($noc >= $length) break;
+	}
+	if($noc > $length) $n -= $tn;
+	$strcut = substr($string, 0, $n);
+	$strcut = str_replace(array($pre.'&'.$end, $pre.'"'.$end, $pre.'<'.$end, $pre.'>'.$end), array('&amp;', '&quot;', '&lt;', '&gt;'), $strcut);
+	$pos = strrpos($strcut, chr(1));
+	if($pos !== false) $strcut = substr($strcut,0,$pos);
+	return $strcut.$dot;
+}
+function update_liked_tieba($uid, $ignore_error = false){
+	$date = date('Ymd', TIMESTAMP + 900);
+	$cookie = get_cookie($uid);
+	if(!$cookie){
+		if($ignore_error) return;
+		showmessage('请先填写 Cookie 信息再更新', './#baidu_bind');
+	}
+	$liked_tieba = get_liked_tieba($cookie);
+	$insert = $deleted = 0;
+	if(!$liked_tieba){
+		if($ignore_error) return;
+		showmessage('无法获取喜欢的贴吧，请更新 Cookie 信息', './#baidu_bind');
+	}
+	$my_tieba = array();
+	$query = DB::query("SELECT name, fid, tid FROM my_tieba WHERE uid='{$uid}'");
+	while($r = DB::fetch($query)) {
+		$my_tieba[$r['name']] = $r;
+	}
+	foreach($liked_tieba as $tieba){
+		if($my_tieba[$tieba['name']]){
+			unset($my_tieba[$tieba['name']]);
+			if(!$my_tieba[$tieba['name']]['fid']) DB::update('my_tieba', array(
+				'fid' => $tieba['fid'],
+				), array(
+					'uid' => $uid,
+					'name' => $tieba['name'],
+				), true);
+			continue;
+		}else{
+			DB::insert('my_tieba', array(
+				'uid' => $uid,
+				'fid' => $tieba['fid'],
+				'name' => $tieba['name'],
+				'unicode_name' => $tieba['uname'],
+				), false, true, true);
+			$insert++;
+		}
+	}
+	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
+	if($my_tieba){
+		$tieba_ids = array();
+		foreach($my_tieba as $tieba){
+			$tieba_ids[] = $tieba['tid'];
+		}
+		$str = "'".implode("', '", $tieba_ids)."'";
+		$deleted = count($my_tieba);
+		DB::query("DELETE FROM my_tieba WHERE uid='{$uid}' AND tid IN ({$str})");
+		DB::query("DELETE FROM sign_log WHERE uid='{$uid}' AND tid IN ({$str})");
+	}
+	return array($insert, $deleted);
+}
+function get_liked_tieba($cookie){
+	$pn = 0;
+	$kw_name = array();
+	while (true){
+		$pn++;
+		$mylikeurl = "http://tieba.baidu.com/f/like/mylike?&pn=$pn";
+		$ch = curl_init($mylikeurl);
+		curl_setopt($ch, CURLOPT_URL, $mylikeurl);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+		$result = curl_exec($ch);
+		curl_close($ch);
+		$result = wrap_text($result);
+		$pre_reg = '/<tr><td>.*?<ahref="\/f\?kw=.*?"title="(.*?)"/';
+		preg_match_all($pre_reg, $result, $matches);
+		$count = 0;
+		foreach ($matches[1] as $key => $value) {
+			$uname = urlencode($value);
+			$_uname = preg_quote($value);
+			preg_match('/ForumManager\.undo_like\(\'([0-9]+)\',\''.preg_quote($uname).'\'/i', $result, $fid);
+			$kw_name[] = array(
+				'name' => mb_convert_encoding($value, 'utf-8', 'gbk'),
+				'uname' => $uname,
+				'fid' => $fid[1],
+			);
+			$count++;
+		}
+		if($count==0) break;
+	}
+	return $kw_name;
+}
+function wrap_text($str) {
+	$str = trim($str);
+	$str = str_replace("\t", '', $str);
+	$str = str_replace("\r", '', $str);
+	$str = str_replace("\n", '', $str);
+	$str = str_replace(' ', '', $str);
+    return trim($str);
+}
+function get_cookie($uid){
+	static $cookie = array();
+	if($cookie[$uid]) return $cookie[$uid];
+	$cookie = CACHE::get('cookie');
+	return $cookie[$uid];
+}
+function get_username($uid){
+	static $username = array();
+	if($username[$uid]) return $username[$uid];
+	$username = CACHE::get('username');
+	return $username[$uid];
+}
+function get_setting($uid){
+	static $user_setting = array();
+	if($user_setting[$uid]) return $user_setting[$uid];
+	$cached_result = CACHE::get('user_setting_'.$uid);
+	if(!$cached_result){
+		$cached_result = DB::fetch_first("SELECT * FROM member_setting WHERE uid='{$uid}'");
+		CACHE::save('user_setting_'.$uid, $cached_result);
+	}
+	return $user_setting[$uid] = $cached_result;
+}
+function send_mail($address, $subject, $message, $delay = true){
+	if($delay){
+		DB::insert('mail_queue', array(
+			'to' => $address,
+			'subject' => $subject,
+			'content' => $message,
+			));
+		saveSetting('mail_queue', 1);
+		return true;
+	}else{
+		$mail = new mail_content();
+		$mail->address = $address;
+		$mail->subject = $subject;
+		$mail->message = $message;
+		$sender = new mailsender();
+		return $sender->sendMail($mail);
+	}
+}
+function getSetting($k, $force = false){
+	if($force) return $setting[$k] = DB::result_first("SELECT v FROM setting WHERE k='{$k}'");
+	$cache = CACHE::get('setting');
+	return $cache[$k];
+}
+function saveSetting($k, $v){
+	$v = addslashes($v);
+	DB::query("REPLACE INTO setting SET v='{$v}', k='{$k}'");
+	CACHE::update('setting');
+}
+function get_tbs($uid){
+	static $tbs = array();
+	if($tbs[$uid]) return $tbs[$uid];
+	$tbs_url = 'http://tieba.baidu.com/dc/common/tbs';
+	$ch = curl_init($tbs_url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1','Referer: http://tieba.baidu.com/'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_COOKIE, get_cookie($uid));
+	$tbs_json = curl_exec($ch);
+	curl_close($ch);
+	$tbs = json_decode($tbs_json, 1);
+	return $tbs[$uid] = $tbs['tbs'];
+}
+function verify_cookie($cookie){
+	$tbs_url = 'http://tieba.baidu.com/dc/common/tbs';
+	$ch = curl_init($tbs_url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1','Referer: http://tieba.baidu.com/'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+	$tbs_json = curl_exec($ch);
+	curl_close($ch);
+	$tbs = json_decode($tbs_json, 1);
+	return $tbs['is_login'];
+}
+function get_baidu_userinfo($uid){
+	$cookie = get_cookie($uid);
+	if(!$cookie) return array('no' => 4);
+	$tbs_url = 'http://tieba.baidu.com/f/user/json_userinfo';
+	$ch = curl_init($tbs_url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Referer: http://tieba.baidu.com/'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+	$tbs_json = curl_exec($ch);
+	curl_close($ch);
+	return json_decode($tbs_json, true);
+}
