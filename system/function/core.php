@@ -296,7 +296,6 @@ function send_mail($address, $subject, $message, $delay = true){
 		saveSetting('mail_queue', 1);
 		return true;
 	}else{
-		require_once SYSTEM_ROOT.'./class/mail.php';
 		$mail = new mail_content();
 		$mail->address = $address;
 		$mail->subject = $subject;
