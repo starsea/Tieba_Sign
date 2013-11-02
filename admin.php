@@ -162,7 +162,6 @@ switch($_GET['action']){
 }
 
 function getClasses(){
-	require_once SYSTEM_ROOT.'./class/mail.php';
 	$handle = opendir(SYSTEM_ROOT.'./class/mail/');
 	$classes = array();
 	while (1){
