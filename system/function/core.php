@@ -173,7 +173,7 @@ function cutstr($string, $length, $dot = ' ...') {
 	if($pos !== false) $strcut = substr($strcut,0,$pos);
 	return $strcut.$dot;
 }
-function update_liked_tieba($uid, $ignore_error = false){
+function update_liked_tieba($uid, $ignore_error = false, $allow_deletion = true){
 	$date = date('Ymd', TIMESTAMP + 900);
 	$cookie = get_cookie($uid);
 	if(!$cookie){
@@ -212,7 +212,7 @@ function update_liked_tieba($uid, $ignore_error = false){
 		}
 	}
 	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
-	if($my_tieba){
+	if($my_tieba && $allow_deletion){
 		$tieba_ids = array();
 		foreach($my_tieba as $tieba){
 			$tieba_ids[] = $tieba['tid'];
