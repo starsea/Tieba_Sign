@@ -4,7 +4,7 @@ define('IN_KKFRAME', true);
 define('SYSTEM_ROOT', dirname(__FILE__).'/');
 define('ROOT', dirname(SYSTEM_ROOT).'/');
 define('TIMESTAMP', time());
-define('VERSION', '1.13.10.20');
+define('VERSION', '1.13.11.5');
 
 if($_GET['debug']){
 	define('DEBUG_ENABLED', true);
