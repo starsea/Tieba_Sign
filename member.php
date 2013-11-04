@@ -97,7 +97,23 @@ EOF;
 	exit();
 }elseif($_GET['action'] == 'register'){
 	if(getSetting('block_register')) showmessage('抱歉，当前站点禁止新用户注册', 'member.php?action=login');
+	$count = DB::result_first('SELECT COUNT(*) FROM member');
 	if($_POST){
+		list($time, $hash, $member_count) = explode("\t", authcode($_POST['key'], 'DECODE'));
+		if($time > TIMESTAMP - 3 || $time < TIMESTAMP - 45) $_POST = array();
+		if($member_count != $count) showmessage('当前注册人数过多，请您稍后再试', 'member.php?action=register');
+		if($count > 1000) showmessage('超过当前站点最大用户数量上限，无法注册', 'member.php?action=register');
+		$_POST['username'] = $_POST['password'] = $_POST['email'] = null;
+		foreach($_POST as $key => $value){
+			$key = authcode($key, 'DECODE', $hash);
+			if($key == 'username'){
+				$_POST['username'] = $value;
+			}elseif($key == 'password'){
+				$_POST['password'] = $value;
+			}elseif($key == 'email'){
+				$_POST['email'] = $value;
+			}
+		}
 		if(!$_POST['username']){
 			showmessage('请输入用户名', 'member.php?action=register');
 		}elseif(!$_POST['password']){
@@ -128,6 +144,12 @@ EOF;
 			showmessage("注册成功，您的用户名是 <b>{$username}</b> 记住了哦~！", dreferer(), 3);
 		}
 	}
+	$hash = random(6);
+	$time = TIMESTAMP;
+	$register_key = authcode("{$time}\t{$hash}\t{$count}", 'ENCODE');
+	$form_username = authcode('username', 'ENCODE', $hash);
+	$form_password = authcode('password', 'ENCODE', $hash);
+	$form_email = authcode('email', 'ENCODE', $hash);
 	include template('register');
 	exit();
 }elseif($_POST){
