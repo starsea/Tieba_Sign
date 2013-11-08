@@ -95,7 +95,7 @@ EOF;
 	}
 	include template('lost_password');
 	exit();
-}elseif($_GET['action'] == 'register'){
+}elseif($_GET['action'] == 'register' && strexists($_SERVER['HTTP_REFERER'], 'member.php?action=register')){
 	if(getSetting('block_register')) showmessage('抱歉，当前站点禁止新用户注册', 'member.php?action=login');
 	$count = DB::result_first('SELECT COUNT(*) FROM member');
 	if($_POST){
