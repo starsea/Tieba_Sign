@@ -75,7 +75,7 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .copyright { margin-top: 42px; color: #757575; text-align: center; font-size: 12px; padding-bottom: 2em; }
 .copyright a { color: #59c; }
 #page_login .copyright { margin-top: 150px; }
-.loading-icon { background: #fff; position: fixed; top: 50%; right: 50%; padding: 20px 50px; border: 1px solid #dedede; border-radius: 5px; line-height: 20px; height: 20px; width: 70px; font-size: 12px; cursor: default; display: block; margin: -30px -85px; text-align: center; box-shadow: #9c9c9c 0 0 100px; animation: showfwin .3s; -webkit-animation: showfwin .3s; -moz-animation: showfwin .3s; }
+.loading-icon { background: #fff; position: fixed; top: 50%; right: 50%; padding: 20px 50px; border: 1px solid #dedede; border-radius: 5px; line-height: 20px; height: 20px; width: 70px; font-size: 12px; cursor: default; margin: -30px -85px; text-align: center; box-shadow: #9c9c9c 0 0 100px; animation: showfwin .3s; -webkit-animation: showfwin .3s; -moz-animation: showfwin .3s; }
 .loading-icon img { padding: 2px 5px 2px 0; float: left; }
 .loading-icon.h { opacity: 0; filter: alpha(opacity=0); _display: none; animation: hidefwin .3s; -webkit-animation: hidefwin .3s; -moz-animation: hidefwin .3s; }
 .reload { display: block; width: 16px; height: 16px; position: absolute; top: 8px; right: 10px; padding: 5px; border: 1px solid #dedede; border-radius: 5px; background: #fff; }

@@ -89,10 +89,14 @@ function msg_redirect_action(link){
 	return false;
 }
 function showloading(){
+	$('.loading-icon').removeClass('hidden');
 	$('.loading-icon').removeClass('h');
 }
+var loading_win_timer;
 function hideloading(){
 	$('.loading-icon').addClass('h');
+	if(loading_win_timer) clearTimeout(loading_win_timer);
+	loading_win_timer = setTimeout(function(){ $('.loading-icon').addClass('hidden'); }, 300);
 }
 function post_win(link, formid){
 	link += link.indexOf('?') < 0 ? '?' : '&';

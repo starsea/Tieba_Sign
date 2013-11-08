@@ -1,7 +1,4 @@
 (function(){
-	var stat = [];
-	var redirected = false;
-	stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
 	$('#menu_loved_tb').click(function (){
 		if($('#menu_loved_tb').hasClass('selected')) return;
 		$('.menu li.selected').removeClass('selected');
@@ -56,148 +53,6 @@
 		if($('#menu_config').hasClass('selected')) load_setting();
 		if(mobile) $('.sidebar').fadeOut();
 	});
-	function load_loved_tieba(){
-		showloading();
-		$.getJSON("ajax.php?v=loved-tieba", function(result){
-			if(!result) return;
-			$('#content-loved-tb table tbody').html('');
-			$.each(result, function(i, field){
-				$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td><input type=\"checkbox\" value=\""+field.tid+"\""+(field.skiped=='1' ? ' checked' : '')+" class=\"skip_sign\" /></td></tr>");
-			});
-			$('#content-loved-tb .skip_sign').click(function(){
-				showloading();
-				this.disabled = 'disabled';
-				$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_loved_tieba(); }).fail(function() { hideloading(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); });
-				return false;
-			});
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
-	}
-	function load_sign_log(){
-		showloading();
-		$.getJSON("ajax.php?v=sign-log", function(result){
-			if(result.count == 0 && !redirected){
-				redirected = true;
-				$('#menu_guide').click();
-			}
-			show_sign_log(result);
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
-	}
-	function load_sign_history(date){
-		$('.menu li.selected').removeClass('selected');
-		$('.main-content>div').addClass('hidden');
-		$('#content-sign-log').removeClass('hidden');
-		showloading();
-		$.getJSON("ajax.php?v=sign-history&date="+date, function(result){
-			show_sign_log(result);
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
-	}
-	function show_sign_log(result){
-		stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
-		if(!result || result.count == 0) return;
-		$('#content-sign-log table tbody').html('');
-		$('#content-sign-log h2').html(result.date+" 签到记录");
-		$.each(result.log, function(i, field){
-			$("#content-sign-log table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td>"+_status(field.status)+"</td><td>"+_exp(field.exp)+"</td></tr>");
-		});
-		var result_text = "";
-		result_text += "共计 "+(stat[0] + stat[1] + stat[2] + stat[3] + stat[4])+" 个贴吧";
-		result_text += ", 成功签到 "+(stat[4])+" 个贴吧";
-		if(stat[2]) result_text += ", 有 "+(stat[2])+" 个贴吧尚未签到";
-		if(stat[0]) result_text += ", 已跳过 "+(stat[0])+" 个贴吧";
-		if(stat[3]) result_text += ", "+(stat[3])+" 个贴吧正在等待重试";
-		if(stat[1]) result_text += ", "+(stat[1])+" 个贴吧无法签到, <a href=\"index.php?action=reset_failure&formhash="+formhash+"\" onclick=\"return msg_redirect_action(this.href)\">点此重置无法签到的贴吧</a>";
-		$('#sign-stat').html(result_text);
-		var pager_text = '';
-		if(result.before_date) pager_text += '<a href="#history-'+result.before_date+'">&laquo; 前一天</a> &nbsp; ';
-		if(!$('#menu_sign_log').hasClass('selected')) pager_text += '<a href="#signlog">今天</a>';
-		if(result.after_date) pager_text += ' &nbsp; <a href="#history-'+result.after_date+'">后一天 &raquo;</a>';
-		$('#page-flip').html(pager_text);
-	}
-	function load_setting(){
-		showloading();
-		$.getJSON("ajax.php?v=get-setting", function(result){
-			if(!result) return;
-			$('#error_mail').attr('checked', result.error_mail == "1");
-			$('#send_mail').attr('checked', result.send_mail == "1");
-			$('#zhidao_sign').attr('checked', result.zhidao_sign == "1");
-			$('#wenku_sign').attr('checked', result.wenku_sign == "1");
-			$('#bdbowser').removeAttr('disabled');
-			$('#error_mail').removeAttr('disabled');
-			$('#send_mail').removeAttr('disabled');
-			$('#zhidao_sign').removeAttr('disabled');
-			$('#wenku_sign').removeAttr('disabled');
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
-	}
-	function load_baidu_bind(){
-		showloading();
-		$.getJSON("ajax.php?v=get-bind-status", function(result){
-			if(!result) return;
-			$('#content-baidu_bind .tab').addClass('hidden');
-			if(result.no == 0){
-				$('#content-baidu_bind .tab-binded').removeClass('hidden');
-				$('.tab-binded div').removeClass('hidden');
-				$('.tab-binded div').html('');
-				$('.tab-binded div').append('<img src="http://tb.himg.baidu.com/sys/portrait/item/' + result.data.user_portrait + '" class="float-left">');
-				$('.tab-binded div').append('<p>百度通行证：<a href="http://tieba.baidu.com/home/main?un=' + result.data.user_name_url + '" target="_blank">' + result.data.user_name_show + '</a></p>');
-				$('.tab-binded div').append('<p>安全手机：' + result.data.mobilephone + '</p>');
-				$('.tab-binded div').append('<p>安全邮箱：' + result.data.email + '</p>');
-			}else{
-				$('#content-baidu_bind .tab-bind').removeClass('hidden');
-			}
-		}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取绑定状态').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
-	}
-	function _status(status){
-		if(typeof status == 'undefined') status = 0;
-		status = parseInt(status);
-		stat[ (status+2) ]++;
-		if(mobile){
-			switch(status){
-				case -2:	return '<img src="style/warn.png" />';
-				case -1:	return '<img src="style/error.gif" />';
-				case 0:		return '<img src="style/retry.gif" />';
-				case 1:		return '<img src="style/warn.png" />';
-				case 2:		return '<img src="style/done.gif" />';
-			}
-		}else{
-			switch(status){
-				case -2:	return '跳过签到';
-				case -1:	return '无法签到';
-				case 0:		return '待签到';
-				case 1:		return '签到失败';
-				case 2:		return '已签到';
-			}
-		}
-	}
-	function _exp(exp){
-		if(typeof exp == 'undefined') exp = 0;
-		return parseInt(exp) == 0 ? '-' : '+'+exp;
-	}
-	function parse_hash(){
-		var hash = location.hash.substring(1);
-		if(hash == "guide"){
-			$('#menu_guide').click();
-		}else if(hash == "loved"){
-			$('#menu_loved_tb').click();
-		}else if(hash == "signlog"){
-			$('#menu_sign_log').click();
-		}else if(hash == "baidu_bind"){
-			$('#menu_baidu_bind').click();
-		}else if(hash == "setting"){
-			$('#menu_config').click();
-		}else if(hash.split('-')[0] == "history"){
-			load_sign_history(hash.split('-')[1]);
-		}else if($('#menu_'+hash).length > 0){
-			$('#menu_'+hash).click();
-		}else{
-			$('#menu_sign_log').click();
-		}
-	}
-	function showloading(){
-		$('.loading-icon').removeClass('h');
-	}
-	function hideloading(){
-		$('.loading-icon').addClass('h');
-	}
 	$('#unbind_btn').click(function(){
 		var link = this.href;
 		createWindow().setTitle('解除绑定').setContent('确认要解除绑定吗？<br>(解除绑定后自动签到将停止，所有记录将被清除)').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();
@@ -231,3 +86,143 @@
 		parse_hash();
 	});
 })();
+
+var redirected = false;
+var stat = [];
+stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
+function load_loved_tieba(){
+	showloading();
+	$.getJSON("ajax.php?v=loved-tieba", function(result){
+		if(!result) return;
+		$('#content-loved-tb table tbody').html('');
+		$.each(result, function(i, field){
+			$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td><input type=\"checkbox\" value=\""+field.tid+"\""+(field.skiped=='1' ? ' checked' : '')+" class=\"skip_sign\" /></td></tr>");
+		});
+		$('#content-loved-tb .skip_sign').click(function(){
+			showloading();
+			this.disabled = 'disabled';
+			$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_loved_tieba(); }).fail(function() { hideloading(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); });
+			return false;
+		});
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
+}
+function load_sign_log(){
+	showloading();
+	$.getJSON("ajax.php?v=sign-log", function(result){
+		if(result.count == 0 && !redirected){
+			redirected = true;
+			$('#menu_guide').click();
+		}
+		show_sign_log(result);
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
+}
+function load_sign_history(date){
+	$('.menu li.selected').removeClass('selected');
+	$('.main-content>div').addClass('hidden');
+	$('#content-sign-log').removeClass('hidden');
+	showloading();
+	$.getJSON("ajax.php?v=sign-history&date="+date, function(result){
+		show_sign_log(result);
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
+}
+function show_sign_log(result){
+	stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
+	if(!result || result.count == 0) return;
+	$('#content-sign-log table tbody').html('');
+	$('#content-sign-log h2').html(result.date+" 签到记录");
+	$.each(result.log, function(i, field){
+		$("#content-sign-log table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td>"+_status(field.status)+"</td><td>"+_exp(field.exp)+"</td></tr>");
+	});
+	var result_text = "";
+	result_text += "共计 "+(stat[0] + stat[1] + stat[2] + stat[3] + stat[4])+" 个贴吧";
+	result_text += ", 成功签到 "+(stat[4])+" 个贴吧";
+	if(stat[2]) result_text += ", 有 "+(stat[2])+" 个贴吧尚未签到";
+	if(stat[0]) result_text += ", 已跳过 "+(stat[0])+" 个贴吧";
+	if(stat[3]) result_text += ", "+(stat[3])+" 个贴吧正在等待重试";
+	if(stat[1]) result_text += ", "+(stat[1])+" 个贴吧无法签到, <a href=\"index.php?action=reset_failure&formhash="+formhash+"\" onclick=\"return msg_redirect_action(this.href)\">点此重置无法签到的贴吧</a>";
+	$('#sign-stat').html(result_text);
+	var pager_text = '';
+	if(result.before_date) pager_text += '<a href="#history-'+result.before_date+'">&laquo; 前一天</a> &nbsp; ';
+	if(!$('#menu_sign_log').hasClass('selected')) pager_text += '<a href="#signlog">今天</a>';
+	if(result.after_date) pager_text += ' &nbsp; <a href="#history-'+result.after_date+'">后一天 &raquo;</a>';
+	$('#page-flip').html(pager_text);
+}
+function load_setting(){
+	showloading();
+	$.getJSON("ajax.php?v=get-setting", function(result){
+		if(!result) return;
+		$('#error_mail').attr('checked', result.error_mail == "1");
+		$('#send_mail').attr('checked', result.send_mail == "1");
+		$('#zhidao_sign').attr('checked', result.zhidao_sign == "1");
+		$('#wenku_sign').attr('checked', result.wenku_sign == "1");
+		$('#bdbowser').removeAttr('disabled');
+		$('#error_mail').removeAttr('disabled');
+		$('#send_mail').removeAttr('disabled');
+		$('#zhidao_sign').removeAttr('disabled');
+		$('#wenku_sign').removeAttr('disabled');
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
+}
+function load_baidu_bind(){
+	showloading();
+	$.getJSON("ajax.php?v=get-bind-status", function(result){
+		if(!result) return;
+		$('#content-baidu_bind .tab').addClass('hidden');
+		if(result.no == 0){
+			$('#content-baidu_bind .tab-binded').removeClass('hidden');
+			$('.tab-binded div').removeClass('hidden');
+			$('.tab-binded div').html('');
+			$('.tab-binded div').append('<img src="http://tb.himg.baidu.com/sys/portrait/item/' + result.data.user_portrait + '" class="float-left">');
+			$('.tab-binded div').append('<p>百度通行证：<a href="http://tieba.baidu.com/home/main?un=' + result.data.user_name_url + '" target="_blank">' + result.data.user_name_show + '</a></p>');
+			$('.tab-binded div').append('<p>安全手机：' + result.data.mobilephone + '</p>');
+			$('.tab-binded div').append('<p>安全邮箱：' + result.data.email + '</p>');
+		}else{
+			$('#content-baidu_bind .tab-bind').removeClass('hidden');
+		}
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取绑定状态').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
+}
+function _status(status){
+	if(typeof status == 'undefined') status = 0;
+	status = parseInt(status);
+	stat[ (status+2) ]++;
+	if(mobile){
+		switch(status){
+			case -2:	return '<img src="style/warn.png" />';
+			case -1:	return '<img src="style/error.gif" />';
+			case 0:		return '<img src="style/retry.gif" />';
+			case 1:		return '<img src="style/warn.png" />';
+			case 2:		return '<img src="style/done.gif" />';
+		}
+	}else{
+		switch(status){
+			case -2:	return '跳过签到';
+			case -1:	return '无法签到';
+			case 0:		return '待签到';
+			case 1:		return '签到失败';
+			case 2:		return '已签到';
+		}
+	}
+}
+function _exp(exp){
+	if(typeof exp == 'undefined') exp = 0;
+	return parseInt(exp) == 0 ? '-' : '+'+exp;
+}
+function parse_hash(){
+	var hash = location.hash.substring(1);
+	if(hash == "guide"){
+		$('#menu_guide').click();
+	}else if(hash == "loved"){
+		$('#menu_loved_tb').click();
+	}else if(hash == "signlog"){
+		$('#menu_sign_log').click();
+	}else if(hash == "baidu_bind"){
+		$('#menu_baidu_bind').click();
+	}else if(hash == "setting"){
+		$('#menu_config').click();
+	}else if(hash.split('-')[0] == "history"){
+		load_sign_history(hash.split('-')[1]);
+	}else if($('#menu_'+hash).length > 0){
+		$('#menu_'+hash).click();
+	}else{
+		$('#menu_sign_log').click();
+	}
+}
