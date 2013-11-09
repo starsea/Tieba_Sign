@@ -95,10 +95,10 @@ EOF;
 	}
 	include template('lost_password');
 	exit();
-}elseif($_GET['action'] == 'register' && strexists($_SERVER['HTTP_REFERER'], 'member.php?action=register')){
+}elseif($_GET['action'] == 'register'){
 	if(getSetting('block_register')) showmessage('抱歉，当前站点禁止新用户注册', 'member.php?action=login');
 	$count = DB::result_first('SELECT COUNT(*) FROM member');
-	if($_POST){
+	if($_POST && strexists($_SERVER['HTTP_REFERER'], 'member.php?action=register')){
 		list($time, $hash, $member_count) = explode("\t", authcode($_POST['key'], 'DECODE'));
 		if($time > TIMESTAMP - 3 || $time < TIMESTAMP - 45) $_POST = array();
 		if($member_count != $count) showmessage('当前注册人数过多，请您稍后再试', 'member.php?action=register');
