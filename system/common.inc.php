@@ -11,7 +11,7 @@ if($_GET['debug']){
 	error_reporting(E_ALL ^ E_NOTICE);
 }else{
 	define('DEBUG_ENABLED', false);
-	error_reporting(E_ERROR);
+	error_reporting(0);
 }
 require_once SYSTEM_ROOT.'./class/core.php';
 $system = new kk_sign();

@@ -14,7 +14,7 @@ class phpmail extends mailer{
 		$headers .= "Content-Type: text/html;charset=utf-8\r\n";
 		$headers .= "Content-Transfer-Encoding: quoted-printable\r\n";
 		$headers .= "To: {$address}\r\n";
-		$headers .= "From: 贴吧签到助手\r\n";
+		$headers .= 'From: =?UTF-8?B?'.base64_encode('贴吧签到助手')."?=\r\n";
 		$message = quoted_printable_encode($message);
 		return mail($mail->address, '=?UTF-8?B?'.base64_encode($mail->subject).'?=', $mail->message, $headers);
 	}

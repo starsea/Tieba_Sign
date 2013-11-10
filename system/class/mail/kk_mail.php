@@ -7,7 +7,7 @@ class kk_mail extends mailer{
 	var $description = 'KK 提供的 SAE 邮件代理发送邮件 (发送者显示 KK-Open-Mail-System &lt;open_mail_api@ikk.me&gt;)';
 	var $config = array(
 		array('加密密钥', 'key', '一般请保持默认', 'c131027cf14ed57680ee'),
-		array('API地址', 'path', '', 'http://miota.sinaapp.com/api/bae_mail_helper_open.php'),
+		array('API地址', 'path', '', 'http://api.ikk.me/mail.php'),
 	);
 	function isAvailable(){
 		return true;
