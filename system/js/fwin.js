@@ -88,6 +88,15 @@ function msg_redirect_action(link){
 	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	return false;
 }
+function msg_callback_action(link, callback){
+	link += link.indexOf('?') < 0 ? '?' : '&';
+	link += "format=json";
+	showloading();
+	$.getJSON(link, function(result){
+		createWindow().setTitle('系统消息').setContent(result.msg).addButton('确定', function(){ callback(); }).append();
+	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
+	return false;
+}
 function showloading(){
 	$('.loading-icon').removeClass('hidden');
 	$('.loading-icon').removeClass('h');
@@ -98,12 +107,20 @@ function hideloading(){
 	if(loading_win_timer) clearTimeout(loading_win_timer);
 	loading_win_timer = setTimeout(function(){ $('.loading-icon').addClass('hidden'); }, 300);
 }
-function post_win(link, formid){
+function post_win(link, formid, callback, skip_win){
 	link += link.indexOf('?') < 0 ? '?' : '&';
 	link += "format=json";
 	showloading();
 	$.post(link, $('#'+formid).serialize(), function(result){
-		createWindow().setTitle('系统消息').setContent(result.msg).addCloseButton('确定').append();
+		if(!callback && result.redirect) callback = function(){ location.href = result.redirect; }
+		if(skip_win) return callback();
+		var win = createWindow().setTitle('系统消息').setContent(result.msg);
+		if(callback){
+			win.addButton('确定', callback);
+		}else{
+			win.addCloseButton('确定');
+		}
+		win.append();
 	}, 'json').fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法解析返回结果').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 	return false;
 }

@@ -24,13 +24,13 @@ if(!defined('IN_KKFRAME')) exit();
 <div class="reload"><img src="style/reload.png" /></div>
 <div class="menubtn">&nbsp;</div>
 <div class="sidebar">
-<ul class="menu">
+<ul id="menu" class="menu">
 <li id="menu_guide"><a href="#guide">配置向导</a></li>
 <li id="menu_sign_log"><a href="#signlog">签到记录</a></li>
-<li id="menu_loved_tb"><a href="#loved">我喜欢的贴吧</a></li>
+<li id="menu_liked_tieba"><a href="#liked_tieba">我喜欢的贴吧</a></li>
 <li id="menu_baidu_bind"><a href="#baidu_bind">百度账号绑定</a></li>
-<li id="menu_config"><a href="#setting">设置</a></li>
-<?php HOOK::run('main_menu'); ?>
+<li id="menu_setting"><a href="#setting">设置</a></li>
+<?php HOOK::page_menu(); ?>
 <li id="menu_logout"><a href="member.php?action=logout&hash=<?php echo $formhash; ?>">退出登录</a></li>
 </ul>
 <br>
@@ -48,7 +48,7 @@ foreach ($users as $_uid => $username){
 <div class="main-content">
 <div id="content-guide" class="hidden">
 </div>
-<div id="content-loved-tb" class="hidden">
+<div id="content-liked_tieba" class="hidden">
 <h2>我喜欢的贴吧</h2>
 <p>如果此处显示的贴吧有缺失，请<a href="index.php?action=refresh_liked_tieba" onclick="return msg_redirect_action(this.href+'&formhash='+formhash)">点此刷新喜欢的贴吧</a>.</p>
 <table>
@@ -56,7 +56,7 @@ foreach ($users as $_uid => $username){
 <tbody></tbody>
 </table>
 </div>
-<div id="content-sign-log" class="hidden">
+<div id="content-sign_log" class="hidden">
 <h2>签到记录</h2>
 <span id="page-flip" class="float-right"></span>
 <p id="sign-stat"></p>
@@ -71,7 +71,7 @@ if(IN_MOBILE){
 <tbody></tbody>
 </table>
 </div>
-<div id="content-config" class="hidden">
+<div id="content-setting" class="hidden">
 <h2>设置</h2>
 <form method="post" action="index.php?action=update_setting" id="setting_form" onsubmit="return post_win(this.action, this.id)">
 <input type="hidden" name="formhash" value="<?php echo $formhash; ?>">
@@ -102,7 +102,7 @@ if(IN_MOBILE){
 </div>
 <div id="content-baidu_bind" class="hidden">
 <h2>百度账号绑定</h2>
-<div class="tab tab-binded">
+<div class="tab tab-binded hidden">
 <p>您的百度账号绑定正常。</p>
 <br>
 <div class="baidu_account"></div>
@@ -133,7 +133,7 @@ if(IN_MOBILE){
 <p><a href="javascript:(function(){if(document.cookie.indexOf('BDUSS')<0){alert('找不到BDUSS Cookie\n请先登陆 http://wapp.baidu.com/');location.href='http://wappass.baidu.com/passport/?login&u=http%3A%2F%2Fwapp.baidu.com%2F&ssid=&from=&uid=wapp_1375936328496_692&pu=&auth=&originid=2&mo_device=1&bd_page_type=1&tn=bdIndex&regtype=1&tpl=tb';}else{prompt('您的 Cookie 信息如下:', document.cookie);}})();" onclick="alert('请拖动到收藏夹');return false;" class="btn">获取手机百度贴吧 Cookie</a></p>
 </div>
 </div>
-<?php HOOK::run('tabs'); ?>
+<?php HOOK::page_contents(); ?>
 </div>
 </div>
 <p class="copyright">当前版本：<?php echo VERSION; ?> <?php if(MCACHE::isAvailable()) echo '- Memcached '; ?>- <a href="https://me.alipay.com/kookxiang" target="_blank">赞助开发</a><br>Designed by <a href="http://www.ikk.me" target="_blank">kookxiang</a>. 2013 &copy; <a href="http://www.kookxiang.com" target="_blank">KK's Laboratory</a><br>请勿擅自修改程序版权信息或将本程序用于商业用途！<br><?php HOOK::run('page_footer'); ?></p>

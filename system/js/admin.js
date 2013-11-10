@@ -1,63 +1,61 @@
-(function(){
-	$('#menu_user').click(function (){
-		if($('#menu_user').hasClass('selected')) return;
+$(document).ready(function() {
+	$('#menu>li').click(function (){
+		if(!$(this).attr('id')) return;
+		if($(this).attr('id') == 'menu_updater') return;
+		if($(this).hasClass('selected')) return;
 		$('.menu li.selected').removeClass('selected');
-		$('#menu_user').addClass('selected');
-		$('.main-content div').addClass('hidden');
-		$('#content-user').removeClass('hidden');
-		load_user();
-		if(mobile) $('.sidebar').fadeOut();
-	});
-	$('#menu_stat').click(function (){
-		if($('#menu_stat').hasClass('selected')) return;
-		$('.menu li.selected').removeClass('selected');
-		$('#menu_stat').addClass('selected');
-		$('.main-content div').addClass('hidden');
-		$('#content-stat').removeClass('hidden');
-		load_userstat();
-		if(mobile) $('.sidebar').fadeOut();
-	});
-	$('#menu_config').click(function (){
-		if($('#menu_config').hasClass('selected')) return;
-		$('.menu li.selected').removeClass('selected');
-		$('#menu_config').addClass('selected');
-		$('.main-content div').addClass('hidden');
-		$('#content-config').removeClass('hidden');
-		load_setting();
-		if(mobile) $('.sidebar').fadeOut();
-	});
-	$('#menu_mail').click(function (){
-		if($('#menu_mail').hasClass('selected')) return;
-		$('.menu li.selected').removeClass('selected');
-		$('#menu_mail').addClass('selected');
-		$('.main-content div').addClass('hidden');
-		$('#content-mail').removeClass('hidden');
+		$(this).addClass('selected');
+		var content_id = $(this).attr('id').replace('menu_', '#content-');
+		$('.main-content>div').addClass('hidden');
+		$(content_id).removeClass('hidden');
+		var callback = $(this).attr('id').replace('menu_', 'load_');
+		eval('if (typeof '+callback+' == "function") '+callback+'(); ');
 		if(mobile) $('.sidebar').fadeOut();
 	});
 	$('#mail_advanced_config').click(function(){
+		post_win($('#mail_setting').attr('action'), 'mail_setting', function(){
+			showloading();
+			$.getJSON("admin.php?action=mail_advanced", function(result){
+				if(!result) return;
+				var content = '';
+				for(var i=0; i<result.length; i++){
+					content += '<p>'+result[i].name+':'+(result[i].description ? ' ('+result[i].description+')' : '')+'</p><p>';
+					content += '<input type="'+result[i].type+'" name="'+result[i].key+'" value="'+result[i].value+'" style="width: 95%" />';
+					content += '</p>';
+				}
+				createWindow().setTitle('邮件高级设置').setContent('<form method="post" action="admin.php?action=mail_advanced" id="advanced_mail_config" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'">'+content+'</form>').addButton('确定', function(){ $('#advanced_mail_config').submit(); }).addCloseButton('取消').append();
+			}).fail(function() { createWindow().setTitle('邮件高级设置').setContent('发生未知错误: 无法打开高级设置面板').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		}, true);
+		return false;
+	});
+	$('.link_config').click(function(){
+		var link = this.href;
 		showloading();
-		$.getJSON("admin.php?action=mail_advanced", function(result){
-			if(!result) return;
-			var content = '';
-			for(var i=0; i<result.length; i++){
-				content += '<p>'+result[i].name+':'+(result[i].description ? ' ('+result[i].description+')' : '')+'</p><p>';
-				content += '<input type="'+result[i].type+'" name="'+result[i].key+'" value="'+result[i].value+'" style="width: 95%" />';
-				content += '</p>';
-			}
-			createWindow().setTitle('邮件高级设置').setContent('<form method="post" action="admin.php?action=mail_advanced" id="advanced_mail_config" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'">'+content+'</form>').addButton('确定', function(){ $('#advanced_mail_config').submit(); }).addCloseButton('取消').append();
-		}).fail(function() { createWindow().setTitle('邮件高级设置').setContent('发生未知错误: 无法打开高级设置面板').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
+		$.getJSON(link, function(result){
+			createWindow().setTitle('插件设置').setContent('<form method="post" action="'+link+'" id="plugin_config" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'">'+result.html+'</form>').addButton('确定', function(){ $('#plugin_config').submit(); }).addCloseButton('取消').append();
+		}).fail(function() { createWindow().setTitle('插件设置').setContent('发生未知错误: 无法打开插件设置面板').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 		return false;
 	});
 	$('.menubtn').click(function(){
 		$('.sidebar').fadeToggle();
 	});
+	$('.link_install').click(function(){
+		var link = this.href;
+		createWindow().setTitle('安装插件').setContent('确定要安装这个插件吗？').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();
+		return false;
+	});
+	$('.link_uninstall').click(function(){
+		var link = this.href;
+		createWindow().setTitle('卸载插件').setContent('确定要卸载这个插件吗？').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();
+		return false;
+	});
 	$(window).on('hashchange', function() {
 		parse_hash();
 	});
-	$(document).ready(function() {
-		parse_hash();
-	});
-})();
+	hideloading();
+	while(location.hash.lastIndexOf('#') > 0) location.hash = location.hash.substring(0, location.hash.lastIndexOf('#'));
+	parse_hash();
+});
 
 function load_user(){
 	showloading();
@@ -69,7 +67,7 @@ function load_user(){
 		});
 	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取用户列表').addCloseButton('确定').append(); }).always(function(){ hideloading(); });
 }
-function load_userstat(){
+function load_stat(){
 	showloading();
 	$.getJSON("admin.php?action=load_userstat", function(result){
 		if(!result) return;
@@ -91,14 +89,21 @@ function load_setting(){
 }
 function parse_hash(){
 	var hash = location.hash.substring(1);
+	if(hash.indexOf('#') >= 0){
+		location.href = location.href.substring(0, location.href.lastIndexOf('#'));
+		location.reload();
+		return;
+	}
 	if(hash == "user"){
 		$('#menu_user').click();
 	}else if(hash == "stat"){
 		$('#menu_stat').click();
-	}else if(hash == "config"){
-		$('#menu_config').click();
+	}else if(hash == "setting"){
+		$('#menu_setting').click();
 	}else if(hash == "mail"){
 		$('#menu_mail').click();
+	}else if(hash == "plugin"){
+		$('#menu_plugin').click();
 	}else{
 		$('#menu_user').click();
 	}

@@ -5,7 +5,7 @@ if(!$uid) exit('Access Denied');
 
 $data = array();
 switch($_GET['v']){
-	case 'loved-tieba':
+	case 'liked_tieba':
 		$query = DB::query("SELECT * FROM my_tieba WHERE uid='{$uid}'");
 		while($result = DB::fetch($query)){
 			$data[] = $result;

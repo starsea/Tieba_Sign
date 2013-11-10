@@ -23,7 +23,7 @@ if(!defined('IN_KKFRAME')) exit();
 <input type="hidden" name="key" value="<?php echo $register_key; ?>">
 <p>用户名：<input type="text" name="<?php echo $form_username; ?>" placeholder="用户名" required /></p>
 <p>密　码：<input type="password" name="<?php echo $form_password; ?>" placeholder="密　码" required /></p>
-<p>邮　箱：<input type="email" name="<?php echo $form_email; ?>" placeholder="邮　箱" required /></p>
+<p>邮　箱：<input type="text" name="<?php echo $form_email; ?>" placeholder="邮　箱" required /></p>
 <?php
 if($invite_code) echo '<p>邀请码：<input type="text" name="invite_code" placeholder="邀请码" required /></p>';
 ?>

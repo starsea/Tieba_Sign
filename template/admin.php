@@ -23,10 +23,11 @@ if(!defined('IN_ADMINCP')) exit();
 <div class="loading-icon"><img src="style/loading.gif" /> 载入中...</div>
 <div class="menubtn">&nbsp;</div>
 <div class="sidebar">
-<ul class="menu">
+<ul id="menu" class="menu">
 <li id="menu_user"><a href="#user">用户管理</a></li>
 <li id="menu_stat"><a href="#stat">用户签到统计</a></li>
-<li id="menu_config"><a href="#config">系统设置</a></li>
+<li id="menu_plugin"><a href="#plugin">插件管理</a></li>
+<li id="menu_setting"><a href="#setting">系统设置</a></li>
 <li id="menu_mail"><a href="#mail">邮件群发</a></li>
 <li id="menu_updater"><a href="http://update.kookxiang.com/gateway.php?id=tieba_sign&version=<?php echo VERSION; ?>" target="_blank" onclick="return show_updater_win(this.href)">检查更新</a></li>
 <li><a href="./">返回前台</a></li>
@@ -47,7 +48,7 @@ if(!defined('IN_ADMINCP')) exit();
 <tbody></tbody>
 </table>
 </div>
-<div id="content-config" class="hidden">
+<div id="content-setting" class="hidden">
 <h2>系统设置</h2>
 <form method="post" action="admin.php?action=save_setting" id="setting_form" onsubmit="return post_win(this.action, this.id)">
 <p>功能增强</p>
@@ -88,6 +89,31 @@ foreach($classes as $id=>$obj){
 <p><textarea name="content" rows="10" style="width: 80%"></textarea></p>
 <p><input type="submit" value="确认发送" /></p>
 </form>
+</div>
+<div id="content-plugin" class="hidden">
+<h2>插件管理</h2>
+<p>安装相关插件能够增强 贴吧签到助手 的相关功能.（部分插件可能会影响系统运行效率）</p>
+<p>插件的设计可以参考 Github 上的项目介绍.</p>
+<p>将插件文件放到 /plugins/ 文件夹下即可在此处看到对应的插件程序.</p>
+<table>
+<thead><tr><td style="width: 40px">#</td><td>插件标识符 (ID)</td><td>插件介绍</td><td>操作</td></tr></thead>
+<?php
+$i = 1;
+foreach($plugins as $plugin){
+	echo '<tr><td>'.$i++."</td><td>{$plugin[id]}</td><td>";
+	echo $plugin['obj']->description;
+	echo '</td><td>';
+	if($plugin['installed']){
+		if(method_exists($plugin['obj'], 'on_config')) echo '<a href="admin.php?action=config_plugin&pluginid='.$plugin['id'].'" class="link_config">设置</a> | ';
+		echo '<a href="admin.php?action=uninstall_plugin&pluginid='.$plugin['id'].'&formhash='.$formhash.'" class="link_uninstall">卸载</a>';
+	}else{
+		echo '<a href="admin.php?action=install_plugin&pluginid='.$plugin['id'].'&formhash='.$formhash.'" class="link_install">安装</a>';
+	}
+	echo '</td></tr>';
+}
+?>
+<tbody></tbody>
+</table>
 </div>
 </div>
 </div>

@@ -1,47 +1,14 @@
-(function(){
-	$('#menu_loved_tb').click(function (){
-		if($('#menu_loved_tb').hasClass('selected')) return;
+$(document).ready(function() {
+	$('#menu>li').click(function (){
+		if($(this).attr('id') == 'menu_logout') return;
+		if($(this).hasClass('selected')) return;
 		$('.menu li.selected').removeClass('selected');
-		$('#menu_loved_tb').addClass('selected');
+		$(this).addClass('selected');
+		var content_id = $(this).attr('id').replace('menu_', '#content-');
 		$('.main-content>div').addClass('hidden');
-		$('#content-loved-tb').removeClass('hidden');
-		load_loved_tieba();
-		if(mobile) $('.sidebar').fadeOut();
-	});
-	$('#menu_sign_log').click(function (){
-		if($('#menu_sign_log').hasClass('selected')) return;
-		$('.menu li.selected').removeClass('selected');
-		$('#menu_sign_log').addClass('selected');
-		$('.main-content>div').addClass('hidden');
-		$('#content-sign-log').removeClass('hidden');
-		load_sign_log();
-		if(mobile) $('.sidebar').fadeOut();
-	});
-	$('#menu_config').click(function (){
-		if($('#menu_config').hasClass('selected')) return;
-		$('.menu li.selected').removeClass('selected');
-		$('#menu_config').addClass('selected');
-		$('.main-content>div').addClass('hidden');
-		$('#content-config').removeClass('hidden');
-		load_setting();
-		if(mobile) $('.sidebar').fadeOut();
-	});
-	$('#menu_guide').click(function (){
-		if($('#menu_guide').hasClass('selected')) return;
-		$('.menu li.selected').removeClass('selected');
-		$('#menu_guide').addClass('selected');
-		$('.main-content>div').addClass('hidden');
-		$('#content-guide').removeClass('hidden');
-		if(mobile) $('.sidebar').fadeOut();
-		hideloading();
-	});
-	$('#menu_baidu_bind').click(function (){
-		if($('#menu_baidu_bind').hasClass('selected')) return;
-		$('.menu li.selected').removeClass('selected');
-		$('#menu_baidu_bind').addClass('selected');
-		$('.main-content>div').addClass('hidden');
-		$('#content-baidu_bind').removeClass('hidden');
-		load_baidu_bind();
+		$(content_id).removeClass('hidden');
+		var callback = $(this).attr('id').replace('menu_', 'load_');
+		eval('if (typeof '+callback+' == "function") '+callback+'(); ');
 		if(mobile) $('.sidebar').fadeOut();
 	});
 	$('#show_cookie_setting').click(function (){
@@ -55,7 +22,7 @@
 	});
 	$('#unbind_btn').click(function(){
 		var link = this.href;
-		createWindow().setTitle('解除绑定').setContent('确认要解除绑定吗？<br>(解除绑定后自动签到将停止，所有记录将被清除)').addButton('确定', function(){ msg_redirect_action(link); }).addCloseButton('取消').append();
+		createWindow().setTitle('解除绑定').setContent('确认要解除绑定吗？<br>(解除绑定后自动签到将停止，所有记录将被清除)').addButton('确定', function(){ msg_callback_action(link, load_baidu_bind); }).addCloseButton('取消').append();
 		return false;
 	});
 	$('.menu_switch_user a').click(function(){
@@ -82,23 +49,23 @@
 	$(window).on('hashchange', function() {
 		parse_hash();
 	});
-	$(document).ready(function() {
-		parse_hash();
-	});
-})();
+	hideloading();
+	while(location.hash.lastIndexOf('#') > 0) location.hash = location.hash.substring(0, location.hash.lastIndexOf('#'));
+	parse_hash();
+});
 
-var redirected = false;
+var guide_viewed = false;
 var stat = [];
 stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
-function load_loved_tieba(){
+function load_liked_tieba(){
 	showloading();
-	$.getJSON("ajax.php?v=loved-tieba", function(result){
+	$.getJSON("ajax.php?v=liked_tieba", function(result){
 		if(!result) return;
-		$('#content-loved-tb table tbody').html('');
+		$('#content-liked_tieba table tbody').html('');
 		$.each(result, function(i, field){
-			$("#content-loved-tb table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td><input type=\"checkbox\" value=\""+field.tid+"\""+(field.skiped=='1' ? ' checked' : '')+" class=\"skip_sign\" /></td></tr>");
+			$("#content-liked_tieba table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td><input type=\"checkbox\" value=\""+field.tid+"\""+(field.skiped=='1' ? ' checked' : '')+" class=\"skip_sign\" /></td></tr>");
 		});
-		$('#content-loved-tb .skip_sign').click(function(){
+		$('#content-liked_tieba .skip_sign').click(function(){
 			showloading();
 			this.disabled = 'disabled';
 			$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_loved_tieba(); }).fail(function() { hideloading(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); });
@@ -109,9 +76,9 @@ function load_loved_tieba(){
 function load_sign_log(){
 	showloading();
 	$.getJSON("ajax.php?v=sign-log", function(result){
-		if(result.count == 0 && !redirected){
-			redirected = true;
+		if(result.count == 0 && !guide_viewed){
 			$('#menu_guide').click();
+			return;
 		}
 		show_sign_log(result);
 	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取签到报告').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
@@ -162,6 +129,9 @@ function load_setting(){
 		$('#wenku_sign').removeAttr('disabled');
 	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取系统设置').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
 }
+function load_guide(){
+	guide_viewed = true;
+}
 function load_baidu_bind(){
 	showloading();
 	$.getJSON("ajax.php?v=get-bind-status", function(result){
@@ -208,10 +178,16 @@ function _exp(exp){
 }
 function parse_hash(){
 	var hash = location.hash.substring(1);
+	if(hash.indexOf('#') >= 0){
+		location.href = location.href.substring(0, location.href.lastIndexOf('#'));
+		location.reload();
+		return;
+	}
 	if(hash == "guide"){
 		$('#menu_guide').click();
-	}else if(hash == "loved"){
-		$('#menu_loved_tb').click();
+	}else if(hash == "liked_tieba"){
+		guide_viewed = true;
+		$('#menu_liked_tieba').click();
 	}else if(hash == "signlog"){
 		$('#menu_sign_log').click();
 	}else if(hash == "baidu_bind"){
