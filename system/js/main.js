@@ -15,7 +15,7 @@ $(document).ready(function() {
 		$('.tab-cookie').toggleClass('hidden');
 	});
 	$('.reload').click(function (){
-		if($('#menu_loved_tb').hasClass('selected')) load_loved_tieba();
+		if($('#menu_liked_tieba').hasClass('selected')) load_loved_tieba();
 		if($('#menu_sign_log').hasClass('selected')) load_sign_log();
 		if($('#menu_config').hasClass('selected')) load_setting();
 		if(mobile) $('.sidebar').fadeOut();
@@ -95,10 +95,10 @@ function load_sign_history(date){
 function show_sign_log(result){
 	stat[0] = stat[1] = stat[2] = stat[3] = stat[4] = 0;
 	if(!result || result.count == 0) return;
-	$('#content-sign-log table tbody').html('');
-	$('#content-sign-log h2').html(result.date+" 签到记录");
+	$('#content-sign_log table tbody').html('');
+	$('#content-sign_log h2').html(result.date+" 签到记录");
 	$.each(result.log, function(i, field){
-		$("#content-sign-log table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td>"+_status(field.status)+"</td><td>"+_exp(field.exp)+"</td></tr>");
+		$("#content-sign_log table tbody").append("<tr><td>"+(i+1)+"</td><td><a href=\"http://tieba.baidu.com/f?kw="+field.unicode_name+"\" target=\"_blank\">"+field.name+"</a></td><td>"+_status(field.status)+"</td><td>"+_exp(field.exp)+"</td></tr>");
 	});
 	var result_text = "";
 	result_text += "共计 "+(stat[0] + stat[1] + stat[2] + stat[3] + stat[4])+" 个贴吧";
@@ -188,7 +188,7 @@ function parse_hash(){
 	}else if(hash == "liked_tieba"){
 		guide_viewed = true;
 		$('#menu_liked_tieba').click();
-	}else if(hash == "signlog"){
+	}else if(hash == "sign_log"){
 		$('#menu_sign_log').click();
 	}else if(hash == "baidu_bind"){
 		$('#menu_baidu_bind').click();

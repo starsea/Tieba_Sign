@@ -26,7 +26,7 @@ if(!defined('IN_KKFRAME')) exit();
 <div class="sidebar">
 <ul id="menu" class="menu">
 <li id="menu_guide"><a href="#guide">配置向导</a></li>
-<li id="menu_sign_log"><a href="#signlog">签到记录</a></li>
+<li id="menu_sign_log"><a href="#sign_log">签到记录</a></li>
 <li id="menu_liked_tieba"><a href="#liked_tieba">我喜欢的贴吧</a></li>
 <li id="menu_baidu_bind"><a href="#baidu_bind">百度账号绑定</a></li>
 <li id="menu_setting"><a href="#setting">设置</a></li>
