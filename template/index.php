@@ -12,6 +12,7 @@ if(!defined('IN_KKFRAME')) exit();
 <meta name="copyright" content="KK's Laboratory" />
 <link rel="shortcut icon" href="/favicon.ico" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="renderer" content="webkit">
 <link rel="stylesheet" href="./style/main.css?version=<?php echo VERSION; ?>" type="text/css" />
 <link rel="stylesheet" href="./style/custom.css" type="text/css" />
 </head>

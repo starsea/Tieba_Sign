@@ -11,6 +11,7 @@ if(!defined('IN_KKFRAME')) exit();
 <meta name="author" content="kookxiang" />
 <meta name="copyright" content="KK's Laboratory" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="renderer" content="webkit">
 <link rel="stylesheet" href="./style/main.css?version=<?php echo VERSION; ?>" type="text/css" />
 <link rel="stylesheet" href="./style/custom.css" type="text/css" />
 </head>
