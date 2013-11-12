@@ -193,7 +193,7 @@ function parse_hash(){
 	}else if(hash == "baidu_bind"){
 		$('#menu_baidu_bind').click();
 	}else if(hash == "setting"){
-		$('#menu_config').click();
+		$('#menu_setting').click();
 	}else if(hash.split('-')[0] == "history"){
 		load_sign_history(hash.split('-')[1]);
 	}else if($('#menu_'+hash).length > 0){
