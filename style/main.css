@@ -120,13 +120,13 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 @media (max-width: 550px){
 	::-webkit-scrollbar { width: 5px; height: 5px; }
 	.wrapper { padding: 0 5px 0 10px; }
-	#page_login .side-bar { width: 100%; height: 85px; border-radius: 10px 10px 0 0; }
 	#page_login .icon { float: left; }
 	#page_index h1 { margin: 0 -5px; }
+	#page_login .side-bar { width: 100%; height: 85px; border-radius: 10px 10px 0 0; overflow: hidden; }
 	#page_login .side-bar li { padding: 0; float: left; width: 85px; height: 85px; line-height: 85px; }
 	#page_login .side-bar li.current { color: #fff; background: url(triangle.mobile.png) no-repeat 50% 100%; }
 	#page_login .main { margin-top: 85px; margin-left: 0; width: 100%; }
-	.center-box { top: 75px; width: 85%; }
+	.center-box { top: 75px; width: 95%; box-sizing: border-box; }
 	.main-box { top: 15px; width: auto; padding: 10px 5px; }
 	.copyright { margin-top: 22px; font-size: 11px; }
 	#page_login .copyright { margin-top: 100px; }
