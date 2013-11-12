@@ -48,6 +48,9 @@ if(!defined('IN_KKFRAME')) exit();
 <p><input type="password" name="<?php echo $form_password; ?>" required tabindex="2" /></p>
 <p>邮箱：</p>
 <p><input type="text" name="<?php echo $form_email; ?>" required tabindex="3" /></p>
+<?php
+if($invite_code) echo '<p>邀请码：</p><p><input type="text" name="invite_code" placeholder="邀请码" required /></p>';
+?>
 <p>(此账号仅用于登陆代签系统，不同于百度通行证)</p>
 <?php HOOK::run('register_form'); ?>
 </div>
