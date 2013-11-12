@@ -126,10 +126,10 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 	#page_login .side-bar li { padding: 0; float: left; width: 85px; height: 85px; line-height: 85px; }
 	#page_login .side-bar li.current { color: #fff; background: url(triangle.mobile.png) no-repeat 50% 100%; }
 	#page_login .main { margin-top: 85px; margin-left: 0; width: 100%; }
-	.center-box { top: 75px; width: 95%; box-sizing: border-box; }
+	.center-box { top: 20px; width: 95%; box-sizing: border-box; }
 	.main-box { top: 15px; width: auto; padding: 10px 5px; }
 	.copyright { margin-top: 22px; font-size: 11px; }
-	#page_login .copyright { margin-top: 100px; }
+	#page_login .copyright { margin-top: 40px; }
 	.sidebar { display: none; float: none; width: auto; padding: 0 0 10px; margin: 0 -5px -10px; border: none; }
 	.main-content { border-left: none; border-top: 1px solid #dedede; padding: 10px 5px; margin: -1px 0 0 -5px; float: none; width: auto; margin-left: -1px; }
 	.reload { right: 45px; }
