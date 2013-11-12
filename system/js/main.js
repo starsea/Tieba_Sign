@@ -86,7 +86,7 @@ function load_sign_log(){
 function load_sign_history(date){
 	$('.menu li.selected').removeClass('selected');
 	$('.main-content>div').addClass('hidden');
-	$('#content-sign-log').removeClass('hidden');
+	$('#content-sign_log').removeClass('hidden');
 	showloading();
 	$.getJSON("ajax.php?v=sign-history&date="+date, function(result){
 		show_sign_log(result);
