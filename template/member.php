@@ -43,15 +43,15 @@ if(!defined('IN_KKFRAME')) exit();
 <form method="post" action="member.php?action=register">
 <div class="login-info">
 <p>用户名：</p>
-<p><input type="text" name="<?php echo $form_username; ?>" required tabindex="0" /></p>
+<p><input type="text" name="<?php echo $form_username; ?>" required tabindex="1" /></p>
 <p>密码：</p>
-<p><input type="password" name="<?php echo $form_password; ?>" required tabindex="1" /></p>
+<p><input type="password" name="<?php echo $form_password; ?>" required tabindex="2" /></p>
 <p>邮箱：</p>
-<p><input type="text" name="<?php echo $form_email; ?>" required tabindex="2" /></p>
+<p><input type="text" name="<?php echo $form_email; ?>" required tabindex="3" /></p>
 <p>(此账号仅用于登陆代签系统，不同于百度通行证)</p>
 <?php HOOK::run('register_form'); ?>
 </div>
-<p><input type="submit" value="注册" tabindex="3" /></p>
+<p><input type="submit" value="注册" tabindex="4" /></p>
 </form>
 </div>
 <div class="main hidden" id="content-find_password">
