@@ -45,7 +45,7 @@ if(!$uid){
 			if(!verify_cookie($cookie)) showmessage('无法登陆百度贴吧，请尝试重新绑定', './#baidu_bind', 1);
 			DB::query("UPDATE member SET cookie='{$cookie}' WHERE uid='{$uid}'");
 			CACHE::update('cookie');
-			showmessage('绑定百度账号成功！<script type="text/javascript" src="?action=refresh_liked_tieba&formhash='.$formhash.'"></script><script type="text/javascript">try{opener.location.reload();window.close();}catch(e){}</script>', './#baidu_bind', 1);
+			showmessage('绑定百度账号成功！<script type="text/javascript" src="?action=refresh_liked_tieba&formhash='.$formhash.'"></script><script type="text/javascript">try{ opener.load_guide_page(3); window.close(); }catch(e){}</script>', './#baidu_bind', 1);
 		case 'update_cookie':
 			if(!$_POST['cookie']) break;
 			$cookie = daddslashes($_POST['cookie']);
