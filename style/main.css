@@ -52,14 +52,29 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 .float-right { float: right; }
 .tip-text { color: #b5b5b5; }
 
-#page_login h1 { color: #000; font-weight: bold; padding: 2px 0 10px 8px; }
+#page_login h1 { color: #000; padding: 2px 0 10px 8px; font-size: 26px; }
+#page_login { background: url(background.jpg) no-repeat 50% 50%; background-size: 100% 100%; }
+#page_login .center-box { box-shadow: #9c9c9c 0 0 150px; background: white; border-radius: 10px; padding: 30px; }
+#page_login input[type=submit] { background: #414b4e; padding: 3px 15px 3px 20px; height: 36px; font-size: 14px; border-radius: 3px; box-shadow: #272a25 0 0 3px; }
+#page_login input[type=submit]:hover { background: #647d7e; }
+#page_login .side-bar { position: absolute; top: 0; left: 0; height: 100%; background: #272a25; width: 85px; border-radius: 10px 0 0 10px; }
+#page_login .main { margin-left: 85px; height: 100%; }
+#page_login .icon { background: url(member.png) no-repeat 50% 50%; display: block; height: 85px; }
+#page_login .side-bar li { color: #cdcdcd; text-align: center; font-size: 18px; padding: 12px 0; cursor: pointer; }
+#page_login .side-bar li a { color: #cdcdcd; }
+#page_login .side-bar li a:hover { text-decoration: none; }
+#page_login .side-bar li.current { color: #fff; background: url(triangle.png) no-repeat 100% 50%; }
+#page_login .side-bar li.current a { color: #fff; }
+#page_login .main p { margin-left: 15px; color: #676767; line-height: 26px; }
+#page_login .login-info input { width: 90%; border-radius: 2px; border: 1px solid #cdcdcd; }
+#page_login .copyright a { color: #3c3c3c; }
+#page_login .copyright { color: #5d5d5d; }
+
 #page_index h1 { margin: 0 -15px; border-bottom: 1px solid #dedede; padding: 0 15px 0.46em; height: 25px; }
-.login-info p { text-align: center; }
-.login-info input { width: 250px; margin-left: 5px; }
 .btns { height: 30px; line-height: 30px; text-align: right; padding: 0 10px; }
 .btns * { margin-left: 5px; }
 .btns .float-left { margin-left: -10px; }
-.center-box { position: relative; top: 125px; width: 320px; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
+.center-box { position: relative; width: 500px; top: 125px; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
 .main-box { position: relative; top: 35px; width: 80%; margin: 0 auto; background: #f5f5f5; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
 .sidebar { float: left; width: 250px; padding: 0 0 10px; border-right: 1px solid #dedede; margin: 0 0 -10px -15px; }
 .sidebar p { text-align: center; margin-bottom: 0; padding-bottom: .75em; border-bottom: 1px solid #DEDEDE; }
@@ -106,8 +121,6 @@ input[type=email].form-error, input[type=password].form-error, input[type=text].
 	::-webkit-scrollbar { width: 5px; height: 5px; }
 	.wrapper { padding: 0 5px 0 10px; }
 	#page_index h1 { margin: 0 -5px; }
-	.login-info input { width: 90%; }
-	.login-info p { text-align: left; line-height: 30px; text-indent: 5px; }
 	.center-box { top: 75px; width: 85%; }
 	.main-box { top: 15px; width: auto; padding: 10px 5px; }
 	.copyright { margin-top: 22px; font-size: 11px; }
