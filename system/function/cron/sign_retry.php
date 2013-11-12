@@ -8,7 +8,7 @@ if($count){
 	$tid = DB::result_first("SELECT tid FROM `sign_log` WHERE status IN (0, 1) AND date='{$date}' LIMIT {$offset},1");
 	if(!$tid) exit();
 	$tieba = DB::fetch_first("SELECT * FROM my_tieba WHERE tid='{$tid}'");
-	if($tieba['skiped']){
+	if($tieba['skiped'] || !$tieba){
 		DB::query("UPDATE sign_log set status='-2' WHERE tid='{$tieba[tid]}' AND date='{$date}'");
 		continue;
 	}
