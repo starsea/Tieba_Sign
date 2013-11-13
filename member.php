@@ -100,7 +100,7 @@ EOF;
 	$count = DB::result_first('SELECT COUNT(*) FROM member');
 	if($_POST && strexists($_SERVER['HTTP_REFERER'], 'member.php')){
 		list($time, $hash, $member_count) = explode("\t", authcode($_COOKIE['key'], 'DECODE'));
-		if($time > TIMESTAMP - 5 || $time < TIMESTAMP - 75) $_POST = array();
+		if($time > TIMESTAMP - 5 || $time < TIMESTAMP - 300) $_POST = array();
 		if($member_count != $count) showmessage('当前注册人数过多，请您稍后再试', 'member.php');
 		if($count > 1000) showmessage('超过当前站点最大用户数量上限，无法注册', 'member.php');
 		$_POST['username'] = $_POST['password'] = $_POST['email'] = null;
