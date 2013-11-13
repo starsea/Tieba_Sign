@@ -2,7 +2,7 @@
 require_once './system/common.inc.php';
 
 if(!$uid){
-	header('Location: member.php?action=login');
+	header('Location: member.php');
 	exit();
 }elseif($_GET['action']){
 	switch($_GET['action']){
