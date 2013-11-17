@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	$('#menu>li').click(function (){
+		if(isMobile()) $('.sidebar').fadeOut();
 		if(!$(this).attr('id')) return;
 		if($(this).attr('id') == 'menu_updater') return;
 		if($(this).hasClass('selected')) return;
@@ -10,7 +11,6 @@ $(document).ready(function() {
 		$(content_id).removeClass('hidden');
 		var callback = $(this).attr('id').replace('menu_', 'load_');
 		eval('if (typeof '+callback+' == "function") '+callback+'(); ');
-		if(mobile) $('.sidebar').fadeOut();
 	});
 	$('#mail_advanced_config').click(function(){
 		post_win($('#mail_setting').attr('action'), 'mail_setting', function(){
@@ -37,7 +37,8 @@ $(document).ready(function() {
 		return false;
 	});
 	$('.menubtn').click(function(){
-		$('.sidebar').fadeToggle();
+		$('.sidebar').fadeIn();
+		autohide_sidebar();
 	});
 	$('.link_install').click(function(){
 		var link = this.href;
@@ -111,4 +112,12 @@ function parse_hash(){
 function deluser(uid){
 	createWindow().setTitle('删除用户').setContent('确认要删除该用户吗？').addButton('确定', function(){ msg_win_action("admin.php?action=deluser&uid="+uid+"&formhash="+formhash); }).addCloseButton('取消').append();
 	return false;
+}
+function autohide_sidebar(){
+	if($(".sidebar:hover").length > 0) return setTimeout(autohide_sidebar, 500);
+	if($(".menubtn:hover").length > 0) return setTimeout(autohide_sidebar, 500);
+	$('.sidebar').fadeOut();
+}
+function isMobile(){
+	return $('body').width() <= 550;
 }

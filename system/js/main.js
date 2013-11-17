@@ -1,6 +1,8 @@
 $(document).ready(function() {
 	$('#menu>li').click(function (){
-		if($(this).attr('id') == 'menu_logout') return;
+		if(isMobile()) $('.sidebar').fadeOut();
+		if($(this).attr('id') == 'menu_updater') return;
+		if($(this).attr('id') == 'menu_admincp') return;
 		if($(this).hasClass('selected')) return;
 		$('.menu li.selected').removeClass('selected');
 		$(this).addClass('selected');
@@ -9,16 +11,9 @@ $(document).ready(function() {
 		$(content_id).removeClass('hidden');
 		var callback = $(this).attr('id').replace('menu_', 'load_');
 		eval('if (typeof '+callback+' == "function") '+callback+'(); ');
-		if(mobile) $('.sidebar').fadeOut();
 	});
 	$('#show_cookie_setting').click(function (){
 		$('.tab-cookie').toggleClass('hidden');
-	});
-	$('.reload').click(function (){
-		if($('#menu_liked_tieba').hasClass('selected')) load_loved_tieba();
-		if($('#menu_sign_log').hasClass('selected')) load_sign_log();
-		if($('#menu_config').hasClass('selected')) load_setting();
-		if(mobile) $('.sidebar').fadeOut();
 	});
 	$('#unbind_btn').click(function(){
 		var link = this.href;
@@ -39,12 +34,24 @@ $(document).ready(function() {
 		createWindow().setTitle('绑定账号').setContent('<form method="post" action="member.php?action=bind_user" id="bind_form" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'"><p>使用此功能，你可以快速切换在本站注册的多个帐号。</p><p>输入您的用户名/密码即可绑定到本账号。</p><p><label>用户名： <input type="text" name="username" style="width: 200px" /></label></p><p><label>密　码： <input type="password" name="password" style="width: 200px" /></label></p></form>').addButton('确定', function(){ $('#bind_form').submit(); }).addCloseButton('取消').append();
 		return false;
 	});
+	$('#menu_password').click(function(){
+		createWindow().setTitle('修改密码').setContent('<form method="post" action="index.php?action=change_password" id="password_form" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'"><p>经常修改密码是个好习惯哦 :)</p><p><label>原密码：　 <input type="password" name="old_password" style="width: 200px" /></label></p><p><label>新密码：　 <input type="password" name="new_password" style="width: 200px" /></label></p><p><label>再次输入： <input type="password" name="new_password2" style="width: 200px" /></label></p></form>').addButton('确定', function(){ $('#bind_form').submit(); }).addCloseButton('取消').append();
+		return false;
+	});
 	$('#menu_logout').click(function(){
 		createWindow().setTitle('退出').setContent('确认要退出登录吗？').addButton('确定', function(){ location.href='member.php?action=logout&hash='+formhash; }).addCloseButton('取消').append();
 		return false;
 	});
 	$('.menubtn').click(function(){
-		$('.sidebar').fadeToggle();
+		$('.sidebar').fadeIn();
+		autohide_sidebar();
+	});
+	$('.avatar').click(function(){
+		$('#member-menu').fadeIn(100);
+		autohide_membermenu();
+	});
+	$('#member-menu li a').click(function(){
+		$('#member-menu').fadeOut(300);
 	});
 	$(window).on('hashchange', function() {
 		parse_hash();
@@ -68,7 +75,7 @@ function load_liked_tieba(){
 		$('#content-liked_tieba .skip_sign').click(function(){
 			showloading();
 			this.disabled = 'disabled';
-			$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_loved_tieba(); }).fail(function() { hideloading(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); });
+			$.getJSON('index.php?action=skip_tieba&format=json&tid='+this.value+'&formhash='+formhash, function(result){ load_liked_tieba(); }).fail(function() { hideloading(); createWindow().setTitle('系统错误').setContent('发生未知错误: 无法修改当前贴吧设置').addCloseButton('确定').append(); });
 			return false;
 		});
 	}).fail(function() { createWindow().setTitle('系统错误').setContent('发生未知错误: 无法获取喜欢的贴吧列表').addButton('确定', function(){ location.reload(); }).append(); }).always(function(){ hideloading(); });
@@ -154,7 +161,7 @@ function _status(status){
 	if(typeof status == 'undefined') status = 0;
 	status = parseInt(status);
 	stat[ (status+2) ]++;
-	if(mobile){
+	if(isMobile()){
 		switch(status){
 			case -2:	return '<img src="style/warn.png" />';
 			case -1:	return '<img src="style/error.gif" />';
@@ -201,4 +208,17 @@ function parse_hash(){
 	}else{
 		$('#menu_sign_log').click();
 	}
+}
+function autohide_membermenu(){
+	if($("#member-menu:hover").length > 0) return setTimeout(autohide_membermenu, 500);
+	if($(".avatar:hover").length > 0) return setTimeout(autohide_membermenu, 500);
+	$('#member-menu').fadeOut(300);
+}
+function autohide_sidebar(){
+	if($(".sidebar:hover").length > 0) return setTimeout(autohide_sidebar, 500);
+	if($(".menubtn:hover").length > 0) return setTimeout(autohide_sidebar, 500);
+	$('.sidebar').fadeOut();
+}
+function isMobile(){
+	return $('body').width() <= 550;
 }

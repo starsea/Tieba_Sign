@@ -170,3 +170,4 @@ function dragMenu(menuObj, e, op) {
 	}
 	return false;
 }
+document.body.onselectstart = function(){ return false; }

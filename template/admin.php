@@ -18,11 +18,11 @@ if(!defined('IN_ADMINCP')) exit();
 </head>
 <body>
 <div class="wrapper" id="page_index">
-<div id="append_parent"></div>
+<div id="append_parent"><div class="loading-icon"><img src="style/loading.gif" /> 载入中...</div></div>
 <div class="main-box clearfix">
 <h1>贴吧签到助手 - 管理中心</h1>
-<div class="loading-icon"><img src="style/loading.gif" /> 载入中...</div>
-<div class="menubtn">&nbsp;</div>
+<div class="menubtn"><p>-</p><p>-</p><p>-</p></div>
+<div class="main-wrapper">
 <div class="sidebar">
 <ul id="menu" class="menu">
 <li id="menu_user"><a href="#user">用户管理</a></li>
@@ -115,6 +115,7 @@ foreach($plugins as $plugin){
 ?>
 <tbody></tbody>
 </table>
+</div>
 </div>
 </div>
 </div>
