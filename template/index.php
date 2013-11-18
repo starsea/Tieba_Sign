@@ -100,7 +100,7 @@ foreach ($users as $_uid => $username){
 <p>只有绑定百度账号之后程序才能自动进行签到。</p>
 <p>您可以使用百度通行证登陆，或是手动填写 Cookie 进行绑定。</p>
 <br>
-<p><a href="https://api.ikk.me/tieba_login.php?callback=<?php echo rawurlencode($siteurl)."&formhash={$formhash}&ver=".VERSION; ?>" class="btn" target="_blank">点击此处登陆百度通行证</a> &nbsp; <a href="javascript:;" class="btn" id="show_cookie_setting">手动绑定</a></p>
+<p><a href="https://api.ikk.me/baidu_login.php?callback=<?php echo rawurlencode($siteurl)."&formhash={$formhash}&ver=".VERSION; ?>" class="btn" target="_blank">点击此处登陆百度通行证</a> &nbsp; <a href="javascript:;" class="btn" id="show_cookie_setting">手动绑定</a></p>
 </div>
 <div class="tab-cookie hidden">
 <br>
