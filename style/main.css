@@ -88,7 +88,7 @@ input[type=submit]:hover, button:hover, .btn:hover { background: #1e2a36; border
 .menu li.selected { background: #343c3e; }
 .menu li:hover { background: #2c3335; }
 .menu li a:hover { color: #dedede; text-decoration: none; }
-.menu_switch_user .del { float: right; background: url(delete.png) no-repeat 0 50%; padding: 19px 15px 19px 0; text-indent: -9999px; overflow: hidden; height: 0; display: none; }
+.menu_switch_user .del { float: right; background: url(delete.png) no-repeat 0 50%; padding: 19px 18px 19px 0; text-indent: -9999px; overflow: hidden; height: 0; display: none; }
 .menu_switch_user:hover .del{ display: block; }
 .copyright { margin-top: 65px; color: #4c4c4c; text-align: center; font-size: 12px; padding-bottom: 2em; }
 .copyright a { color: #159; }
