@@ -72,7 +72,7 @@ if($invite_code) echo '<p>邀请码：</p><p><input type="text" name="invite_cod
 </div>
 </div>
 <p class="copyright">贴吧签到助手 <?php echo VERSION; ?> - Designed by <a href="http://www.ikk.me" target="_blank">kookxiang</a>. 2013 &copy; <a href="http://www.kookxiang.com" target="_blank">KK's Laboratory</a> (<a href="https://me.alipay.com/kookxiang" target="_blank">赞助开发</a>)<br>请勿擅自修改程序版权信息或将本程序用于商业用途！</p>
-<script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="system/js/member.js?version=<?php echo VERSION; ?>"></script>
 <?php HOOK::run('member_footer'); ?>
 </div>
