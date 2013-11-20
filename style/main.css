@@ -73,7 +73,7 @@ input[type=submit]:hover, button:hover, .btn:hover { background: #1e2a36; border
 .main-wrapper { margin: 0 -15px -10px; overflow: hidden; min-height: 500px; }
 .main-box { position: relative; top: 35px; width: 80%; margin: 0 auto; background: #ffffff; padding: 10px 15px; box-shadow: 0 0 5px #ababab; }
 .avatar { position: absolute; z-index: 7; top: 0; right: 0; height: 50px; line-height: 50px; background: url('member.png') no-repeat 90% 50%; background-size: 32px; padding: 0 50px 0 10px; cursor: pointer; }
-.avatar img { float: right; width: 40px; margin: 5px -45px 5px 1px; border-radius: 20px; box-shadow: 0 0 3px #dedede; }
+.avatar img { position: absolute; width: 40px; top: 5px; right: 5px; border-radius: 20px; box-shadow: 0 0 3px #dedede; }
 .avatar:hover { background-color: #2c3335; }
 #member-menu { position: absolute; z-index: 3; right: 0; background: #1b2223; width: 200px; box-shadow: 0 0 25px #999; }
 #member-menu a { color: #dedede; }
