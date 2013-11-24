@@ -35,7 +35,7 @@ $(document).ready(function() {
 		return false;
 	});
 	$('#menu_password').click(function(){
-		createWindow().setTitle('修改密码').setContent('<form method="post" action="index.php?action=change_password" id="password_form" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'"><p>经常修改密码是个好习惯哦 :)</p><p><label>原密码：　 <input type="password" name="old_password" style="width: 200px" /></label></p><p><label>新密码：　 <input type="password" name="new_password" style="width: 200px" /></label></p><p><label>再次输入： <input type="password" name="new_password2" style="width: 200px" /></label></p></form>').addButton('确定', function(){ $('#bind_form').submit(); }).addCloseButton('取消').append();
+		createWindow().setTitle('修改密码').setContent('<form method="post" action="index.php?action=change_password" id="password_form" onsubmit="return post_win(this.action, this.id)"><input type="hidden" name="formhash" value="'+formhash+'"><p>经常修改密码是个好习惯哦 :)</p><p><label>原密码：　 <input type="password" name="old_password" style="width: 200px" /></label></p><p><label>新密码：　 <input type="password" name="new_password" style="width: 200px" /></label></p><p><label>再次输入： <input type="password" name="new_password2" style="width: 200px" /></label></p></form>').addButton('确定', function(){ $('#password_form').submit(); }).addCloseButton('取消').append();
 		return false;
 	});
 	$('#menu_logout').click(function(){
