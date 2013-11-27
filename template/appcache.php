@@ -3,6 +3,7 @@ if(!defined('IN_KKFRAME')) exit();
 ?>
 CACHE MANIFEST
 # Tieba Sign (<?php echo VERSION; ?>)
+# Current user: <?php echo $username; ?> 
 # Author: kookxiang ( www.ikk.me )
 favicon.ico
 style/background.jpg
@@ -22,7 +23,7 @@ style/warn.png
 system/js/fwin.js?version=<?php echo VERSION; ?> 
 system/js/main.js?version=<?php echo VERSION; ?> 
 system/js/member.js?version=<?php echo VERSION; ?> 
-./
 
 NETWORK:
+./
 *
