@@ -34,4 +34,7 @@ if(defined('SAE_MYSQL_DB')){						// 已自动设置好，无需干预
 }
 // -------------- END 非BAE、SAE 数据库设定 ------------------
 
+// 是否使用 MySQL 持续连接
+$_config['db']['pconnect'] = false;
+
 ?>
