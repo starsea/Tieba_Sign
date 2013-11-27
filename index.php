@@ -1,7 +1,11 @@
 <?php
 require_once './system/common.inc.php';
 
-if(!$uid){
+if($_GET['action'] == 'cache'){
+	header('Content-Type: text/cache-manifest');
+	include template('appcache');
+	exit();
+}elseif(!$uid){
 	header('Location: member.php');
 	exit();
 }elseif($_GET['action']){

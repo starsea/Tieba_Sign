@@ -2,7 +2,7 @@
 if(!defined('IN_KKFRAME')) exit();
 ?>
 <!DOCTYPE html>
-<html>
+<html manifest="index.php?action=cache">
 <head>
 <title>贴吧签到助手</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
