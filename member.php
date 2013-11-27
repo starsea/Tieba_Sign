@@ -133,6 +133,7 @@ EOF;
 			if(strexists($un, 'admin') || strexists($un, 'guanli')) showmessage('用户名不和谐，请修改', dreferer(), 5);
 			$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}'");
 			if($user) showmessage('用户名已经存在', 'member.php');
+			HOOK::run('before_register');
 			$uid = DB::insert('member', array(
 				'username' => $username,
 				'password' => $password,
@@ -141,6 +142,8 @@ EOF;
 			DB::insert('member_setting', array('uid' => $uid));
 			CACHE::update('username');
 			CACHE::save('user_setting_'.$uid, '');
+			do_login($uid);
+			HOOK::run('register_finish', $uid);
 			showmessage("注册成功，您的用户名是 <b>{$username}</b> 记住了哦~！", dreferer(), 3);
 		}
 	}
