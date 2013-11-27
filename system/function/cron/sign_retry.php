@@ -1,6 +1,5 @@
 <?php
 if(!defined('IN_KKFRAME')) exit();
-require_once SYSTEM_ROOT.'./function/sign.php';
 $date = date('Ymd', TIMESTAMP + 900);
 $count = DB::result_first("SELECT COUNT(*) FROM `sign_log` WHERE status IN (0, 1) AND date='{$date}'");
 if($count){

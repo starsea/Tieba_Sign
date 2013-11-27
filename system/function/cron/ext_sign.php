@@ -1,6 +1,5 @@
 <?php
 if(!defined('IN_KKFRAME')) exit();
-require_once SYSTEM_ROOT.'./function/sign.php';
 $num = 0;
 $_uid = getSetting('extsign_uid') ? getSetting('extsign_uid') : 1;
 while($_uid){

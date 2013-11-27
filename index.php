@@ -22,7 +22,6 @@ if(!$uid){
 			showmessage('修改签到设置成功！');
 		case 'test_sign':
 			if($_GET['formhash'] != $formhash) break;
-			require_once SYSTEM_ROOT.'./function/sign.php';
 			$tieba = DB::fetch_first("SELECT * FROM my_tieba WHERE uid='{$uid}' ORDER BY RAND() LIMIT 0,1");
 			if(!$tieba) showmessage('没有喜欢的贴吧，请先刷新喜欢的贴吧列表', './#liked_tieba');
 			$setting = get_setting($uid);

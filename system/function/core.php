@@ -4,13 +4,6 @@ function is_admin($uid){
 	global $_config;
 	return in_array($uid, explode(',', $_config['adminid']));
 }
-function do_login($uid){
-	global $cookiever;
-	$user = DB::fetch_first("SELECT * FROM member WHERE uid='{$uid}'");
-	$password_hash = substr(md5($user['password']), 8, 8);
-	$login_exp = TIMESTAMP + 900;
-	dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$user[username]}\t{$login_exp}\t{$password_hash}", 'ENCODE'));
-}
 function dsetcookie($name, $value = '', $exp = 2592000){
 	$exp = $value ? TIMESTAMP + $exp : '1';
 	setcookie($name, $value, $exp, '/');
@@ -173,89 +166,6 @@ function cutstr($string, $length, $dot = ' ...') {
 	if($pos !== false) $strcut = substr($strcut,0,$pos);
 	return $strcut.$dot;
 }
-function update_liked_tieba($uid, $ignore_error = false, $allow_deletion = true){
-	$date = date('Ymd', TIMESTAMP + 900);
-	$cookie = get_cookie($uid);
-	if(!$cookie){
-		if($ignore_error) return;
-		showmessage('请先填写 Cookie 信息再更新', './#baidu_bind');
-	}
-	$liked_tieba = get_liked_tieba($cookie);
-	$insert = $deleted = 0;
-	if(!$liked_tieba){
-		if($ignore_error) return;
-		showmessage('无法获取喜欢的贴吧，请更新 Cookie 信息', './#baidu_bind');
-	}
-	$my_tieba = array();
-	$query = DB::query("SELECT name, fid, tid FROM my_tieba WHERE uid='{$uid}'");
-	while($r = DB::fetch($query)) {
-		$my_tieba[$r['name']] = $r;
-	}
-	foreach($liked_tieba as $tieba){
-		if($my_tieba[$tieba['name']]){
-			unset($my_tieba[$tieba['name']]);
-			if(!$my_tieba[$tieba['name']]['fid']) DB::update('my_tieba', array(
-				'fid' => $tieba['fid'],
-				), array(
-					'uid' => $uid,
-					'name' => $tieba['name'],
-				), true);
-			continue;
-		}else{
-			DB::insert('my_tieba', array(
-				'uid' => $uid,
-				'fid' => $tieba['fid'],
-				'name' => $tieba['name'],
-				'unicode_name' => $tieba['uname'],
-				), false, true, true);
-			$insert++;
-		}
-	}
-	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
-	if($my_tieba && $allow_deletion){
-		$tieba_ids = array();
-		foreach($my_tieba as $tieba){
-			$tieba_ids[] = $tieba['tid'];
-		}
-		$str = "'".implode("', '", $tieba_ids)."'";
-		$deleted = count($my_tieba);
-		DB::query("DELETE FROM my_tieba WHERE uid='{$uid}' AND tid IN ({$str})");
-		DB::query("DELETE FROM sign_log WHERE uid='{$uid}' AND tid IN ({$str})");
-	}
-	return array($insert, $deleted);
-}
-function get_liked_tieba($cookie){
-	$pn = 0;
-	$kw_name = array();
-	while (true){
-		$pn++;
-		$mylikeurl = "http://tieba.baidu.com/f/like/mylike?&pn=$pn";
-		$ch = curl_init($mylikeurl);
-		curl_setopt($ch, CURLOPT_URL, $mylikeurl);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
-		$result = curl_exec($ch);
-		curl_close($ch);
-		$result = wrap_text($result);
-		$pre_reg = '/<tr><td>.*?<ahref="\/f\?kw=.*?"title="(.*?)"/';
-		preg_match_all($pre_reg, $result, $matches);
-		$count = 0;
-		foreach ($matches[1] as $key => $value) {
-			$uname = urlencode($value);
-			$_uname = preg_quote($value);
-			preg_match('/ForumManager\.undo_like\(\'([0-9]+)\',\''.preg_quote($uname).'\'/i', $result, $fid);
-			$kw_name[] = array(
-				'name' => mb_convert_encoding($value, 'utf-8', 'gbk'),
-				'uname' => $uname,
-				'fid' => $fid[1],
-			);
-			$count++;
-		}
-		if($count==0) break;
-	}
-	return $kw_name;
-}
 function wrap_text($str) {
 	$str = trim($str);
 	$str = str_replace("\t", '', $str);
@@ -314,39 +224,44 @@ function saveSetting($k, $v){
 	DB::query("REPLACE INTO setting SET v='{$v}', k='{$k}'");
 	CACHE::update('setting');
 }
+// Function link
 function get_tbs($uid){
-	static $tbs = array();
-	if($tbs[$uid]) return $tbs[$uid];
-	$tbs_url = 'http://tieba.baidu.com/dc/common/tbs';
-	$ch = curl_init($tbs_url);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1','Referer: http://tieba.baidu.com/'));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_COOKIE, get_cookie($uid));
-	$tbs_json = curl_exec($ch);
-	curl_close($ch);
-	$tbs = json_decode($tbs_json, 1);
-	return $tbs[$uid] = $tbs['tbs'];
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _get_tbs($uid);
 }
 function verify_cookie($cookie){
-	$tbs_url = 'http://tieba.baidu.com/dc/common/tbs';
-	$ch = curl_init($tbs_url);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1','Referer: http://tieba.baidu.com/'));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
-	$tbs_json = curl_exec($ch);
-	curl_close($ch);
-	$tbs = json_decode($tbs_json, 1);
-	return $tbs['is_login'];
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _verify_cookie($cookie);
 }
 function get_baidu_userinfo($uid){
-	$cookie = get_cookie($uid);
-	if(!$cookie) return array('no' => 4);
-	$tbs_url = 'http://tieba.baidu.com/f/user/json_userinfo';
-	$ch = curl_init($tbs_url);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Referer: http://tieba.baidu.com/'));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
-	$tbs_json = curl_exec($ch);
-	curl_close($ch);
-	return json_decode($tbs_json, true);
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _get_baidu_userinfo($uid);
+}
+function client_sign($uid, $tieba){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _client_sign($uid, $tieba);
+}
+function zhidao_sign($uid){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _zhidao_sign($uid);
+}
+function wenku_sign($uid){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _wenku_sign($uid);
+}
+function update_liked_tieba($uid, $ignore_error = false, $allow_deletion = true){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _update_liked_tieba($uid, $ignore_error, $allow_deletion);
+}
+function get_liked_tieba($cookie){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _get_liked_tieba($cookie);
+}
+function do_login($uid){
+	require_once SYSTEM_ROOT.'./function/member.php';
+	_do_login($uid);
+}
+function delete_user($uid){
+	require_once SYSTEM_ROOT.'./function/member.php';
+	_delete_user($uid);
 }
