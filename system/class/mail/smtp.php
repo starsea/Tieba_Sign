@@ -1,5 +1,26 @@
 <?php
-class smtp {
+if(!defined('IN_KKFRAME')) exit('Access Denied');
+
+class smtp extends mailer{
+	var $id = 'smtp';
+	var $name = 'SMTP - Socket';
+	var $description = '通过 Socket 连接 SMTP 服务器发邮件';
+	var $config = array(
+		array('SMTP 服务器地址', 'smtp_server', '', ''),
+		array('发送者邮箱地址', 'address', '', '', 'email'),
+		array('SMTP 用户名', 'smtp_name', '', ''),
+		array('SMTP 密码', 'smtp_pass', '', '', 'password'),
+	);
+	function isAvailable(){
+		return !isset($_SERVER['HTTP_APPVERSION']) && $_SERVER['USER'] != 'bae';
+	}
+	function send($mail){
+		$smtp = new _smtp($this);
+		return $smtp->send($mail->address, $mail->subject, $mail->message);
+	}
+}
+
+class _smtp {
 	private $smtpServer = '';
 	private $port = '25';
 	private $timeout = '45';
@@ -20,16 +41,18 @@ class smtp {
 	private $logArray = array();
 	public $Error = '';
 
+	public function _smtp($obj){
+		$this->smtpServer = $obj->_get_setting('smtp_server');
+		$this->address = $obj->_get_setting('address');
+		$this->username = $obj->_get_setting('smtp_name');
+		$this->password = $obj->_get_setting('smtp_pass');
+	}
+
 	public function send($to, $subject, $message) {
 		global $_config;
 		$this->to = &$to;
 		$this->subject = &$subject;
 		$this->message = &$message;
-
-		$this->smtpServer = $_config['mail']['smtp']['smtp_server'];
-		$this->address = $_config['mail']['smtp']['address'];
-		$this->username = $_config['mail']['smtp']['smtp_name'];
-		$this->password = $_config['mail']['smtp']['smtp_pass'];
 
 		if(!$this->Connect2Server()) {
 			if(!$this->debug) return false;
@@ -116,4 +139,5 @@ class smtp {
 		if (is_resource($this->smtpConnect)) fclose($this->smtpConnect);
 	}
 }
+
 ?>

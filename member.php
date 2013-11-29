@@ -24,7 +24,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 	if($_username == $username) showmessage('请输入其他账户的信息', './#');
 	$email = daddslashes($_POST['email']);
 	$password = md5(ENCRYPT_KEY.md5($_POST['password']).ENCRYPT_KEY);
-	if(strlen($_username) > 12) showmessage('用户名过长，请修改', dreferer(), 5);
+	if(strlen($_username) > 24) showmessage('用户名过长，请修改', dreferer(), 5);
 	$user = DB::fetch_first("SELECT * FROM member WHERE username='{$_username}' AND password='{$password}'");
 	$userid = $user['uid'];
 	if($user){
@@ -74,6 +74,7 @@ if($_GET['action'] == 'logout' && $_GET['hash']==$formhash){
 		$username = daddslashes($_POST['username']);
 		$email = daddslashes($_POST['email']);
 		$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}' AND email='{$email}'");
+		if(!$user) showmessage('用户名 / 邮箱有误', './');
 		$info = array(
 			$user['uid'],			// UID
 			TIMESTAMP + 3600,		// Token 过期时间
@@ -92,48 +93,68 @@ EOF;
 		$res = send_mail($user['email'], "贴吧签到助手 - 密码找回", $message);
 		showmessage($res ? '邮件发送成功，请到邮箱查收' : '邮件发送失败，请检查config中的设置', './');
 	}
-	include template('lost_password');
+	header('Location: member.php');
 	exit();
 }elseif($_GET['action'] == 'register'){
-	if(getSetting('block_register')) showmessage('抱歉，当前站点禁止新用户注册', 'member.php?action=login');
-	if($_POST){
+	if(getSetting('block_register')) showmessage('抱歉，当前站点禁止新用户注册', 'member.php');
+	$count = DB::result_first('SELECT COUNT(*) FROM member');
+	if($_POST && strexists($_SERVER['HTTP_REFERER'], 'member.php')){
+		list($time, $hash, $member_count) = explode("\t", authcode($_COOKIE['key'], 'DECODE'));
+		if($time > TIMESTAMP - 5 || $time < TIMESTAMP - 300) $_POST = array();
+		if($member_count != $count) showmessage('当前注册人数过多，请您稍后再试', 'member.php');
+		if($count > 1000) showmessage('超过当前站点最大用户数量上限，无法注册', 'member.php');
+		$_POST['username'] = $_POST['password'] = $_POST['email'] = null;
+		foreach($_POST as $key => $value){
+			$key = authcode($key, 'DECODE', $hash);
+			if($key == 'username'){
+				$_POST['username'] = $value;
+			}elseif($key == 'password'){
+				$_POST['password'] = $value;
+			}elseif($key == 'email'){
+				$_POST['email'] = $value;
+			}
+		}
 		if(!$_POST['username']){
-			showmessage('请输入用户名', 'member.php?action=register');
+			showmessage('请输入用户名', 'member.php');
 		}elseif(!$_POST['password']){
-			showmessage('请输入密码', 'member.php?action=register');
+			showmessage('请输入密码', 'member.php');
 		}elseif(!$_POST['email']){
-			showmessage('请输入您的邮箱', 'member.php?action=register');
+			showmessage('请输入您的邮箱', 'member.php');
 		}else{
-			if($invite_code && $_POST['invite_code'] != $invite_code) showmessage('邀请码有误', 'member.php?action=register');
+			if($invite_code && $_POST['invite_code'] != $invite_code) showmessage('邀请码有误', 'member.php');
 			$username = daddslashes($_POST['username']);
 			$email = daddslashes($_POST['email']);
 			$password = md5(ENCRYPT_KEY.md5($_POST['password']).ENCRYPT_KEY);
-			if(!$username || !$password || !$email) showmessage('您输入的信息不完整', 'member.php?action=register');
-			if(preg_match('/[<>\'\\"]/i', $username)) showmessage('用户名中有被禁止使用的关键字', 'member.php?action=register');
+			if(!$username || !$password || !$email) showmessage('您输入的信息不完整', 'member.php');
+			if(preg_match('/[<>\'\\"]/i', $username)) showmessage('用户名中有被禁止使用的关键字', 'member.php');
 			if(strlen($username) < 6) showmessage('用户名至少要6个字符(即2个中文 或 6个英文)，请修改', dreferer(), 5);
-			if(strlen($username) > 12) showmessage('用户名过长，请修改', dreferer(), 5);
+			if(strlen($username) > 24) showmessage('用户名过长，请修改', dreferer(), 5);
 			$un = strtolower($username);
 			if(strexists($un, 'admin') || strexists($un, 'guanli')) showmessage('用户名不和谐，请修改', dreferer(), 5);
 			$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}'");
-			if($user) showmessage('用户名已经存在', 'member.php?action=register');
+			if($user) showmessage('用户名已经存在', 'member.php');
+			HOOK::run('before_register');
 			$uid = DB::insert('member', array(
 				'username' => $username,
 				'password' => $password,
 				'email' => $email,
 			));
 			DB::insert('member_setting', array('uid' => $uid));
+			CACHE::update('username');
+			CACHE::save('user_setting_'.$uid, '');
 			do_login($uid);
+			HOOK::run('register_finish', $uid);
 			showmessage("注册成功，您的用户名是 <b>{$username}</b> 记住了哦~！", dreferer(), 3);
 		}
 	}
-	include template('register');
+	header('Location: member.php');
 	exit();
 }elseif($_POST){
 	if($_POST['username'] && $_POST['password']){
 		$username = daddslashes($_POST['username']);
 		$password = md5(ENCRYPT_KEY.md5($_POST['password']).ENCRYPT_KEY);
 		$un = strtolower($username);
-		if(strlen($username) > 12) showmessage('用户名过长，请修改', dreferer(), 5);
+		if(strlen($username) > 24) showmessage('用户名过长，请修改', dreferer(), 5);
 		$user = DB::fetch_first("SELECT * FROM member WHERE username='{$username}' AND password='{$password}'");
 		$username = $user['username'];
 		if($user) {
@@ -141,8 +162,15 @@ EOF;
 			do_login($user['uid']);
 			showmessage("欢迎回来，{$username}！", dreferer(), 1);
 		}else{
-			showmessage('对不起，您的用户名或密码错误，无法登录.', 'member.php?action=login', 3);
+			showmessage('对不起，您的用户名或密码错误，无法登录.', 'member.php', 3);
 		}
 	}
 }
-include template('login');
+$count = DB::result_first('SELECT COUNT(*) FROM member');
+$hash = random(6);
+$time = TIMESTAMP;
+dsetcookie('key', authcode("{$time}\t{$hash}\t{$count}", 'ENCODE'));
+$form_username = authcode('username', 'ENCODE', $hash);
+$form_password = authcode('password', 'ENCODE', $hash);
+$form_email = authcode('email', 'ENCODE', $hash);
+include template('member');

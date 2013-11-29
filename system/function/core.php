@@ -4,13 +4,6 @@ function is_admin($uid){
 	global $_config;
 	return in_array($uid, explode(',', $_config['adminid']));
 }
-function do_login($uid){
-	global $cookiever;
-	$user = DB::fetch_first("SELECT * FROM member WHERE uid='{$uid}'");
-	$password_hash = substr(md5($user['password']), 8, 8);
-	$login_exp = TIMESTAMP + 900;
-	dsetcookie('token', authcode("{$cookiever}\t{$uid}\t{$user[username]}\t{$login_exp}\t{$password_hash}", 'ENCODE'));
-}
 function dsetcookie($name, $value = '', $exp = 2592000){
 	$exp = $value ? TIMESTAMP + $exp : '1';
 	setcookie($name, $value, $exp, '/');
@@ -29,6 +22,7 @@ function daddslashes($string, $force = 0, $strip = FALSE) {
 	return $string;
 }
 function template($file){
+	HOOK::run("template_load_{$file}");
 	if(IN_MOBILE){
 		$mobilefile = ROOT."./template/mobile/{$file}.php";
 		if(file_exists($mobilefile)) return $mobilefile;
@@ -109,9 +103,7 @@ function authcode($string, $operation = 'DECODE', $key = '', $expiry = 0) {
 	}
 }
 function showmessage($msg = '', $redirect = '', $delay = 3){
-	if(IN_API){
-		exit($msg);
-	}elseif($_GET['format'] == 'json'){
+	if($_GET['format'] == 'json'){
 		$result = array('msg' => $msg, 'redirect' => $redirect, 'delay' => $delay);
 		echo json_encode($result);
 		exit();
@@ -174,89 +166,6 @@ function cutstr($string, $length, $dot = ' ...') {
 	if($pos !== false) $strcut = substr($strcut,0,$pos);
 	return $strcut.$dot;
 }
-function update_liked_tieba($uid, $ignore_error = false){
-	$date = date('Ymd', TIMESTAMP + 900);
-	$cookie = get_cookie($uid);
-	if(!$cookie){
-		if($ignore_error) return;
-		showmessage('请先填写 Cookie 信息再更新', './#setting');
-	}
-	$liked_tieba = get_liked_tieba($cookie);
-	$insert = $deleted = 0;
-	if(!$liked_tieba){
-		if($ignore_error) return;
-		showmessage('无法获取喜欢的贴吧，请更新 Cookie 信息', './#setting');
-	}
-	$my_tieba = array();
-	$query = DB::query("SELECT name, fid, tid FROM my_tieba WHERE uid='{$uid}'");
-	while($r = DB::fetch($query)) {
-		$my_tieba[$r['name']] = $r;
-	}
-	foreach($liked_tieba as $tieba){
-		if($my_tieba[$tieba['name']]){
-			unset($my_tieba[$tieba['name']]);
-			if(!$my_tieba[$tieba['name']]['fid']) DB::update('my_tieba', array(
-				'fid' => $tieba['fid'],
-				), array(
-					'uid' => $uid,
-					'name' => $tieba['name'],
-				), true);
-			continue;
-		}else{
-			DB::insert('my_tieba', array(
-				'uid' => $uid,
-				'fid' => $tieba['fid'],
-				'name' => $tieba['name'],
-				'unicode_name' => $tieba['uname'],
-				), false, true, true);
-			$insert++;
-		}
-	}
-	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
-	if($my_tieba){
-		$tieba_ids = array();
-		foreach($my_tieba as $tieba){
-			$tieba_ids[] = $tieba['tid'];
-		}
-		$str = "'".implode("', '", $tieba_ids)."'";
-		$deleted = count($my_tieba);
-		DB::query("DELETE FROM my_tieba WHERE uid='{$uid}' AND tid IN ({$str})");
-		DB::query("DELETE FROM sign_log WHERE uid='{$uid}' AND tid IN ({$str})");
-	}
-	return array($insert, $deleted);
-}
-function get_liked_tieba($cookie){
-	$pn = 0;
-	$kw_name = array();
-	while (true){
-		$pn++;
-		$mylikeurl = "http://tieba.baidu.com/f/like/mylike?&pn=$pn";
-		$ch = curl_init($mylikeurl);
-		curl_setopt($ch, CURLOPT_URL, $mylikeurl);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
-		$result = curl_exec($ch);
-		curl_close($ch);
-		$result = wrap_text($result);
-		$pre_reg = '/<tr><td>.*?<ahref="\/f\?kw=.*?"title="(.*?)"/';
-		preg_match_all($pre_reg, $result, $matches);
-		$count = 0;
-		foreach ($matches[1] as $key => $value) {
-			$uname = urlencode($value);
-			$_uname = preg_quote($value);
-			preg_match('/ForumManager\.undo_like\(\'([0-9]+)\',\''.preg_quote($uname).'\'/i', $result, $fid);
-			$kw_name[] = array(
-				'name' => mb_convert_encoding($value, 'utf-8', 'gbk'),
-				'uname' => $uname,
-				'fid' => $fid[1],
-			);
-			$count++;
-		}
-		if($count==0) break;
-	}
-	return $kw_name;
-}
 function wrap_text($str) {
 	$str = trim($str);
 	$str = str_replace("\t", '', $str);
@@ -265,121 +174,94 @@ function wrap_text($str) {
 	$str = str_replace(' ', '', $str);
     return trim($str);
 }
-function curl_get($url, $uid, $mobile_ua = false, $postdata = ''){
-	$ch = curl_init($url);
-	if ($mobile_ua){
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1'));
-    } else {
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent:Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36', 'Connection:keep-alive', 'Referer:http://wapp.baidu.com/'));
-    }
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_COOKIE, get_cookie($uid));
-	if($postdata) curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-	$get_url = curl_exec($ch);
-	if($get_url !== false){
-		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($statusCode >= 500) return false;
-  	}
-    curl_close($ch);
-    return $get_url;
-}
 function get_cookie($uid){
 	static $cookie = array();
 	if($cookie[$uid]) return $cookie[$uid];
-	return $cookie[$uid] = DB::result_first("SELECT cookie FROM member WHERE uid='{$uid}'");
+	$cookie = CACHE::get('cookie');
+	return $cookie[$uid];
 }
 function get_username($uid){
 	static $username = array();
 	if($username[$uid]) return $username[$uid];
-	return $username[$uid] = DB::result_first("SELECT username FROM member WHERE uid='{$uid}'");
+	$username = CACHE::get('username');
+	return $username[$uid];
 }
 function get_setting($uid){
 	static $user_setting = array();
 	if($user_setting[$uid]) return $user_setting[$uid];
-	return $user_setting[$uid] = DB::fetch_first("SELECT * FROM member_setting WHERE uid='{$uid}'");
+	$cached_result = CACHE::get('user_setting_'.$uid);
+	if(!$cached_result){
+		$cached_result = DB::fetch_first("SELECT * FROM member_setting WHERE uid='{$uid}'");
+		CACHE::save('user_setting_'.$uid, $cached_result);
+	}
+	return $user_setting[$uid] = $cached_result;
 }
-function send_mail($address, $subject, $message){
-	global $_config;
-	switch($_config['mail']['type']){
-		case 'kk_mail': return kk_mail($address, $subject, $message);
-		case 'bcms':	return bcms_mail($address, $subject, $message);
-		case 'saemail': return saemail($address, $subject, $message);
-		case 'mail':	return mail($address, $subject, $message);
-		case 'smtp':	return smtp_mail($address, $subject, $message);
-		default: return false;
+function send_mail($address, $subject, $message, $delay = true){
+	if($delay){
+		DB::insert('mail_queue', array(
+			'to' => $address,
+			'subject' => $subject,
+			'content' => $message,
+			));
+		saveSetting('mail_queue', 1);
+		return true;
+	}else{
+		$mail = new mail_content();
+		$mail->address = $address;
+		$mail->subject = $subject;
+		$mail->message = $message;
+		$sender = new mailsender();
+		return $sender->sendMail($mail);
 	}
 }
-function bcms_mail($address, $subject, $message){
-	global $_config;
-	require_once SYSTEM_ROOT.'./class/bcms.php';
-	$bcms = new Bcms();
-    $ret = $bcms->mail($_config['mail']['bcms']['queue'], '<!--HTML-->'.$message, array($address), array(Bcms::MAIL_SUBJECT => $subject));
-    if (false === $ret) {
-        return false;
-    } else {
-        return true;
-    }
-}
-function smtp_mail($address, $subject, $message){
-	global $_config;
-	require_once SYSTEM_ROOT.'./class/smtp.php';
-	$smtp = new smtp();
-    return $smtp->send($address, $subject, $message);
-}
-function kk_mail($address, $subject, $message){
-	global $_config;
-	$data = array(
-		'to' => $address,
-		'title' => $subject,
-		'content' => $message,
-		'ver' => VERSION,
-	);
-	$path = authcode(serialize($data), 'ENCODE', $_config['mail']['kk_mail']['api_key']);
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $_config['mail']['kk_mail']['api_path']);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, 'data='.urlencode($path));
-	$result = curl_exec($ch);
-	curl_close($ch);
-	return $result == 'ok';
-}
-function saemail($address, $subject, $message){
-	global $_config;
-	$mail = new SaeMail();
-	$mail->setOpt(array(
-		'from' => 'Mail-System <'.$_config['mail']['saemail']['address'].'>',
-		'to' => $address,
-		'smtp_host' => $_config['mail']['saemail']['smtp_server'],
-		'smtp_username' => $_config['mail']['saemail']['smtp_name'],
-		'smtp_password' => $_config['mail']['saemail']['smtp_pass'],
-		'subject' => $subject,
-		'content' => $message,
-		'content_type' => 'HTML',
-	));
-	$mail->send();
-	return true;
-}
 function getSetting($k, $force = false){
-	static $setting = array();
-	if(!$force && isset($setting[$k])) return $setting[$k];
-	return $setting[$k] = DB::result_first("SELECT v FROM setting WHERE k='{$k}'");
+	if($force) return $setting[$k] = DB::result_first("SELECT v FROM setting WHERE k='{$k}'");
+	$cache = CACHE::get('setting');
+	return $cache[$k];
 }
 function saveSetting($k, $v){
 	$v = addslashes($v);
 	DB::query("REPLACE INTO setting SET v='{$v}', k='{$k}'");
+	CACHE::update('setting');
 }
+// Function link
 function get_tbs($uid){
-	static $tbs = array();
-	if($tbs[$uid]) return $tbs[$uid];
-	$tbs_url = 'http://tieba.baidu.com/dc/common/tbs';
-	$ch = curl_init($tbs_url);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1','Referer: http://tieba.baidu.com/'));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_COOKIE, get_cookie($uid));
-	$tbs_json = curl_exec($ch);
-	curl_close($ch);
-	$tbs = json_decode($tbs_json, 1);
-	return $tbs[$uid] = $tbs['tbs'];
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _get_tbs($uid);
+}
+function verify_cookie($cookie){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _verify_cookie($cookie);
+}
+function get_baidu_userinfo($uid){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _get_baidu_userinfo($uid);
+}
+function client_sign($uid, $tieba){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _client_sign($uid, $tieba);
+}
+function zhidao_sign($uid){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _zhidao_sign($uid);
+}
+function wenku_sign($uid){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _wenku_sign($uid);
+}
+function update_liked_tieba($uid, $ignore_error = false, $allow_deletion = true){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _update_liked_tieba($uid, $ignore_error, $allow_deletion);
+}
+function get_liked_tieba($cookie){
+	require_once SYSTEM_ROOT.'./function/sign.php';
+	return _get_liked_tieba($cookie);
+}
+function do_login($uid){
+	require_once SYSTEM_ROOT.'./function/member.php';
+	_do_login($uid);
+}
+function delete_user($uid){
+	require_once SYSTEM_ROOT.'./function/member.php';
+	_delete_user($uid);
 }

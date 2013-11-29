@@ -13,5 +13,5 @@ if(!in_array('member', $tables)){
 }elseif(!in_array('member_setting', $tables)){
 	include SYSTEM_ROOT.'./function/updater/1.13.8.18.php';
 }
-error::system_error('找不到更新程序，无法进行更新！');
+throw new Exception('找不到更新程序，无法进行更新！');
 ?>

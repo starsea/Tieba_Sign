@@ -1,68 +1,131 @@
 <?php
 if(!defined('IN_KKFRAME')) exit();
 
-function normal_sign($uid, $tieba){
-	$setting = get_setting($uid);
-	$url = "http://tieba.baidu.com/mo/m?kw={$tieba[unicode_name]}";
-	$get_url = curl_get($url, $uid);
-	if(!$get_url) return array(1, '无法打开贴吧首页', 0);
-	$get_url = wrap_text($get_url);
-	preg_match('/<ahref="([^"]*?)">签到<\/a>/', $get_url, $matches);
-	if (isset($matches[1])){
-		$s = str_replace('&amp;', '&', $matches[1]);
-		$sign_url = 'http://tieba.baidu.com'.$s;
-		$get_sign = curl_get($sign_url, $uid, $setting['use_bdbowser']);
-		$done++;
-		if(!$get_sign) return array(1, '签到错误，可能已经签到成功，稍后重试', 0);
-      	$get_sign = wrap_text($get_sign);
-      	preg_match('/<spanclass="light">签到成功，经验值上升<spanclass="light">(\d+)<\/span>/', $get_sign, $matches);
-      	if ($matches[1]){
-			return array(2, "签到成功，经验值+{$matches[1]}", $matches[1]);
-        }else{
-			return array(1, '签到错误，可能已经签到成功，稍后重试', 0);
-        }
-	}else{
-      	preg_match('/<span>已签到<\/span>/', $get_url, $matches);
-      	if ($matches[0]){
-			return array(2, '此前已成功签到', 0);
-        } else {
-			return array(-1, '找不到签到链接，稍后重试', 0);
-        }
-    }
+function _get_tbs($uid){
+	static $tbs = array();
+	if($tbs[$uid]) return $tbs[$uid];
+	$tbs_url = 'http://tieba.baidu.com/dc/common/tbs';
+	$ch = curl_init($tbs_url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1','Referer: http://tieba.baidu.com/'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_COOKIE, get_cookie($uid));
+	$tbs_json = curl_exec($ch);
+	curl_close($ch);
+	$tbs = json_decode($tbs_json, 1);
+	return $tbs[$uid] = $tbs['tbs'];
 }
 
-function mobile_sign($uid, $tieba){
-	$sign_url = 'http://tieba.baidu.com/mo/q/sign?tbs='.get_tbs($uid).'&kw='.$tieba['unicode_name'].'&is_like=1&fid='.$tieba['fid'];
-	$c_sign = curl_init($sign_url);
-	$refer = 'Referer: http://tieba.baidu.com/f?kw='.$tieba['unicode_name'];
-	curl_setopt($c_sign, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1', 'Connection: Keep-Alive', $refer, 'Host: tieba.baidu.com', 'Origin: http://tieba.baidu.com'));
-	curl_setopt($c_sign, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($c_sign, CURLOPT_COOKIE, get_cookie($uid));
-	$sign_json = curl_exec($c_sign);
-	curl_close($c_sign);
-	$res = @json_decode($sign_json, true);
-	if(!$res) return array(1, 'JSON 解析错误', 0);
-	if(strexists($sign_json, '"is_sign_in":1')){
-		$exp = $res['data']['msg'];
-		return array(2, "签到成功，经验值上升 {$exp}", $exp);
-	}else{
-		switch($res['no']){
-			case '1101':		// 已经签过
-				return array(2, $res['data']['msg'], 0);
-			//case '1012':		// 贴吧目录出问题?
-			case '1002':		// 不支持
-				return array(-1, "ERROR-{$res[no]}: ".$res['data']['msg'], 0);
-			case '1100':		// 零点 稍后再试
-			case '1102':		// 太快了
-			case '11000':		// 稍候重试
-				return array(1, "ERROR-{$res[no]}: ".$res['data']['msg'], 0);
-			default:
-				return array(-1, "ERROR-{$res[no]}: ".$res['data']['msg'], 0);
+function _verify_cookie($cookie){
+	$tbs_url = 'http://tieba.baidu.com/dc/common/tbs';
+	$ch = curl_init($tbs_url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Linux; U; Android 4.1.2; zh-cn; MB526 Build/JZO54K) AppleWebKit/530.17 (KHTML, like Gecko) FlyFlow/2.4 Version/4.0 Mobile Safari/530.17 baidubrowser/042_1.8.4.2_diordna_458_084/alorotoM_61_2.1.4_625BM/1200a/39668C8F77034455D4DED02169F3F7C7%7C132773740707453/1','Referer: http://tieba.baidu.com/'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+	$tbs_json = curl_exec($ch);
+	curl_close($ch);
+	$tbs = json_decode($tbs_json, 1);
+	return $tbs['is_login'];
+}
+
+function _get_baidu_userinfo($uid){
+	$cookie = get_cookie($uid);
+	if(!$cookie) return array('no' => 4);
+	$tbs_url = 'http://tieba.baidu.com/f/user/json_userinfo';
+	$ch = curl_init($tbs_url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Referer: http://tieba.baidu.com/'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+	$tbs_json = curl_exec($ch);
+	curl_close($ch);
+	return json_decode($tbs_json, true);
+}
+
+function _get_liked_tieba($cookie){
+	$pn = 0;
+	$kw_name = array();
+	while (true){
+		$pn++;
+		$mylikeurl = "http://tieba.baidu.com/f/like/mylike?&pn=$pn";
+		$ch = curl_init($mylikeurl);
+		curl_setopt($ch, CURLOPT_URL, $mylikeurl);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+		$result = curl_exec($ch);
+		curl_close($ch);
+		$result = wrap_text($result);
+		$pre_reg = '/<tr><td>.*?<ahref="\/f\?kw=.*?"title="(.*?)"/';
+		preg_match_all($pre_reg, $result, $matches);
+		$count = 0;
+		foreach ($matches[1] as $key => $value) {
+			$uname = urlencode($value);
+			$_uname = preg_quote($value);
+			preg_match('/ForumManager\.undo_like\(\'([0-9]+)\',\''.preg_quote($uname).'\'/i', $result, $fid);
+			$kw_name[] = array(
+				'name' => mb_convert_encoding($value, 'utf-8', 'gbk'),
+				'uname' => $uname,
+				'fid' => $fid[1],
+			);
+			$count++;
+		}
+		if($count==0) break;
+	}
+	return $kw_name;
+}
+
+function _update_liked_tieba($uid, $ignore_error = false, $allow_deletion = true){
+	$date = date('Ymd', TIMESTAMP + 900);
+	$cookie = get_cookie($uid);
+	if(!$cookie){
+		if($ignore_error) return;
+		showmessage('请先填写 Cookie 信息再更新', './#baidu_bind');
+	}
+	$liked_tieba = get_liked_tieba($cookie);
+	$insert = $deleted = 0;
+	if(!$liked_tieba){
+		if($ignore_error) return;
+		showmessage('无法获取喜欢的贴吧，请更新 Cookie 信息', './#baidu_bind');
+	}
+	$my_tieba = array();
+	$query = DB::query("SELECT name, fid, tid FROM my_tieba WHERE uid='{$uid}'");
+	while($r = DB::fetch($query)) {
+		$my_tieba[$r['name']] = $r;
+	}
+	foreach($liked_tieba as $tieba){
+		if($my_tieba[$tieba['name']]){
+			unset($my_tieba[$tieba['name']]);
+			if(!$my_tieba[$tieba['name']]['fid']) DB::update('my_tieba', array(
+				'fid' => $tieba['fid'],
+				), array(
+					'uid' => $uid,
+					'name' => $tieba['name'],
+				), true);
+			continue;
+		}else{
+			DB::insert('my_tieba', array(
+				'uid' => $uid,
+				'fid' => $tieba['fid'],
+				'name' => $tieba['name'],
+				'unicode_name' => $tieba['uname'],
+				), false, true, true);
+			$insert++;
 		}
 	}
+	DB::query("INSERT IGNORE INTO sign_log (tid, uid) SELECT tid, uid FROM my_tieba");
+	if($my_tieba && $allow_deletion){
+		$tieba_ids = array();
+		foreach($my_tieba as $tieba){
+			$tieba_ids[] = $tieba['tid'];
+		}
+		$str = "'".implode("', '", $tieba_ids)."'";
+		$deleted = count($my_tieba);
+		DB::query("DELETE FROM my_tieba WHERE uid='{$uid}' AND tid IN ({$str})");
+		DB::query("DELETE FROM sign_log WHERE uid='{$uid}' AND tid IN ({$str})");
+	}
+	return array($insert, $deleted);
 }
 
-function client_sign($uid, $tieba){
+function _client_sign($uid, $tieba){
 	$cookie = get_cookie($uid);
 	preg_match('/BDUSS=([^ ;]+);/i', $cookie, $matches);
 	$BDUSS = trim($matches[1]);
@@ -74,14 +137,25 @@ function client_sign($uid, $tieba){
 	curl_setopt($ch, CURLOPT_POST, 1);
 	$array = array(
 		'BDUSS' => $BDUSS,
-		'_client_id' => '03-00-DA-59-05-00-72-96-06-00-01-00-04-00-4C-43-01-00-34-F4-02-00-BC-25-09-00-4E-36',
-		'_client_type' => '4',
-		'_client_version' => '1.2.1.17',
-		'_phone_imei' => '540b43b59d21b7a4824e1fd31b08e9a6',
+		'_client_id' => 'wappc_136'.random(10, true).'_'.random(3, true),
+		'_client_type' => '2',
+		'_client_version' => '4.5.5',
+		'_phone_imei' => md5(random(16, true)),
+		'app_id' => 'version_campus',
+		'cuid' => md5(random(16)).'|'.random(15, true),
 		'fid' => $tieba['fid'],
+		'from' => 'tieba',
 		'kw' => urldecode($tieba['unicode_name']),
+		'model' => 'MiOne',
 		'net_type' => '3',
+		'stErrorNums' => '0',
+		'stMethod' => '2',
+		'stMode' => '1',
+		'stSize' => random(5, true),
+		'stTime' => random(3, true),
+		'stTimesNum' => '0',
 		'tbs' => get_tbs($uid),
+		'timestamp' => time().rand(1000, 9999),
 	);
 	$sign_str = '';
 	foreach($array as $k=>$v) $sign_str .= $k.'='.$v;
@@ -112,7 +186,7 @@ function client_sign($uid, $tieba){
 	}
 }
 
-function zhidao_sign($uid){
+function _zhidao_sign($uid){
 	$ch = curl_init('http://zhidao.baidu.com/submit/user');
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -124,7 +198,7 @@ function zhidao_sign($uid){
 	return @json_decode($result);
 }
 
-function wenku_sign($uid){
+function _wenku_sign($uid){
 	$ch = curl_init('http://wenku.baidu.com/task/submit/signin');
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 BIDUBrowser/2.x Safari/537.31'));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

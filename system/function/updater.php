@@ -2,9 +2,12 @@
 if(!defined('IN_KKFRAME')) exit('Access Denied');
 function check_update(){
 	if(defined('UPDATE_CHECKED')) return;
+	$ver = $_COOKIE['ver'];
+	if($ver == VERSION) return;
 	$query = DB::query("SELECT v FROM setting WHERE k='version'", 'SILENT');
 	$res = DB::fetch($query);
 	$current_version = $res['v'];
+	dsetcookie('ver', $current_version);
 	if ($current_version != VERSION){
 		// load update script
 		while($current_version){

@@ -1,5 +1,24 @@
 <?php
-class Bcms extends BaeBase{
+if(!defined('IN_KKFRAME')) exit('Access Denied');
+
+class bcms extends mailer{
+	var $id = 'bcms';
+	var $name = 'BCMS 百度消息队列';
+	var $description = '通过 百度消息队列 发邮件 (发送者显示 *******@duapp.com，一般进垃圾箱)';
+	var $config = array(
+		array('百度消息队列名', 'queue', '一般为随机的字母+数字', ''),
+	);
+	function isAvailable(){
+		return $_SERVER['USER'] == 'bae';
+	}
+	function send($mail){
+		$bcms = new _Bcms();
+		$ret = $bcms->mail($this->_get_setting('queue'), '<!--HTML-->'.$mail->message, array($mail->address), array(_Bcms::MAIL_SUBJECT => $mail->subject));
+		return $ret !== false;
+	}
+}
+
+class _Bcms extends _BaeBase{
 	const QUEUE_TYPE = 'queue_type';
 	const QUEUE_ALIAS_NAME = 'queue_alias_name';
 	const FROM = 'from';
@@ -64,13 +83,13 @@ class Bcms extends BaeBase{
 		if( is_null($accessKey)|| $this->_checkString($accessKey, 1, 64)){
 			$this->_clientId = $accessKey;
 		}else{
-			throw new BcmsException("invalid param - access key [ ${accessKey} ] , which must be a 1 - 64 length string", self::BCMS_SDK_INIT_FAIL);
+			throw new _BcmsException("invalid param - access key [ ${accessKey} ] , which must be a 1 - 64 length string", self::BCMS_SDK_INIT_FAIL);
 		}
 
 		if( is_null($secretKey)|| $this->_checkString($secretKey, 1, 64)){
 			$this->_clientSecret = $secretKey;
 		}else{
-			throw new BcmsException("invalid param - secret key [ ${secretKey} ] , which must be a 1 - 64 length string", self::BCMS_SDK_INIT_FAIL);
+			throw new _BcmsException("invalid param - secret key [ ${secretKey} ] , which must be a 1 - 64 length string", self::BCMS_SDK_INIT_FAIL);
 		}
 
 		if( is_null($host)|| $this->_checkString($host, 1, 1024)){
@@ -78,11 +97,11 @@ class Bcms extends BaeBase{
 				$this->_host = $host;
 			}
 		}else{
-			throw new BcmsException("invalid param - host [ ${host} ] , which must be a 1 - 1024 length string", self::BCMS_SDK_INIT_FAIL);
+			throw new _BcmsException("invalid param - host [ ${host} ] , which must be a 1 - 1024 length string", self::BCMS_SDK_INIT_FAIL);
 		}
 
 		if(!is_array($arr_curlOpts)){
-			throw new BcmsException( 'invalid param - arr_curlopt is not an array [' . print_r( $arr_curlOpts, true). ']', self::BCMS_SDK_INIT_FAIL);
+			throw new _BcmsException( 'invalid param - arr_curlopt is not an array [' . print_r( $arr_curlOpts, true). ']', self::BCMS_SDK_INIT_FAIL);
 		}
 		foreach($arr_curlOpts as $k => $v){
 			$this->_curlOpts [ $k ] = $v;
@@ -100,7 +119,7 @@ class Bcms extends BaeBase{
 		global $$g_key;
 		if(isset($opt [ $opt_key ])){
 			if(! $this->_checkString($opt [ $opt_key ], $min, $max)){
-				throw new BcmsException('invalid ' . $dis [ $opt_key ] . ' in $optinal(' . $opt [ $opt_key ] . '), which must be a ' . $min . ' - ' . $max . ' length string', self::BCMS_SDK_PARAM);
+				throw new _BcmsException('invalid ' . $dis [ $opt_key ] . ' in $optinal(' . $opt [ $opt_key ] . '), which must be a ' . $min . ' - ' . $max . ' length string', self::BCMS_SDK_PARAM);
 			}
 			return ;
 		}
@@ -110,14 +129,14 @@ class Bcms extends BaeBase{
 		}
 		if(isset($$g_key)){
 			if(! $this->_checkString($$g_key, $min, $max)){
-				throw new BcmsException('invalid ' . $g_key . ' in global area(' . $$g_key . '), which must be a ' . $min . ' - ' . $max . ' length string', self::BCMS_SDK_PARAM);
+				throw new _BcmsException('invalid ' . $g_key . ' in global area(' . $$g_key . '), which must be a ' . $min . ' - ' . $max . ' length string', self::BCMS_SDK_PARAM);
 			}
 			$opt [ $opt_key ] = $$g_key;
 			return ;
 		}
 		if(false !== getenv($env_key)){
 			if(! $this->_checkString(getenv($env_key), $min, $max)){
-				throw new BcmsException('invalid ' . $env_key . ' in environment variable(' . getenv($env_key). '), which must be a ' . $min . ' - ' . $max . ' length string', self::BCMS_SDK_PARAM);
+				throw new _BcmsException('invalid ' . $env_key . ' in environment variable(' . getenv($env_key). '), which must be a ' . $min . ' - ' . $max . ' length string', self::BCMS_SDK_PARAM);
 			}
 			$opt [ $opt_key ] = getenv($env_key);
 			return ;
@@ -126,11 +145,11 @@ class Bcms extends BaeBase{
 			$opt [ $opt_key ] = self::DEFAULT_HOST;
 			return ;
 		}
-		throw new BcmsException('no param(' . $dis [ $opt_key ] . ')was found', self::BCMS_SDK_PARAM);
+		throw new _BcmsException('no param(' . $dis [ $opt_key ] . ')was found', self::BCMS_SDK_PARAM);
 	}
 	private function _adjustOpt(&$opt){
 		if(! isset($opt)|| empty($opt)|| ! is_array($opt)){
-			throw new BcmsException('no params are set', self::BCMS_SDK_PARAM);
+			throw new _BcmsException('no params are set', self::BCMS_SDK_PARAM);
 		}
 		if(! isset($opt [ self::TIMESTAMP ])){
 			$opt [ self::TIMESTAMP ] = time();
@@ -155,7 +174,7 @@ class Bcms extends BaeBase{
 		$arrExclude = array(self::QUEUE_NAME, self::HOST, self::SECRET_KEY);
 		foreach($arrNeed as $key){
 			if(! isset($opt [ $key ])||(! is_integer( $opt [ $key ])&& empty($opt [ $key ]))){
-				throw new BcmsException("lack param (${key})", self::BCMS_SDK_PARAM);
+				throw new _BcmsException("lack param (${key})", self::BCMS_SDK_PARAM);
 			}
 			if(in_array($key, $arrExclude)){
 				continue;
@@ -244,22 +263,22 @@ class Bcms extends BaeBase{
 		$this->_bcmsGetSign($paramOpt, $arrContent, $arrNeed);
 		$ret = $this->_baseControl($arrContent);
 		if(empty($ret)){
-			throw new BcmsException('base control returned empty object', self::BCMS_SDK_SYS);
+			throw new _BcmsException('base control returned empty object', self::BCMS_SDK_SYS);
 		}
 		if($ret->isOK()){
 			$result = json_decode($ret->body, true);
 			if(is_null($result)){
-				throw new BcmsException($ret->body, self::BCMS_SDK_HTTP_STATUS_OK_BUT_RESULT_ERROR);
+				throw new _BcmsException($ret->body, self::BCMS_SDK_HTTP_STATUS_OK_BUT_RESULT_ERROR);
 			}
 			$this->_requestId = $result [ 'request_id' ];
 			return $result;
 		}
 		$result = json_decode($ret->body, true);
 		if(is_null($result)){
-			throw new BcmsException('ret body: ' . $ret->body, self::BCMS_SDK_HTTP_STATUS_ERROR_AND_RESULT_ERROR);
+			throw new _BcmsException('ret body: ' . $ret->body, self::BCMS_SDK_HTTP_STATUS_ERROR_AND_RESULT_ERROR);
 		}
 		$this->_requestId = $result [ 'request_id' ];
-		throw new BcmsException($result [ 'error_msg' ], $result [ 'error_code' ]);
+		throw new _BcmsException($result [ 'error_msg' ], $result [ 'error_code' ]);
 	}
 	private function _mergeArgs($arrNeed, $tmpArgs){
 		$arrArgs = array();
@@ -322,9 +341,9 @@ class Bcms extends BaeBase{
     	return $ret;
 	}
 }
-class BaeException extends Exception{}
-class BcmsException extends Exception{}
-class BaeBase{
+class _BaeException extends Exception{}
+class _BcmsException extends Exception{}
+class _BaeBase{
 	public    $errcode;
 	public    $errmsg;
 	protected $_handle= null;

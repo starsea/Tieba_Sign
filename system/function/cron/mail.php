@@ -1,30 +1,30 @@
 <?php
-chdir('../');
-require_once './system/common.inc.php';
-if($_GET['key'] != $_config['cronkey']) exit('ERROR CRON KEY');
-$date = date('Ymd', TIMESTAMP+900);
-$mdate = date('Y-m-d', TIMESTAMP+900);
-$uid = 0;
-while(true){
-	$user = DB::fetch_first("SELECT uid, username, email FROM member WHERE uid>'{$uid}' ORDER BY uid LIMIT 0,1");
-	$uid = $user['uid'];
-	if(!$uid) break;
-	echo "正在检查用户 {$user[username]}<br>";
-	if(check_if_msg($user)){
-		echo "正在发送邮件给 {$user[username]}...<br>";
-		sendmsg($user);
-	}
-};
+if(!defined('IN_KKFRAME')) exit();
+
+$_uid = getSetting('mail_uid') ? getSetting('mail_uid') : 1;
+while($_uid){
+	$user = DB::fetch_first("SELECT uid, username, email FROM member WHERE uid='{$_uid}'");
+	if(check_if_msg($user)) sendmsg($user);
+	$_uid = DB::result_first("SELECT uid FROM member WHERE uid>'{$_uid}' ORDER BY uid ASC LIMIT 0,1");
+	saveSetting('mail_uid', $_uid);
+}
+define('CRON_FINISHED', true);
+
 function check_if_msg($user){
-	global $date, $uid;
+	$date = date('Ymd', TIMESTAMP+900);
+	$uid = $user['uid'];
+	$total_num = DB::result_first("SELECT COUNT(*) FROM sign_log WHERE date='{$date}' AND uid='{$uid}'");
+	if($total_num > 200) return false;
 	$setting = get_setting($user['uid']);
 	if($setting['send_mail']) return true;
 	if(!$setting['error_mail']) return false;
-	$error_num = DB::result_first("SELECT COUNT(*) FROM sign_log WHERE status!=2 AND date='{$date}' AND uid='{$uid}'");
+	$error_num = DB::result_first("SELECT COUNT(*) FROM sign_log WHERE status!='2' AND status!='-2' AND date='{$date}' AND uid='{$uid}'");
 	if($error_num > 0) return true;
 }
 function sendmsg($user){
-	global $date, $mdate, $uid;
+	$date = date('Ymd', TIMESTAMP+900);
+	$mdate = date('Y-m-d', TIMESTAMP+900);
+	$uid = $user['uid'];
 	$log = array();
 	$query = DB::query("SELECT * FROM sign_log l LEFT JOIN my_tieba t ON t.tid=l.tid WHERE l.uid='{$uid}' AND l.date='{$date}' ORDER BY l.status DESC, l.tid ASC");
 	$i = 1;
@@ -56,7 +56,6 @@ EOF;
 	}
 	$message .= '</tbody></table></div></body></html>';
 	$res = send_mail($user['email'], "[{$mdate}] 贴吧签到助手 - {$user[username]} - 签到报告", $message);
-	echo $res ? '邮件发送成功<br>' : '邮件发送失败<br>';
 }
 function _status($status){
 	switch($status){
